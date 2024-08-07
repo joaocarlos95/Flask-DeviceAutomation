@@ -6,12 +6,12 @@ from collections import defaultdict
 from flask import Flask, render_template, request, jsonify, Response
 from nornir.core.filter import F
 
-from src.classes.network_handler import NetworkHandler
-from src.classes.colors import Colors
-from src.classes.netbox import Netbox
+from dep.panda.classes.network_handler import NetworkHandler
+from dep.panda.classes.colors import Colors
+from dep.panda.classes.netbox import Netbox
 
 
-CLIENT_NAME = "ANA Aeroportos"
+NETWORK_HANDLER_NAME = "ANA Aeroportos"
 ROOT_DIRECTORY = f"{pathlib.Path(__file__).parent.resolve()}"
 CONFIG_OPTIONS = {
     'set_configs': {
@@ -39,13 +39,13 @@ CONFIG_OPTIONS = {
 }
 
 
-app = Flask(__name__, template_folder='src/web/templates', static_folder='dep/')
+app = Flask(__name__, template_folder='web/templates', static_folder='dep/')
 
 @app.route('/')
 def index():
     template_context = {}
-    if CLIENT_NAME is not None:
-        template_context['client_name'] = CLIENT_NAME
+    if NETWORK_HANDLER_NAME is not None:
+        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
     if ROOT_DIRECTORY is not None:
         template_context['root_directory'] = ROOT_DIRECTORY
     return render_template('index.html', **template_context)
@@ -53,17 +53,17 @@ def index():
 @app.route('/get_configs')
 def get_configs():
     template_context = {}
-    if CLIENT_NAME is not None:
-        template_context['client_name'] = CLIENT_NAME
+    if NETWORK_HANDLER_NAME is not None:
+        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
     if ROOT_DIRECTORY is not None:
         template_context['root_directory'] = ROOT_DIRECTORY
-    return render_template('get_configs.html', config_options=CONFIG_OPTIONS['get_configs'], device_groups=CLIENT.nornir.inventory.groups, **template_context)
+    return render_template('get_configs.html', config_options=CONFIG_OPTIONS['get_configs'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **template_context)
 
 @app.route('/set_configs')
 def set_configs():
     template_context = {}
-    if CLIENT_NAME is not None:
-        template_context['client_name'] = CLIENT_NAME
+    if NETWORK_HANDLER_NAME is not None:
+        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
     if ROOT_DIRECTORY is not None:
         template_context['root_directory'] = ROOT_DIRECTORY
     return render_template('set_configs.html', config_options=CONFIG_OPTIONS['set_configs'], **template_context)
@@ -71,8 +71,8 @@ def set_configs():
 @app.route('/generate_configs')
 def generate_configs():
     template_context = {}
-    if CLIENT_NAME is not None:
-        template_context['client_name'] = CLIENT_NAME
+    if NETWORK_HANDLER_NAME is not None:
+        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
     if ROOT_DIRECTORY is not None:
         template_context['root_directory'] = ROOT_DIRECTORY
     return render_template('generate_configs.html', config_options=CONFIG_OPTIONS['set_configs'], **template_context)
@@ -80,11 +80,11 @@ def generate_configs():
 @app.route('/update_netbox')
 def update_netbox():
     template_context = {}
-    if CLIENT_NAME is not None:
-        template_context['client_name'] = CLIENT_NAME
+    if NETWORK_HANDLER_NAME is not None:
+        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
     if ROOT_DIRECTORY is not None:
         template_context['root_directory'] = ROOT_DIRECTORY
-    return render_template('update_netbox.html', config_options=CONFIG_OPTIONS['upd_netbox'], device_groups=CLIENT.nornir.inventory.groups, **template_context)
+    return render_template('update_netbox.html', config_options=CONFIG_OPTIONS['upd_netbox'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **template_context)
 
 @app.route('/update_device_group_options', methods=['POST'])
 def update_device_group_options():
@@ -92,11 +92,11 @@ def update_device_group_options():
     CONFIG_OPTIONS['device_group'] = request.json.get('device_group_options')
     return jsonify(success=True)
 
-@app.route('/update_client_name', methods=['POST'])
-def update_client_name():
-    global CLIENT_NAME
-    CLIENT_NAME = request.form.get('client_name')
-    return CLIENT_NAME
+@app.route('/update_NETWORK_HANDLER_name', methods=['POST'])
+def update_NETWORK_HANDLER_name():
+    global NETWORK_HANDLER_NAME
+    NETWORK_HANDLER_NAME = request.form.get('NETWORK_HANDLER_name')
+    return NETWORK_HANDLER_NAME
 
 @app.route('/update_root_directory', methods=['POST'])
 def update_root_directory():
@@ -129,19 +129,20 @@ def run_get_configs():
     for group in selected_groups[1:]:
         nornir_group_filter |= F(groups__contains=group)
 
-    nornir_filtered = CLIENT.nornir.filter(nornir_group_filter)
-    CLIENT.nornir_get_configs(get_configs_info=get_configs_info, nornir_filtered=nornir_filtered)
+    nornir_filtered = NETWORK_HANDLER.nornir.filter(nornir_group_filter)
+    NETWORK_HANDLER.nornir_get_configs(get_configs_info=get_configs_info, nornir_filtered=nornir_filtered)
 
-    script_data = CLIENT.nornir_generate_data_dict()
-    output_parsed = CLIENT.nornir_generate_config_parsed(script_data)
+    NETWORK_HANDLER.dir = ROOT_DIRECTORY
+    script_data = NETWORK_HANDLER.nornir_generate_data_dict()
+    output_parsed = NETWORK_HANDLER.nornir_generate_config_parsed(script_data)
 
     # Generate diagrams using CDP or LLDP neighbors
     # if 'Network Diagram CDP' in get_configs_info:
-    #     graph = CLIENT.generate_graph(output_parsed=output_parsed, discovery_protocol='CDP')
-    #     CLIENT.generate_diagram(graph)
+    #     graph = NETWORK_HANDLER.generate_graph(output_parsed=output_parsed, discovery_protocol='CDP')
+    #     NETWORK_HANDLER.generate_diagram(graph)
     # elif 'Network Diagram LLDP' in get_configs_info:
-    #     graph = CLIENT.generate_graph(output_parsed=output_parsed, discovery_protocol='LLDP')
-    #     CLIENT.generate_diagram(graph)
+    #     graph = NETWORK_HANDLER.generate_graph(output_parsed=output_parsed, discovery_protocol='LLDP')
+    #     NETWORK_HANDLER.generate_diagram(graph)
     
     print(f"{Colors.OK_GREEN}[>]{Colors.END} Execution time: {time.time() - start_time} seconds")
     return Response(status=204)
@@ -151,24 +152,24 @@ def run_get_configs():
 def run_set_configs():
     start_time = time.time()
 
-    if ROOT_DIRECTORY == None or CLIENT_NAME == None:
-        print(f"{Colors.NOK_RED}[>]{Colors.END} Please specify the Client Name and Root Directory in the proper forms")
+    if ROOT_DIRECTORY == None or NETWORK_HANDLER_NAME == None:
+        print(f"{Colors.NOK_RED}[>]{Colors.END} Please specify the NETWORK_HANDLER Name and Root Directory in the proper forms")
         return Response(status=200)
 
     config_blocks = get_checked_options(method='set_configs')
 
-    # Create a new client object and initialize all data (command list)
-    client = Client(ROOT_DIRECTORY, CLIENT_NAME)
-    client.get_devices_from_csv()
-    client.get_j2_template()
-    client.get_j2_data()
+    # Create a new NETWORK_HANDLER object and initialize all data (command list)
+    NETWORK_HANDLER = NETWORK_HANDLER(ROOT_DIRECTORY, NETWORK_HANDLER_NAME)
+    NETWORK_HANDLER.get_devices_from_csv()
+    NETWORK_HANDLER.get_j2_template()
+    NETWORK_HANDLER.get_j2_data()
 
     # Get device information for each information requested
-    client.set_concurrent_configs(config_blocks=config_blocks)
+    NETWORK_HANDLER.set_concurrent_configs(config_blocks=config_blocks)
 
     # Generate script data, converting all class objects to nested dicts
-    # script_data = client.generate_data_dict()
-    # output_parsed = client.generate_config_parsed(script_data)
+    # script_data = NETWORK_HANDLER.generate_data_dict()
+    # output_parsed = NETWORK_HANDLER.generate_config_parsed(script_data)
 
     print(f"{Colors.OK_GREEN}[>]{Colors.END} Execution time: {time.time() - start_time} seconds")
     return Response(status=204)
@@ -186,7 +187,7 @@ def init_config_options() -> None:
 
     global CONFIG_OPTIONS
 
-    with open(f"{os.path.dirname(__file__)}/src/config.yaml", 'r') as nornir_config:
+    with open(f"{os.path.dirname(__file__)}/dep/panda/config.yaml", 'r') as nornir_config:
         config = yaml.safe_load(nornir_config)
 
         get_configs = defaultdict(list)
@@ -220,26 +221,26 @@ def init_network_handler() -> None:
     ''' '''
     global NETWORK_HANDLER
 
-    if ROOT_DIRECTORY == None or CLIENT_NAME == None:
-        print(f"{Colors.NOK_RED}[>]{Colors.END} Please specify the Client Name and Root Directory in the proper forms")
+    if ROOT_DIRECTORY == None or NETWORK_HANDLER_NAME == None:
+        print(f"{Colors.NOK_RED}[>]{Colors.END} Please specify the NETWORK_HANDLER Name and Root Directory in the proper forms")
         return Response(status=200)
 
-    NETWORK_HANDLER = NetworkHandler(
+    NETWORK_HANDLER = NetworkHandler()
 
 
 def init_netbox() -> None:
     ''' '''
     global NETBOX
 
-    url = 'https://10.168.10.81:443'
-    token = '4550ebdc9e1f2f5652fb77fa5a2b0def73cac0a7'
+    url = None
+    token = None
 
     NETBOX = Netbox(url, token)
 
 
 def update_netbox_device(site, output_parsed) -> None:
 
-    device_model_db = CLIENT.nornir.config.user_defined['models_database']
+    device_model_db = NETWORK_HANDLER.nornir.config.user_defined['models_database']
     for get_configs_info_result in output_parsed.values():
         for command_result in get_configs_info_result.values():
             for device in command_result:
@@ -279,7 +280,7 @@ def update_netbox_device(site, output_parsed) -> None:
 
 def add_device_netbox(site:str, model:str, hostname:str, serial_number:str) -> None:
 
-    device_model_db = CLIENT.nornir.config.user_defined['models_database'][model]
+    device_model_db = NETWORK_HANDLER.nornir.config.user_defined['models_database'][model]
     data = {
         "role": NETBOX.get_device_role_id(device_model_db['role']),
         "manufacturer": device_model_db['manufacturer'],
@@ -293,7 +294,7 @@ def add_device_netbox(site:str, model:str, hostname:str, serial_number:str) -> N
 
 def add_device_type_netbox(site:str, model:str, hostname:str, serial_number:str) -> None:
 
-    device_model_db = CLIENT.nornir.config.user_defined['models_database'][model]
+    device_model_db = NETWORK_HANDLER.nornir.config.user_defined['models_database'][model]
     data = {
         "role": NETBOX.get_device_role_id(device_model_db['role']),
         "manufacturer": device_model_db['manufacturer'],
@@ -318,10 +319,10 @@ def main():
 
     # get_configs_info = ['device_information']
     # nornir_group_filter = F(groups__contains='extreme_exos')
-    # nornir_filtered = CLIENT.nornir.filter(nornir_group_filter)
-    # CLIENT.nornir_get_configs(get_configs_info=get_configs_info, nornir_filtered=nornir_filtered)
-    # script_data = CLIENT.nornir_generate_data_dict()
-    # output_parsed = CLIENT.nornir_generate_config_parsed(script_data)
+    # nornir_filtered = NETWORK_HANDLER.nornir.filter(nornir_group_filter)
+    # NETWORK_HANDLER.nornir_get_configs(get_configs_info=get_configs_info, nornir_filtered=nornir_filtered)
+    # script_data = NETWORK_HANDLER.nornir_generate_data_dict()
+    # output_parsed = NETWORK_HANDLER.nornir_generate_config_parsed(script_data)
 
     # manufacturer = 'Extreme Networks'
     # platform = 'extreme_exos'

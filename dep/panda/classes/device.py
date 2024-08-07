@@ -1,6 +1,7 @@
 
 import inspect
 from netmiko import ConnectHandler
+
 from .colors import Colors
 from .upgrade import Upgrade
 from .configs import GetConfigs, SetConfigs

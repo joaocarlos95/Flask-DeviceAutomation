@@ -44,6 +44,8 @@ class NetworkHandler:
 
     def __init__(self, netbox_url: str=None, netbox_token: str=None, host_file: str=None, group_file: str=None, defaults_file: str=None):
 
+        self.dir = os.path.join(os.path.dirname(__file__), '../outputfiles')
+
         if netbox_url and netbox_token:
             inventory = {
                 "plugin": "NetBoxInventory2",
@@ -54,7 +56,11 @@ class NetworkHandler:
                     "use_platform_slug": True
                 }
             }
-        elif host_file:
+        else:
+            host_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/hosts.yaml')
+            group_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/groups.yaml')
+            defaults_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/defaults.yaml')
+
             inventory = {
                 "plugin": "SimpleInventory",
                 "options": {
@@ -63,28 +69,12 @@ class NetworkHandler:
                     "defaults_file": defaults_file
                 }
             }
-        else:
-            raise ValueError("Either netbox_url and netbox_token or host_file must be set")
 
         # Define the inventory as a dictionary with the hosts, groups and defaults as its keys
         self.nornir = InitNornir(
             config_file=f"{os.path.dirname(__file__)}/../config.yaml",
             inventory=inventory
         )
-
-    def __init__(self, dir, name):
-        '''
-        Constructor used to create a new client object, defining its main directory, name and
-        threading lock to avoid race conditions when accessing multiple devices at the same time
-        to perform operations.
-
-        Args:
-            dir (str): Main directory where the client is located
-            name (str): Name of the client
-        '''
-
-        self.dir = dir
-        self.name = name
 
     def get_j2_template(self):
         '''
@@ -342,7 +332,6 @@ class NetworkHandler:
             return output_parsed
 
         script_data = {
-            'client_name': self.name,
             'client_dir': self.dir,
             'get_configs': {}
         }

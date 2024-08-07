@@ -1,6 +1,7 @@
 from datetime import datetime
 from netmiko.utilities import get_structured_data
 #from OuiLookup import OuiLookup
+
 from .colors import Colors 
 from .decorators import write_to_file
 
