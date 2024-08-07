@@ -1,0 +1,215 @@
+{
+    "Configuration": {
+        "textfsm": false,
+        "commands": {
+            "alcatel_aos": ["show configuration snapshot"],
+            "cisco_ios": ["show running-config"],
+            "cisco_nxos": ["show running-config"],
+            "extreme": ["show config"],
+            "extreme_exos": ["show config"]
+        }
+    },
+    "Device Information": {
+        "textfsm": true,
+        "commands": {
+            "cisco_ios": ["show version"],
+            "cisco_nxos": ["show version"],
+            "extreme": ["show system", "show time", "show system hardware"],
+            "extreme_exos": ["show system"]
+        }
+    },
+    "Device Directory": {
+        "textfsm": true,
+        "commands": {
+            "cisco_ios": ["dir"],
+            "cisco_nxos": ["dir"]
+        }
+    },
+    "Device Management": {
+        "textfsm": true,
+        "commands": {
+            "extreme": ["show ssh", "show telnet", "show webview"],
+            "extreme_exos": ["show management"]
+        }
+    },
+    "File System": {
+        "textfsm": false,
+        "commands": {
+            "cisco_ios": ["show file system"]
+        }
+    },
+    "Interfaces Counters": {
+        "textfsm": true,
+        "clear_counters": {
+            "to_clear": false,
+            "cisco_ios": ["clear counters"]
+        },
+        "commands": {
+            "cisco_ios": ["show interfaces counters"]
+        }
+    },
+    "Interfaces Information": {
+        "textfsm": true,
+        "commands": {
+            "cisco_ios": ["show interfaces"]
+        }
+    },
+    "License": {
+        "textfsm": false,
+        "commands": {
+            "cisco_ios": ["show license status"]
+        }
+    },
+    "MAC Address Table": {
+        "textfsm": true,
+        "commands": {
+            "cisco_ios": ["show mac address-table"]
+        }
+    },
+    "MD5 Checksum": {
+        "textfsm": false,
+        "commands": {
+            "cisco_ios": ["verify /md5"]
+        }
+    },
+    "CDP Neighbors": {
+        "textfsm": true,
+        "commands": {
+            "cisco_ios": ["show cdp neighbors detail"],
+            "cisco_nxos": ["show cdp neighbors detail"],
+            "cisco_wlc": ["show cdp neighbors detail"],
+            "extreme": ["show neighbors"],
+            "extreme_exos": ["show cdp neighbor detail"]
+        }
+    },
+    "LLDP Neighbors": {
+        "textfsm": true,
+        "commands": {
+            "alcatel_aos": ["show lldp remote-system"],
+            "cisco_ios": ["show lldp neighbors detail"],
+            "cisco_nxos": ["show lldp neighbors detail"],
+            "extreme": ["show lldp port remote-info"],
+            "extreme_exos": ["show lldp neighbor detailed"]
+        }
+    },
+    "Network Diagram CDP": {
+        "textfsm": true,
+        "commands": {
+            "cisco_ios": ["show cdp neighbors detail"],
+            "cisco_nxos": ["show cdp neighbors detail"],
+            "cisco_wlc": ["show cdp neighbors detail"],
+            "extreme": ["show neighbors"],
+            "extreme_exos": ["show cdp neighbor detail"]
+        }
+    },
+    "Network Diagram LLDP": {
+        "textfsm": true,
+        "commands": {
+            "extreme": ["show neighbors"],
+            "extreme_exos": ["show lldp neighbor detail"]
+        }
+    },
+
+    "CDP Config": {
+        "textfsm": true,
+        "commands": {
+            "extreme": ["show ciscodp"],
+            "extreme_exos": ["show cdp"]
+        }
+    },
+    "VLAN Ports": {
+        "textfsm": true,
+        "commands": {
+            "extreme": ["show vlan portinfo"],
+            "extreme_exos": ["show ports vid port-number"]
+        }
+    },
+    "Interface Status": {
+        "textfsm": true,
+        "commands": {
+            "extreme": ["show port status"],
+            "extreme_exos": ["show ports no-refresh"]
+        }
+    },
+    "Local Users": {
+        "textfsm": true,
+        "commands": {
+            "extreme": ["show system login"],
+            "extreme_exos": ["show accounts"]
+        }
+    },
+    "Transceiver Information": {
+        "textfsm": true,
+        "commands": {
+            "extreme": ["show port transceiver basic-only"],
+            "extreme_exos": ["show ports transceiver information detail"]
+        }
+    },
+    "Interface Information": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show ports information detail"]
+        }
+    },
+    "SNMP Access": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 access"]
+        }
+    },
+    "SNMP Community": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 community"]
+        }
+    },
+    "SNMP Filter Profile": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 filter-profile"]
+        }
+    },
+    "SNMP Filter": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 filter"]
+        }
+    },
+    "SNMP Group": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 group"]
+        }
+    },
+    "SNMP Traps": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 notify"]
+        }
+    },
+    "SNMP Server": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 target-addr"]
+        }
+    },
+    "SNMP Target Parameters": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 target-params"]
+        }
+    },
+    "SNMP User": {
+        "textfsm": true,
+        "commands": {
+            "extreme_exos": ["show snmpv3 user"]
+        }
+    },
+    "Power Information": {
+        "textfsm": true,
+        "commands": {
+            "extreme": ["show system"],
+            "extreme_exos": ["show power detail"]
+        }
+    }
+}
