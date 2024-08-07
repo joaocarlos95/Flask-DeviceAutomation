@@ -6,7 +6,7 @@ import tempfile
 import time
 
 from classes.colors import Colors
-from classes.client import Client
+from classes.network_handler import NetworkHandler
 
 
 ROOT_DIR = 'C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation'

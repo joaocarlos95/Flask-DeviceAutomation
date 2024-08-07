@@ -2,7 +2,7 @@ import os
 import requests
 import time
 
-from classes.client import Client as NC
+from classes.network_handler import NetworkHandler
 
 
 url = 'https://10.168.10.81:443/api/'

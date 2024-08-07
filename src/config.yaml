@@ -2,15 +2,15 @@
 inventory:
     plugin: SimpleInventory
     options:
-        host_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/02. PANDA/inputfiles/inventory/hosts.yaml"
-        group_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/02. PANDA/inputfiles/inventory/groups.yaml"
-        defaults_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/02. PANDA/inputfiles/inventory/defaults.yaml"
+        host_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation/inputfiles/inventory/defaults.yaml"
+        group_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation/inputfiles/inventory/groups.yaml"
+        defaults_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation/inputfiles/inventory/defaults.yaml"
 runner:
     plugin: threaded
     options:
         num_workers: 40
 user_defined:
-    PANDA_data:
+    device_data:
         # Device related information
         device_configuration:
             group: Device
@@ -27,6 +27,7 @@ user_defined:
                     - show config
                 extreme_exos:
                     - show config
+            read_timeout: 600
         device_file_system:
             group: Device
             label: File System
@@ -101,6 +102,7 @@ user_defined:
                     - show interfaces
                 extreme_exos:
                     - show ports information detail
+            read_timeout: 600
         interface_statistics:
             group: Interface
             label: Statistics
@@ -134,7 +136,8 @@ user_defined:
                 extreme:
                     - show vlan portinfo
                 extreme_exos:
-                    - show ports vid port-number
+                    - show ports information detail
+            read_timeout: 600
         # Monitoring related information
         snmp_credentials:
             group: Monitoring

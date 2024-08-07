@@ -4,7 +4,7 @@ import sys
 import time
 from getpass import getpass
 from multiprocessing import Manager, Process
-from classes.client import Client
+from classes.network_handler import NetworkHandler
 from classes.device import Device
 from classes.colors import Colors
 

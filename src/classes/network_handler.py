@@ -31,7 +31,7 @@ MAX_WORKERS = 40
 
 
 
-class Client:
+class NetworkHandler:
     '''
     Class used to define client variables, which are used by other classes, and 
     to define the script main execution, namely import and export data.
@@ -41,6 +41,36 @@ class Client:
         name (str): Name of the client
         nornir (InitNornir): Nornir class to interact with the devices
     '''
+
+    def __init__(self, netbox_url: str=None, netbox_token: str=None, host_file: str=None, group_file: str=None, defaults_file: str=None):
+
+        if netbox_url and netbox_token:
+            inventory = {
+                "plugin": "NetBoxInventory2",
+                "options": {
+                    "nb_url": netbox_url,
+                    "nb_token": netbox_token,
+                    "ssl_verify": False,
+                    "use_platform_slug": True
+                }
+            }
+        elif host_file:
+            inventory = {
+                "plugin": "SimpleInventory",
+                "options": {
+                    "host_file": host_file,
+                    "group_file": group_file,
+                    "defaults_file": defaults_file
+                }
+            }
+        else:
+            raise ValueError("Either netbox_url and netbox_token or host_file must be set")
+
+        # Define the inventory as a dictionary with the hosts, groups and defaults as its keys
+        self.nornir = InitNornir(
+            config_file=f"{os.path.dirname(__file__)}/../config.yaml",
+            inventory=inventory
+        )
 
     def __init__(self, dir, name):
         '''
@@ -55,20 +85,6 @@ class Client:
 
         self.dir = dir
         self.name = name
-
-        # Define the inventory as a dictionary with the hosts, groups and defaults as its keys
-        self.nornir = InitNornir(
-            config_file=f"{os.path.dirname(__file__)}/../config.yaml",
-            inventory={
-                'options': {
-                    'host_file': f"{dir}/inputfiles/inventory/hosts.yaml",
-                    'group_file': f"{dir}/inputfiles/inventory/groups.yaml",
-                    'defaults_file': f"{dir}/inputfiles/inventory/defaults.yaml",
-                }
-            }
-        )
-        # self.nornir_get_commands()
-        
 
     def get_j2_template(self):
         '''
