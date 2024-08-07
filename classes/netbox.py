@@ -2,7 +2,7 @@ import json
 import requests
 import time
 
-from src.classes.colors import Colors
+from .colors import Colors
 
 
 class Netbox:
