@@ -2,9 +2,9 @@
 inventory:
     plugin: SimpleInventory
     options:
-        host_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation/inputfiles/inventory/defaults.yaml"
-        group_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation/inputfiles/inventory/groups.yaml"
-        defaults_file: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation/inputfiles/inventory/defaults.yaml"
+        host_file: "./inputfiles/inventory/defaults.yaml"
+        group_file: "./inputfiles/inventory/groups.yaml"
+        defaults_file: "./inputfiles/inventory/defaults.yaml"
 runner:
     plugin: threaded
     options:
