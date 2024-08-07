@@ -1,0 +1,4 @@
+---
+group1:
+    data:
+      ntp_server: 10.10.10.10

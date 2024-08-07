@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAPymiko</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="layout-top-nav" style="height: auto;">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+            <div class="container">
+                <a href="/" class="navbar-brand">
+                    <span class="brand-text font-weight-light">NAPymiko</span>
+                 </a>
+                <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a href="/get_configs" class="nav-link">Get Configs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Set Configs</a>
+                        </li>
+                    </ul>
+            
+                    <form class="form-inline ml-0 ml-md-3">
+                        <div class="input-group input-group-sm">
+                            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-navbar" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>          
+            </div>
+        </nav>
+        <!-- /.navbar -->        
+
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Set Configurations</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item active">Set Configs</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="container">
+                    <div class="form-group row">
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="clientName" name="clientName" placeholder="Client Name" value="{{ client_name }}">
+                        </div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="rootDirectory" name="rootDirectory"  placeholder="Root Directory" value="{{ root_directory }}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card card-danger">
+                                <div class="card-header">
+                                    <h5 class="card-title m-0">Information Data</h5>
+                                </div>
+                                <div class="card-body">                                      
+                                    <div id="accordion">
+                                        {% for group_name, options in config_options.items() %}
+                                            <div class="card card-light">
+                                                <div class="card-header">
+                                                    <h4 class="card-title m-0">{{ group_name }}</h4>
+                                                    <div class="card-tools">
+                                                        <button class="btn btn-block btn-light btn-xs" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">show/hide</button>
+                                                    </div>
+                                                </div>
+                                                <div id="collapse{{ loop.index }}" class="collapse" aria-labelledby="heading{{ loop.index }}" data-parent="#accordion">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            {% for option in options %}
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" id="{{ option['id'] }}" name="{{ option['name'] }}" {{ option['status'] }}>
+                                                                        <label class="form-check-label" for="{{ option['id'] }}">{{ option['label'] }}</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {% if loop.index % 3 == 0 %}
+                                                        </div>
+                                                        <div class="row">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>                                                
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>                               
+                                <div class="card-footer">
+                                    Select the data you want to collect from the devices
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card card-outline card-danger">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        Information Data <small>(selected)</small>
+                                    </h3>
+                                    <div class="card-tools">
+                                        <button class="btn btn-block btn-light btn-xs" type="button" id="refreshInformationData">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    {% for group_name, options in config_options.items() %}
+                                        {% set selected_options = [] %}
+                                        {% for option in options %}
+                                            {% if option['status'] == 'checked' %}
+                                                {% set _ = selected_options.append(option['label']) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if selected_options %}
+                                            <dl>
+                                                <dt>{{ group_name }}</dt>
+                                                <dd>
+                                                    <ul class="list-unstyled">
+                                                        {% for option in selected_options %}
+                                                            <li>&nbsp;&nbsp;&nbsp;&#8226; {{ option }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <form id="runSetConfigsForm" action="/run_set_configs" method="POST">
+                                <button type="submit" class="btn btn-block btn-success mb-3">Run</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="float-right d-none d-sm-block">
+                <b>Version</b> 3.1.0
+            </div>
+            <strong>&copy; 2022 AdminLTE.io</strong> All rights reserved.
+        </footer>
+    </div>
+    <!-- JavaScript at the bottom of the page for faster page loading -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function updateConfigOptions() {
+            var updatedData = {};
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+                var group = checkbox.closest('.card').querySelector('.card-title').innerText.trim();
+                var id = checkbox.id;
+                var label = checkbox.nextElementSibling.innerText.trim();
+                var status = checkbox.disabled ? 'disabled' : (checkbox.checked ? 'checked' : '');
+
+                if (!updatedData[group]) {
+                    updatedData[group] = [];
+                }
+
+                updatedData[group].push({
+                    id: id,
+                    name: id,
+                    label: label,
+                    status: status
+                });
+            });
+
+            updatedData.method = 'set_configs';
+
+            fetch('/update_config_options', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            })
+            .then(response => response.json())
+            .then(data => updateSelectedOptions(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateSelectedOptions(data) {
+            var selectedOptionsHTML = '';
+
+            // Loop through data to generate HTML for selected options
+            for (var group in data) {
+                if (data.hasOwnProperty(group)) {
+                    var options = data[group];
+                    var selectedOptions = options.filter(option => option.status === 'checked');
+                    if (selectedOptions.length > 0) {
+                        selectedOptionsHTML += '<dl class="row">';
+                        selectedOptionsHTML += '<dt class="col-sm-4">' + group + '</dt>';
+                        selectedOptionsHTML += '<dd class="col-sm-8">';
+                        selectedOptionsHTML += '<ul class="list-unstyled">';
+                        selectedOptions.forEach(option => {
+                            selectedOptionsHTML += '<li>&#8226; ' + option.label + '</li>';
+                        });
+                        selectedOptionsHTML += '</ul>';
+                        selectedOptionsHTML += '</dd>';
+                        selectedOptionsHTML += '</dl>';
+                    }
+                }
+            }
+
+            // Update selected options section in the DOM
+            var selectedOptionsContainer = document.getElementById('selectedOptions');
+            selectedOptionsContainer.innerHTML = selectedOptionsHTML;
+        }
+
+        document.addEventListener('change', function(event) {
+            var target = event.target;
+            if (target && target.type === 'checkbox') {
+                updateConfigOptions();
+            }
+        });
+
+        // Add event listener to the refresh button
+        document.getElementById('refreshInformationData').addEventListener('click', function() {
+            // Refresh the page when the button is clicked
+            location.reload();
+        });
+
+        var debounceTimer;
+        document.querySelectorAll('#rootDirectory').forEach(function(inputElement) {
+            inputElement.addEventListener('input', function(event) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    var rootDirectory = document.getElementById('rootDirectory').value;
+                    $.ajax({
+                        url: '/update_root_directory',
+                        type: 'POST',
+                        data: {root_directory: rootDirectory},
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }, 1000); // Adjust the delay (in milliseconds) as needed
+            });
+        });
+
+        document.querySelectorAll('#clientName').forEach(function(inputElement) {
+            inputElement.addEventListener('input', function(event) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    var clientName = document.getElementById('clientName').value;
+                    $.ajax({
+                        url: '/update_client_name',
+                        type: 'POST',
+                        data: {client_name: clientName},
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }, 1000); // Adjust the delay (in milliseconds) as needed
+            });
+        });
+
+        $(document).ready(function() {
+            // Intercept form submission event
+            $('#runSetConfigsForm').submit(function(event) {
+                // Prevent default form submission behavior
+                event.preventDefault();
+
+                // Serialize form data
+                var formData = $(this).serialize();
+
+                // Send AJAX request
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        console.log('AJAX request successful');
+                        // Handle success response if needed
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX request failed:', error);
+                        // Handle error if needed
+                    }
+                });
+            });
+        });
+    </script>
+    </script>
+</body>
+</html>
