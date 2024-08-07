@@ -1,0 +1,10 @@
+---
+host1.group1:
+    hostname: 1.1.1.1
+    groups:
+        - group1
+host2.group2:
+    hostname: 2.2.2.2
+    username: username
+    password: password
+    platform: extreme_exos

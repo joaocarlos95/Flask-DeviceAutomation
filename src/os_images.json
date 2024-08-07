@@ -1,0 +1,154 @@
+{
+	"cisco_ios": {
+		"C9300-48UXM": {
+			"17.6.3": {
+				"image": "cat9k_iosxe.17.06.03.SPA.bin",
+				"md5": "4637c5c6767fee76c8b0cec1b7370cd3",
+				"space": 1017259730
+			},
+			"17.6.4": {
+				"image": "cat9k_iosxe.17.06.04.SPA.bin",
+				"md5": "dae85d113b3438d4f00e49ccdd1ec611",
+				"space": 1017587860
+			}
+		},
+		"WS-C2960-24LC-S": {
+			"15.0(2)SE11": {
+				"image": "c2960-lanlitek9-mz.150-2.SE11.bin",
+				"md5": "885ed3dd7278baa11538a51827c2c9f8",
+				"space": 10196782
+			}
+		},
+		"WS-C2960-24PC-L": {
+			"15.0(2)SE11": {
+				"image": "c2960-lanbasek9-mz.150-2.SE11.bin",
+				"md5": "81064ff93a36442ed4f5ad6be86c8cea",
+				"space": 11832946
+			}
+		},
+		"WS-C2960-48TC-L": {
+			"15.0(2)SE11": {
+				"image": "c2960-lanbasek9-mz.150-2.SE11.bin",
+				"md5": "81064ff93a36442ed4f5ad6be86c8cea",
+				"space": 11832946
+			}
+		},
+		"WS-C2960C-8TC-L": {
+			"15.2(7)E6": {
+				"image": "c2960c405-universalk9-mz.152-7.E6.bin",
+				"md5": "b94d25cba08d132551cb64a4fbe0a237",
+				"space": 18187264
+			}
+		},
+		"WS-C2960C-8PC-L": {
+			"15.2(7)E6": {
+				"image": "c2960c405-universalk9-mz.152-7.E6.bin",
+				"md5": "b94d25cba08d132551cb64a4fbe0a237",
+				"space": 18187264
+			}
+		},
+		"WS-C2960G-24TC-L": {
+			"12.2.55-SE12": {
+				"image": "c2960-lanbasek9-mz.122-55.SE12.bin",
+				"md5": "1504e5d9342eabf6f7b2376e94ace46f",
+				"space": 9827106
+			},
+			"15.0(2)SE11": {
+				"image": "c2960-lanbasek9-mz.150-2.SE11.bin",
+				"md5": "81064ff93a36442ed4f5ad6be86c8cea",
+				"space": 11832946
+			}
+		},
+		"WS-C2960L-8PS-LL": {
+			"15.2.7E6": {
+				"image": "c2960l-universalk9-mz.152-7.E6.bin",
+				"md5": "fbfddf7de5dc788422b7177c419278d6",
+				"space": 16250880
+			}
+		},
+		"WS-C2960L-24PS-LL": {
+			"15.2(7)E6": {
+				"image": "c2960l-universalk9-mz.152-7.E6.bin",
+				"md5": "fbfddf7de5dc788422b7177c419278d6",
+				"space": 16250880
+			}
+		},
+		"WS-C2960S-24PS-L": {
+			"15.2(2)E9": {
+				"image": "c2960s-universalk9-mz.152-2.E9.bin",
+				"md5": "ea604d030b378b6c5c3dda3d501ac2f5",
+				"space": 16800768
+			}
+		},
+		"WS-C2960X-24PS-L": {
+			"15.2(7)E6": {
+				"image": "c2960x-universalk9-mz.152-7.E6.bin",
+				"md5": "2adb9ecfefb635ef7814c8d48e3f3a4a",
+				"space": 26777600
+			}
+		},
+		"WS-C2960X-48FPS-L": {
+			"15.2(7)E6": {
+				"image": "c2960x-universalk9-mz.152-7.E6.bin",
+				"md5": "2adb9ecfefb635ef7814c8d48e3f3a4a",
+				"space": 26777600
+			}
+		},
+		"WS-C3560CX-8PC-S": {
+			"15.2(7)E5": {
+				"image": "c3560cx-universalk9-mz.152-7.E5.bin",
+				"md5": "b765a3fbf698670c8c97c26270e71910",
+				"space": 22962176
+			}
+		},
+		"WS-C3560CX-12PC-S": {
+			"15.2(7)E5": {
+				"image": "c3560cx-universalk9-mz.152-7.E5.bin",
+				"md5": "b765a3fbf698670c8c97c26270e71910",
+				"space": 22962176
+			}
+		},
+		"WS-C3650-24PS-S": {
+			"Gibraltar-16.12.7": {
+				"image": "cat3k_caa-universalk9.16.12.07.SPA.bin",
+				"md5": "5de9de43040184c7de21960456027f8c",
+				"space": 480189009
+			}
+		},
+		"WS-C3650-48FS-S": {
+			"Gibraltar-16.12.7": {
+				"image": "cat3k_caa-universalk9.16.12.07.SPA.bin",
+				"md5": "5de9de43040184c7de21960456027f8c",
+				"space": 480189009
+			}
+		},
+		"WS-C3650-48PD-E": {
+			"Gibraltar-16.12.7": {
+				"image": "cat3k_caa-universalk9.16.12.07.SPA.bin",
+				"md5": "5de9de43040184c7de21960456027f8c",
+				"space": 480189009
+			}
+		},
+		"WS-C3650-48PS": {
+			"Gibraltar-16.12.7": {
+				"image": "cat3k_caa-universalk9.16.12.07.SPA.bin",
+				"md5": "5de9de43040184c7de21960456027f8c",
+				"space": 480189009
+			}
+		},
+		"WS-C3850-12S-S": {
+			"Gibraltar-16.12.7": {
+				"image": "cat3k_caa-universalk9.16.12.07.SPA.bin",
+				"md5": "5de9de43040184c7de21960456027f8c",
+				"space": 480189009
+			}
+		},
+		"WS-C3850-24S-S": {
+			"Gibraltar-16.12.7": {
+				"image": "cat3k_caa-universalk9.16.12.07.SPA.bin",
+				"md5": "5de9de43040184c7de21960456027f8c",
+				"space": 480189009
+			}
+		}
+	}
+}
