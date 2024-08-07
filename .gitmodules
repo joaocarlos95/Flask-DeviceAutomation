@@ -1,0 +1,6 @@
+[submodule "dep/ntc-templates"]
+	path = dep/ntc-templates
+	url = https://github.com/networktocode/ntc-templates.git
+[submodule "dep/jinja2config"]
+	path = dep/jinja2config
+	url = https://github.com/joaocarlos95/Jinja2Config.git
