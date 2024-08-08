@@ -1,0 +1,33 @@
+Value SLOT (\d+)
+Value POWER_SUPPLY (\d+)
+Value Required STATE (Powered On|Powered Off)
+#Value INTERNAL_EXTERNAL (Internal|External)
+#Value SERIAL_NUMBER (\S+)
+#Value SYSTEM_NUMBER (\S+)
+#Value REVISION (\S+)
+#Value INPUT_VOLTAGE (\d+\.\d+)
+#Value OUTPUT_VOLTAGE (\d+\.\d+)
+#Value OUTPUT_CURRENT (\d+\.\d+)
+#Value MAX_POWER_OUTPUT (\d+)
+#Value POWER_USAGE (\d+\.\d+)
+#Value AIRFLOW_DIRECTION (.+)
+
+Start
+  ^PowerSupply\s+${POWER_SUPPLY}\s+information:
+  ^Slot-${SLOT} PowerSupply ${POWER_SUPPLY} information:
+  ^\s+State\s+:\s+${STATE} -> Record
+
+# PSU_Record_Standalone
+#   ^\s+State\s+:\s+${STATE}
+#   ^\s+ -> Record Start
+
+# PSU_Record_Slot
+#   ^\s+State\s+:\s+Powered\s+${STATE}
+#   ^\s+PartInfo\s+:\s+${INTERNAL_EXTERNAL}\s+\S+\s+\s+${SYSTEM_NUMBER}
+#   ^\s+PartInfo\s+:\s+${INTERNAL_EXTERNAL}\s+\S+\s+${SERIAL_NUMBER}\s+${SYSTEM_NUMBER}
+#   ^\s+Revision\s+:\s+${REVISION}
+#   ^\s+Input\s+:\s+${INPUT_VOLTAGE}\s+\S+\s+\S+
+#   ^\s+Output\s+\d+\s+:\s+${OUTPUT_VOLTAGE}\s+\S+\s+${OUTPUT_CURRENT}\s+\S+\s+\S+/${MAX_POWER_OUTPUT}W Max\)
+#   ^\s+Power\s+Usage\s+:\s+${POWER_USAGE}\s+\S+
+#   ^\s+Airflow\s+Direction\s+:\s+${AIRFLOW_DIRECTION}
+#   ^\s+ -> Record Start

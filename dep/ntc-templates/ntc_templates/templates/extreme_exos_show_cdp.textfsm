@@ -1,0 +1,13 @@
+Value TRANSMIT_TIME (\d+)
+Value HOLD_TIME (\d+)
+Value DEVICE_ID (.+)
+Value ENABLED_PORTS ([^\n]+)
+Value MGMT_VLAN (.+)
+Value MGMT_ADDR (\d+\.\d+\.\d+\.\d+)
+
+Start
+  ^CDP\s+Transmit\s+time\s+:\s+${TRANSMIT_TIME}\s+seconds
+  ^CDP\s+Hold\s+time\s+:\s+${HOLD_TIME}\s+seconds
+  ^CDP\s+Device\s+ID\s+:\s+${DEVICE_ID}
+  ^CDP\s+Enabled\s+ports\s+:\s+${ENABLED_PORTS}
+  ^CDP\s+Local\s+management\s+address\s+:\s+VLAN\s+${MGMT_VLAN}\s+\(${MGMT_ADDR}\)

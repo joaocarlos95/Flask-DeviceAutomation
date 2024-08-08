@@ -1,0 +1,13 @@
+Value GROUP_NAME (.+)
+Value USERNAME (.+)
+Value SECURITY_MODEL (.+)
+Value STORAGE_TYPE (.+)
+Value ROW_STATUS (.+)
+
+Start
+  ^\s+
+  ^Group Name\s+: ${GROUP_NAME}
+  ^Security Name\s+: ${USERNAME}
+  ^Security Model\s+: ${SECURITY_MODEL}
+  ^Storage Type\s+: ${STORAGE_TYPE}
+  ^Row Status\s+: ${ROW_STATUS} -> Record

@@ -1,0 +1,13 @@
+Value USERNAME (\S+)
+Value PERMISSIONS (R/W|RO)
+Value LOGIN_OK (\d+)
+Value LOGIN_FAILED (\d+)
+Value LOGIN_CONSEC_FAILED (\d+)
+Value STATE (Disabled|Enabled)
+
+Start
+  ^\s+User Name\s+Access LoginOK\s+Failed\s+Consec. Fail\s+State
+  ^\s+User Name\s+Access LoginOK\s+Failed\s+State
+  ^-+
+  ^\s+${USERNAME}\s+${PERMISSIONS}\s+${LOGIN_OK}\s+${LOGIN_FAILED}\s+${STATE} -> Record
+  ^\s+${USERNAME}\s+${PERMISSIONS}\s+${LOGIN_OK}\s+${LOGIN_FAILED}\s+${LOGIN_CONSEC_FAILED}\s+${STATE} -> Record

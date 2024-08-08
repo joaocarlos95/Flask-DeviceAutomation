@@ -1,0 +1,27 @@
+Value VLAN (\d+)
+Value NAME (\S+)
+Value VLAN_Type (\S+)
+Value Egress_Ports (.+)
+Value Forbidden_Egress_Ports (\S+)
+Value Untagged_ports (.+)
+
+Start
+  ^\s*VLAN:\s+${VLAN}\s+NAME:\s+${NAME}\s*$ -> VLANID
+
+VLANID
+  ^\s*VLAN:\s+${VLAN}\s+NAME:\s+${NAME}\s*$ -> VLANID
+  ^\s*VLAN\s+Type:\s+${VLAN_Type}\s*$ -> Egress_Ports
+
+Egress_Ports
+  ^\s*Egress\s+Ports\s*$ -> Forbidden_Egress_Ports
+  ^\s*Forbidden\s+Egress\s+Ports\s*$ -> Untagged_Ports
+
+Forbidden_Egress_Ports
+  ^\s*None\.\s*$ -> Untagged_Ports
+
+Untagged_Ports
+  ^\s*Untagged\s+ports\s*$ -> Record
+
+Record
+  ^\s*${Untagged_ports}\s*$ -> VLANID
+  ^\s*$ -> Start
