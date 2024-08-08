@@ -1,0 +1,83 @@
+---
+parsed_sample:
+  - bandwidth: "10000000 kbps"
+    description: "Servers"
+    duplex: ""
+    hw_address:
+      - "abab-cdcd-6486"
+      - "abab-cdcd-6486"
+    interface: "Vlan-interface2000"
+    ip_address:
+      - "10.1.1.1/24"
+    l2mtu: ""
+    line_status: "UP"
+    mtu: "1500"
+    port_link_type: ""
+    protocol_status: "UP"
+    speed: ""
+    untagged_vlan_id: ""
+    vlan_native: ""
+    vlan_passing: []
+    vlan_permitted: []
+  - bandwidth: "40000000 kbps"
+    description: "FIRST_BLOCK"
+    duplex: "full-duplex"
+    hw_address:
+      - "abab-cdcd-6485"
+    interface: "Bridge-Aggregation20"
+    ip_address: []
+    l2mtu: ""
+    line_status: "UP"
+    mtu: ""
+    port_link_type: "Trunk"
+    protocol_status: "UP"
+    speed: "40Gbps-speed"
+    untagged_vlan_id: ""
+    vlan_native: "1"
+    vlan_passing:
+      - "1(default vlan)"
+      - "4001-4002"
+    vlan_permitted:
+      - "1(default vlan)"
+      - "2001-2020"
+      - "2190"
+      - "4001-4002"
+  - bandwidth: "1000000 kbps"
+    description: "WIFI"
+    duplex: "unknown-duplex"
+    hw_address:
+      - "abab-cdcd-6485"
+    interface: "GigabitEthernet1/1/0/31"
+    ip_address: []
+    l2mtu: "9216"
+    line_status: "DOWN"
+    mtu: ""
+    port_link_type: "Trunk"
+    protocol_status: "DOWN"
+    speed: "Unknown-speed"
+    untagged_vlan_id: ""
+    vlan_native: "2190"
+    vlan_passing:
+      - "2000"
+      - "3230"
+      - "4001-4005"
+      - "4049-4052"
+    vlan_permitted:
+      - "2-4094"
+  - bandwidth: "100000 kbps"
+    description: "Ten-GigabitEthernet1/0/1 Interface"
+    duplex: "unknown-duplex"
+    hw_address:
+      - "000c-2963-b767"
+    interface: "Ten-GigabitEthernet1/0/1"
+    ip_address: []
+    l2mtu: "9216"
+    line_status: "DOWN"
+    mtu: ""
+    port_link_type: "Access"
+    protocol_status: "DOWN"
+    speed: "Unknown-speed"
+    untagged_vlan_id: ""
+    vlan_native: "1"
+    vlan_passing: []
+    vlan_permitted: []

@@ -1,0 +1,256 @@
+---
+inventory:
+    plugin: SimpleInventory
+    options:
+        host_file: "./inputfiles/inventory/defaults.yaml"
+        group_file: "./inputfiles/inventory/groups.yaml"
+        defaults_file: "./inputfiles/inventory/defaults.yaml"
+runner:
+    plugin: threaded
+    options:
+        num_workers: 40
+user_defined:
+    device_data:
+        # Device related information
+        device_configuration:
+            group: Device
+            label: Configuration
+            status: enabled
+            commands:
+                alcatel_aos:
+                    - show configuration snapshot
+                cisco_ios:
+                    - show running-config
+                cisco_nxos:
+                    - show running-config
+                extreme:
+                    - show config
+                extreme_exos:
+                    - show config
+            read_timeout: 600
+        device_file_system:
+            group: Device
+            label: File System
+            status: disabled
+            commands:
+                cisco_ios:
+                    - dir
+                    - show file system
+                cisco_nxos:
+                    - dir
+                    - show file system
+        device_information:
+            group: Device
+            label: Information
+            status: enabled
+            commands:
+                cisco_ios:
+                    - show version
+                cisco_nxos:
+                    - show version
+                extreme:
+                    - show system
+                    - show time
+                    - show system hardware
+                extreme_exos:
+                    - show system
+        device_license:
+            group: Device
+            label: License Status
+            status: disabled
+            commands:
+                cisco_ios:
+                    - show license status
+        local_users:
+            group: Device
+            label: Local Users
+            status: enabled
+            commands:
+                extreme:
+                    - show system login
+                extreme_exos:
+                    - show accounts
+        device_management:
+            group: Device
+            label: Management
+            status: enabled
+            commands:
+                extreme:
+                    - show ssh
+                    - show telnet
+                    - show webview
+                    - show system login
+                extreme_exos:
+                    - show management
+                    - show accounts
+        device_power_information:
+            group: Device
+            label: Power Information
+            status: enabled
+            commands:
+                extreme:
+                    - show system
+                extreme_exos:
+                    - show power detail
+        # Interface related information
+        interface_information:
+            group: Interface
+            label: Information
+            status: enabled
+            commands:
+                cisco_ios:
+                    - show interfaces
+                extreme_exos:
+                    - show ports information detail
+            read_timeout: 600
+        interface_statistics:
+            group: Interface
+            label: Statistics
+            status: disabled
+            commands:
+                cisco_ios:
+                    - show interfaces counters
+        interface_status:
+            group: Interface
+            label: Status
+            status: enabled
+            commands:
+                extreme:
+                    - show port status
+                extreme_exos:
+                    - show ports no-refresh
+        transceiver_information:
+            group: Interface
+            label: Transceiver Information
+            status: enabled
+            commands:
+                extreme:
+                    - show port transceiver basic-only
+                extreme_exos:
+                    - show ports transceiver information detail
+        vlan_ports:
+            group: Interface
+            label: VLAN Ports
+            status: disabled
+            commands:
+                extreme:
+                    - show vlan portinfo
+                extreme_exos:
+                    - show ports information detail
+            read_timeout: 600
+        # Monitoring related information
+        snmp_credentials:
+            group: Monitoring
+            label: SNMP Credentials
+            status: enabled
+            commands:
+                extreme_exos:
+                    - show snmpv3 group
+                    - show snmpv3 access
+                    - show snmpv3 user
+                    - show snmpv3 community
+        snmp_filters:
+            group: Monitoring
+            label: SNMP Filters
+            status: enabled
+            commands:
+                extreme_exos:
+                    - show snmpv3 target-params
+                    - show snmpv3 fiter
+                    - show snmpv3 fiter-profile
+        snmp_server:
+            group: Monitoring
+            label: SNMP Server
+            status: enabled
+            commands:
+                extreme_exos: 
+                    - show snmpv3 target-addr
+                    - show snmpv3 target-params
+                    - show snmpv3 notify
+        snmp_traps:
+            group: Monitoring
+            label: SNMP Traps
+            status: enabled
+            commands:
+                extreme_exos: 
+                    - show snmpv3 notify
+        # Discovery Protocols related information
+        dp_neighbors:
+            group: Discovery Protocols
+            label: Neighbors
+            status: enabled
+            commands:
+                alcatel_aos: 
+                    - show lldp remote-system
+                cisco_ios: 
+                    - show cdp neighbors detail
+                    - show lldp neighbors detail
+                cisco_nxos: 
+                    - show cdp neighbors detail
+                    - show lldp neighbors detail
+                cisco_wlc: 
+                    - show cdp neighbors detail
+                extreme: 
+                    - show neighbors
+                    - show lldp port remote-info
+                extreme_exos: 
+                    - show cdp neighbor detail
+                    - show lldp neighbor detailed
+        dp_configuration:
+            group: Discovery Protocols
+            label: Configuration
+            status: enabled
+            commands:
+                extreme: 
+                    - show ciscodp
+                extreme_exos:
+                    - show cdp
+        # Others
+        cdp_diagram:
+            group: Others
+            label: CDP Diagram
+            status: disabled
+            commands:
+                cisco_ios:
+                    - show cdp neighbors detail
+                cisco_nxos:
+                    - show cdp neighbors detail
+                cisco_wlc:
+                    - show cdp neighbors detail
+                extreme:
+                    - show neighbors
+                extreme_exos:
+                    - show cdp neighbor detail
+        lldp_diagram:
+            group: Others
+            label: LLDP Diagram
+            status: disabled
+            commands:
+                alcatel_aos:
+                    - show lldp remote-system
+                cisco_ios:
+                    - show lldp neighbors detail
+                cisco_nxos:
+                    - show lldp neighbors detail
+                extreme:
+                    - show lldp port remote-info
+                extreme_exos:
+                    - show lldp neighbor detailed
+        mac_address_table:
+            group: Others
+            label: MAC Address Table
+            status: enabled
+            commands:
+                cisco_ios:
+                    - show mac address-table
+                extreme_exos:
+                    - show fdb
+    Netbox_data:
+        # Netbox related information
+        device_type:
+            group: Device
+            label: Device Type
+            status: enabled
+            PANDA_reference:
+                - device_information
+    models_database: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/02. PANDA/inputfiles/inventory/device_database.yaml"

@@ -1,0 +1,81 @@
+---
+parsed_sample:
+  - vrf: "red"
+    rd: "not set"
+    vpn_id: "not set"
+    mode: "Regular"
+    description: "not set"
+    rt_import: []
+    rt_export: []
+    interfaces: []
+  - vrf: "blue"
+    rd: "not set"
+    vpn_id: "not set"
+    mode: "Regular"
+    description: "not set"
+    rt_import: []
+    rt_export: []
+    interfaces:
+      - "BVI10"
+  - vrf: "green"
+    rd: "not set"
+    vpn_id: "not set"
+    mode: "Regular"
+    description: "not set"
+    rt_import: []
+    rt_export: []
+    interfaces:
+      - "GigabitEthernet200/0/0/1"
+      - "GigabitEthernet200/0/0/2"
+      - "GigabitEthernet300/0/0/1"
+      - "GigabitEthernet300/0/0/2"
+      - "TenGigE0/0/0/10.10"
+      - "Bundle-Ether10.10"
+      - "Bundle-Ether10.20"
+      - "Bundle-Ether20.10"
+      - "Bundle-Ether20.20"
+      - "Bundle-Ether30.10"
+      - "Bundle-Ether40.10"
+      - "Bundle-Ether50.10"
+      - "Loopback0"
+  - vrf: "purple"
+    rd: "not set"
+    vpn_id: "not set"
+    mode: "Regular"
+    description: "not set"
+    rt_import: []
+    rt_export: []
+    interfaces:
+      - "Loopback1"
+      - "Bundle-Ether10.10"
+      - "Bundle-Ether10.20"
+      - "Bundle-Ether10.30"
+      - "GigabitEthernet100/0/0/10.10"
+      - "GigabitEthernet100/0/0/10.20"
+      - "GigabitEthernet200/0/0/20.10"
+      - "GigabitEthernet200/0/0/20.20"
+      - "GigabitEthernet300/0/0/30.10"
+      - "GigabitEthernet300/0/0/30.20"
+      - "TenGigE0/0/0/10.10"
+      - "TenGigE0/2/0/20.10"
+      - "TenGigE0/2/0/20.20"
+  - vrf: "brown"
+    rd: "not set"
+    vpn_id: "not set"
+    mode: "Regular"
+    description: "not set"
+    rt_import: []
+    rt_export: []
+    interfaces:
+      - "GigabitEthernet100/0/0/10"
+      - "GigabitEthernet300/0/0/20"
+      - "Bundle-Ether10.10"
+      - "Bundle-Ether10.20"
+  - vrf: "vrf-test"
+    rd: "not set"
+    vpn_id: "not set"
+    mode: "Regular"
+    description: "this is a description"
+    rt_import: ["RT:65000:42"]
+    rt_export: ["RT:65000:43"]
+    interfaces: []

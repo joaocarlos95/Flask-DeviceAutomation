@@ -1,0 +1,38 @@
+---
+parsed_sample:
+  - bandwidth: "160000000 kbps"
+    description: "Servers"
+    duplex: "full-duplex"
+    hw_address:
+      - "aaaa-bbbb-0200"
+    interface: "Bridge-Aggregation41"
+    ip_address: []
+    l2mtu: ""
+    line_status: "UP"
+    mtu: ""
+    port_link_type: "Trunk"
+    protocol_status: ""
+    speed: "160Gbps-speed"
+    untagged_vlan_id: ""
+    vlan_native: "1"
+    vlan_passing:
+      - "2-21"
+      - "41-42"
+      - "43"
+      - "45-46"
+      - "47"
+      - "49-50"
+      - "52-101"
+      - "103"
+      - "105"
+      - "107-109"
+      - "111-112"
+      - "114-115"
+      - "116"
+      - "118-119"
+      - "121-122"
+      - "123-125"
+      - "127-129"
+      - "131"
+    vlan_permitted:
+      - "2-4094"

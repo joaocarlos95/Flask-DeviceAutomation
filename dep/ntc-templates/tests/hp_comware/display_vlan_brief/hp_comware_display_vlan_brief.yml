@@ -1,0 +1,14 @@
+---
+parsed_sample:
+  - vlan_id: "1"
+    vlan_name: "VLAN"
+  - vlan_id: "10"
+    vlan_name: "VLAN"
+  - vlan_id: "20"
+    vlan_name: "VLAN"
+  - vlan_id: "30"
+    vlan_name: "VLAN"
+  - vlan_id: "200"
+    vlan_name: "VLAN"
+  - vlan_id: "500"
+    vlan_name: "VLAN"

@@ -1,0 +1,9 @@
+---
+parsed_sample:
+  - bia: "18:B7:38:F4:CE:40"
+    description: "Cisco 5500 Series Wireless LAN Controller"
+    max_ap_num: "500"
+    name: "Chassis"
+    pid: "AIR-CT5508-K9"
+    sn: "FCW1234L25Y"
+    vid: "V03"
