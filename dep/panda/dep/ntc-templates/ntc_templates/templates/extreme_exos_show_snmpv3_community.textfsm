@@ -1,0 +1,19 @@
+Value COMMUNITY_INDEX (.+)
+Value COMMUNITY_NAME (.+)
+Value SECURITY_NAME (.+)
+Value CONTEXT_ENGINE_ID (.+)
+Value CONTEXT_NAME (.+)
+Value TRANSPORT_TAG (.+)
+Value STORAGE_TYPE (.+)
+Value ROW_STATUS (.+)
+
+Start
+  ^\s+
+  ^Community Index\s+: ${COMMUNITY_INDEX}
+  ^Community Name\s+: ${COMMUNITY_NAME}
+  ^Security Name\s+: ${SECURITY_NAME}
+  ^Context EngineID\s+: ${CONTEXT_ENGINE_ID}
+  ^Context Name\s+: ${CONTEXT_NAME}
+  ^Transport Tag\s+: ${TRANSPORT_TAG}
+  ^Storage Type\s+: ${STORAGE_TYPE}
+  ^Row Status\s+: ${ROW_STATUS} -> Record

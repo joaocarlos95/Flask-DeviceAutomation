@@ -1,0 +1,13 @@
+Value TRAP_PROFILE (.+)
+Value TAG_PROFILE (.+)
+Value TYPE (.+)
+Value STORAGE_TYPE (.+)
+Value ROW_STATUS (.+)
+
+Start
+  ^\s+
+  ^Notify Name\s+: ${TRAP_PROFILE}
+  ^Tag\s+: ${TAG_PROFILE}
+  ^Type\s+: ${TYPE}
+  ^Storage Type\s+: ${STORAGE_TYPE}
+  ^Row Status\s+: ${ROW_STATUS} -> Record

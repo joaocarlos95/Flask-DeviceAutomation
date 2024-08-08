@@ -1,0 +1,15 @@
+Value TARGET_PARAMETERS_PROFILE (.+)
+Value SNMP_VERSION (.+)
+Value SECURITY_MODEL (.+)
+Value USERNAME (.+)
+Value SECURITY_LEVEL (.+)
+Value STORAGE_TYPE (.+)
+
+Start
+  ^\s+
+  ^Target Params Name\s+: ${TARGET_PARAMETERS_PROFILE}
+  ^MP Model\s+: ${SNMP_VERSION}
+  ^Security Model\s+: ${SECURITY_MODEL}
+  ^User Name\s+: ${USERNAME}
+  ^Security Level\s+: ${SECURITY_LEVEL}
+  ^Storage Type\s+: ${STORAGE_TYPE} -> Record

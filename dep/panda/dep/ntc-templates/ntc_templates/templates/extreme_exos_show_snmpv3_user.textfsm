@@ -1,0 +1,17 @@
+Value ENGINE_ID (.+)
+Value USERNAME (.+)
+Value SECURITY_NAME (.+)
+Value CRYPTO_HASH_FUNCTION (.+)
+Value CIPHER_ALGORITHM (.+)
+Value STORAGE_TYPE (.+)
+Value ROW_STATUS (.+)
+
+Start
+  ^\s+
+  ^Engine-ID\s+: ${ENGINE_ID}
+  ^User Name\s+: ${USERNAME}
+  ^Security Name\s+: ${SECURITY_NAME}
+  ^Authentication\s+: ${CRYPTO_HASH_FUNCTION}
+  ^Privacy\s+: ${CIPHER_ALGORITHM}
+  ^Storage Type\s+: ${STORAGE_TYPE}
+  ^Row Status\s+: ${ROW_STATUS} -> Record
