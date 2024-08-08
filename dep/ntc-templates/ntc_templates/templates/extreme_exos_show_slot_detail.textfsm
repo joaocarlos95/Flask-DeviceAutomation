@@ -1,0 +1,16 @@
+Value MAC_ADDR (\S+:\S+:\S+:\S+:\S+:\S+)
+Value PRIMARY_VERSION (\S+)
+Value SECONDARY_VERSION (\S+)
+Value Required SERIAL_NUMBER (\S+\-\S+)
+Value HARDWARE (\S+)
+
+Start
+  ^Slot\-\d+ information: -> Slot_Information
+
+Slot_Information
+  ^\s+Serial number:\s+\S+\s+${SERIAL_NUMBER}
+  ^\s+Hw Module Type:\s+${HARDWARE}
+  ^\s+Node MAC:\s+${MAC_ADDR}
+  ^\s+Primary version:\s+${PRIMARY_VERSION}
+  ^\s+Secondary version:\s+${SECONDARY_VERSION}
+  ^\s+Config Selected -> Record

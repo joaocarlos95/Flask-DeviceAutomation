@@ -1,0 +1,18 @@
+Value LOG_TARGET (\S+)
+Value SYSLOG_ADDR (\S+)
+Value SYSLOG_PORT (\S+)
+Value VRF (\S+)
+Value STATUS (\w+)
+Value FILTER_NAME (\S+)
+Value MATCH_REGEX (\S+)
+Value SEVERITY (\S+)
+Value LOG_FORMAT (.+)
+
+Start
+  ^Log\s+Target\s+:\s+${LOG_TARGET}$$
+  ^Log\s+Target\s+:\s+${LOG_TARGET};\s+${SYSLOG_ADDR}:${SYSLOG_PORT}\s+\(vr\s+${VRF}\)
+  ^\s+Enabled\s+:\s+${STATUS}
+  ^\s+Filter\s+Name\s+:\s+${FILTER_NAME}
+  ^\s+Match\s+regex\s+:\s+${MATCH_REGEX}
+  ^\s+Severity\s+:\s+${SEVERITY}
+  ^\s+Format\s+:\s+${LOG_FORMAT} -> Record

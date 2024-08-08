@@ -1,0 +1,27 @@
+Value MEDIA_TYPE (.+)
+Value VENDOR (.+)
+Value MODEL (.+)
+Value Required SERIAL_NUMBER (.+)
+Value WAVELENGTH (.+)
+Value PORT_ID (\d+:\d+|\d+)
+
+Start
+  ^Port :\s+${PORT_ID} -> Transceiver_Information
+
+Transceiver_Information
+  ^\s+DDMI is not supported on this port -> Start
+  ^Error: DDMI is not supported on this port -> Start
+  ^\s+Transceiver is not present on this port -> Start
+  ^Error: Transceiver is not present on this port -> Start
+  ^\s+Media Type\s+:\s+${MEDIA_TYPE}
+  ^\s+SKU\s+:
+  ^\s+Vendor Name\s+:\s+${VENDOR}
+  ^\s+Vendor Date\s+:
+  ^\s+Vendor Revision\s+:
+  ^\s+Part Number\s+:\s+${MODEL}
+  ^\s+Serial Number\s+:\s+${SERIAL_NUMBER}
+  ^\s+Power Up Counter\s+:
+  ^\s+Attenuation\s:
+  ^\s+Wavelength\s+:\s+${WAVELENGTH}
+  ^\s+ -> Record Start
+  

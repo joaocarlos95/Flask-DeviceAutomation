@@ -1,0 +1,17 @@
+Value LOCAL_PORT (\S+)
+Value REMOTE_PORT (.+)
+Value REMOTE_HOST (.+)
+Value REMOTE_IP_ADDRESS (\d+\.\d+\.\d+\.\d+)
+Value PLATFORM (.+)
+
+Start
+  ^Device ID\s+:\s+${REMOTE_HOST}
+  ^Port\sID\s+\(outgoing\s+port\)\s+:\s+${REMOTE_PORT}
+  ^IP Addresses\s+:
+  ^\s+${REMOTE_IP_ADDRESS}
+  ^Platform\s+:\s+${PLATFORM}
+  ^Interface\s+:\s+${LOCAL_PORT}
+  ^SysName\s+:\s+${REMOTE_HOST}
+  ^Management IP Addresses\s+:
+  ^\s+${REMOTE_IP_ADDRESS}
+  ^-+ -> Record

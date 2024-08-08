@@ -1,0 +1,10 @@
+Value SYSLOG_ADDR (\S+)
+Value SYSLOG_PORT (\S+)
+Value FACILITY (\S+)
+Value SEVERITY (\S+)
+Value DESCRIPTION (.+)
+Value STATUS (\w+)
+
+Start
+  ^\s+IP\s+Address\s+Facility\s+Severity\s+Description\s+Port\s+Status
+  ^\d+\s+${SYSLOG_ADDR}\s+${FACILITY}\s+${SEVERITY}\s+${DESCRIPTION}\s+${SYSLOG_PORT}\s+${STATUS} -> Record

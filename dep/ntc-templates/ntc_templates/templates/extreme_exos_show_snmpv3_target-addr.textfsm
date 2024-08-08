@@ -1,0 +1,21 @@
+Value SERVER_ADDRESS_PROFILE (.+)
+Value SERVER_DOMAIN (.+)
+Value SERVER_IP_ADDRESS (.+)
+Value TIMEOUT (.+)
+Value RETRY_COUNT (.+)
+Value TAG_PROFILE (.+)
+Value TARGET_PARAMETERS_PROFILE (.+)
+Value STORAGE_TYPE (.+)
+Value ROW_STATUS (.+)
+
+Start
+  ^\s+
+  ^Target Addr Name\s+: ${SERVER_ADDRESS_PROFILE}
+  ^TDomain\s+: ${SERVER_DOMAIN}
+  ^TAddress\s+: ${SERVER_IP_ADDRESS}
+  ^Timeout\s+: ${TIMEOUT}
+  ^Retry Count\s+: ${RETRY_COUNT}
+  ^Tag List\s+: ${TAG_PROFILE}
+  ^Params\s+: ${TARGET_PARAMETERS_PROFILE}
+  ^Storage Type\s+: ${STORAGE_TYPE}
+  ^Row Status\s+: ${ROW_STATUS} -> Record
