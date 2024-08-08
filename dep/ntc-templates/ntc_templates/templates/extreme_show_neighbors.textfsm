@@ -1,0 +1,14 @@
+Value LOCAL_PORT (\S+)
+Value REMOTE_PORT (\S+|\S+\s+\S+|\d+\:\d+)
+Value REMOTE_HOST (\S+|\S+\s+\S+|\S+\s+\S+\s+\S+)
+Value REMOTE_IP_ADDRESS (\d+\.\d+\.\d+\.\d+)
+Value PROTOCOL (ciscodp|lldp|cdp|Ci|LL)
+
+Start
+  ^\s+Port\s+Device\s+ID\s+Port\s+ID\s+Type\s+Network\s+Address\s+$$
+  ^\s+Port\s+Device\s+ID\s+Port\s+ID\s+Ty\s+Network\s+Address$$
+  ^-+ -> Line
+
+Line
+  ^${LOCAL_PORT}\s+${REMOTE_HOST}\s+Slot:\s+(\d+),\s+Port:\s+${REMOTE_PORT}\s+${PROTOCOL}\s+${REMOTE_IP_ADDRESS} -> Record
+  ^${LOCAL_PORT}\s+${REMOTE_HOST}\s+${REMOTE_PORT}\s+${PROTOCOL}\s+${REMOTE_IP_ADDRESS} -> Record

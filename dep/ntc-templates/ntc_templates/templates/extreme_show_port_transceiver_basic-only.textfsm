@@ -1,0 +1,11 @@
+Value VENDOR (\S+\s\S+|\S+)
+Value Required SERIAL_NUMBER (\S+)
+Value PORT_ID (ge.\d+.\d+|tg.\d+.\d+|vsb.\d+.\d+)
+
+Start
+  ^Transceiver Data \(operational transceivers only\)
+  ^-+
+  ^\s+
+  ^Port\s+Vendor\s+Vendor
+  ^\s+Name\s+Serial Number
+  ^${PORT_ID}\s+${VENDOR}\s+${SERIAL_NUMBER} -> Record

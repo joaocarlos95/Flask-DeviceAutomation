@@ -1,0 +1,12 @@
+Value SSH_STATUS (Disabled|Enabled)
+Value TELNET_STATUS (Disabled|Enabled)
+Value WEB_STATUS (Disabled|Enabled)
+Value SNMPv1v2c_STATUS (Disabled|Enabled)
+Value SNMPv3_STATUS (Disabled|Enabled)
+
+Start
+  ^Telnet\s+access\s+:\s+${TELNET_STATUS}
+  ^SSH\s+access\s+:\s+${SSH_STATUS}
+  ^Web\s+access\s+:\s+${WEB_STATUS}
+  ^SNMP\s+access\s+:\s+v1,v2c\s+${SNMPv1v2c_STATUS},\s+v3\s+${SNMPv3_STATUS}
+  ^SNMP\s+access\s+:\s+${SNMPv3_STATUS}

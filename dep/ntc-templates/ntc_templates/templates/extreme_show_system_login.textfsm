@@ -1,0 +1,14 @@
+Value USERNAME (\S+)
+Value PERMISSIONS (super-user|read-only|read-write)
+Value STATE (disabled|enabled)
+Value AGING (\d+)
+Value SIMULTANEOS_LOGIN (\d+)
+Value LOCAL_ONLY (yes|no)
+
+Start
+  ^Username\s+Access\s+State\s+Aging\s+Simul\s+Local\s+Login\s+Access\s+Allowed
+  ^Username\s+Access\s+State\s+Local\s+Login\s+Access\s+Allowed
+  ^\s+Login\s+Only?\s+Start\s+End\s+Days
+  ^\s+
+  ^${USERNAME}\s+${PERMISSIONS}\s+${STATE}\s+${LOCAL_ONLY}\s+ -> Record
+  ^${USERNAME}\s+${PERMISSIONS}\s+${STATE}\s+${AGING}\s+${SIMULTANEOS_LOGIN}\s+${LOCAL_ONLY}\s+ -> Record

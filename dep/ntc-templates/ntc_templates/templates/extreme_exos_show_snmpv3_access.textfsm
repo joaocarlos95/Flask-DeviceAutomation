@@ -1,0 +1,23 @@
+Value GROUP_NAME (.+)
+Value CONTEXT_PREFIX (.+)
+Value SECURITY_MODEL (.+)
+Value SECURITY_LEVEL (.+)
+Value CONTEXT_MATCH (.+)
+Value READ_VIEW (.+)
+Value WRITE_VIEW (.+)
+Value NOTIFY_VIEW (.+)
+Value STORAGE_TYPE (.+)
+Value ROW_STATUS (.+)
+
+Start
+  ^\s+
+  ^Group Name\s+: ${GROUP_NAME}
+  ^Context Prefix\s+: ${CONTEXT_PREFIX}
+  ^Security Model\s+: ${SECURITY_MODEL}
+  ^Security Level\s+: ${SECURITY_LEVEL}
+  ^Context Match\s+: ${CONTEXT_MATCH}
+  ^Read View\s+: ${READ_VIEW}
+  ^Write View\s+: ${WRITE_VIEW}
+  ^Notify View\s+: ${NOTIFY_VIEW}
+  ^Storage Type\s+: ${STORAGE_TYPE}
+  ^Row Status\s+: ${ROW_STATUS} -> Record

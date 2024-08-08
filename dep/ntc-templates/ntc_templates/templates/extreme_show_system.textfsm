@@ -1,0 +1,59 @@
+Value Filldown CONTACT (.+)
+Value Filldown LOCATION (.+)
+Value Filldown HOSTNAME (.+)
+Value UPTIME (\S+)
+Value LAST_LOGOUT (.+)
+Value SLOT (\d+)
+Value PS1_STATUS (Installed and Operating|Not Installed and/or Not Operating|Not Installed|Not Operating|not installed|ok)
+Value PS2_STATUS (Installed and Operating|Not Installed and/or Not Operating|Not Installed|Not Operating|not installed|ok)
+Value PS3_STATUS (Installed and Operating|Not Installed and/or Not Operating|Not Installed|Not Operating|not installed|ok)
+Value PS4_STATUS (Installed and Operating|Not Installed and/or Not Operating|Not Installed|Not Operating|not installed|ok)
+Value FAN1_STATUS (Installed and Operating|Not Installed and/or Not Operating|Not Installed|Not Operating|ok)
+Value FAN2_STATUS (Installed and Operating|Not Installed and/or Not Operating|Not Installed|Not Operating)
+Value TEMP_ALARM_STATUS (off)
+Value THERMAL_THRESHOLD (\d+%)
+Value TEMP_ALARM_MAX_THRESHOLD (\d+%)
+Value TEMP_ALARM_TRAP (disabled|enabled)
+Value TEMP_ALARM_SYSLOG (disabled|enabled)
+
+Start
+  ^System contact:\s+${CONTACT}
+  ^System location:\s+${LOCATION}
+  ^System location:${LOCATION}
+  ^System name:\s+${HOSTNAME}
+  ^\s+
+  ^\s+
+  ^\s+
+  ^Switch\s+${SLOT} -> Switch_Record
+  ^CHASSIS\s+${SLOT}\s+INFORMATION -> Chassis_Record
+
+Switch_Record
+  ^PS1-Status\s+PS2-Status -> PowerSupply_Information
+  ^Fan1-Status\s+Fan2-Status -> Fan_Information
+  ^Fan Group 1-Status\s+Fan Group 2-Status -> Fan_Information
+  ^Temp-Alarm -> Temperature_Alarm_Information
+
+Chassis_Record
+  ^\s+
+  ^PS Number\s+|\s+PS Status\s+|\s+PS Type
+  ^-+
+  ^1\s+\|\s+${PS1_STATUS}
+  ^2\s+\|\s+${PS2_STATUS}
+  ^3\s+\|\s+${PS3_STATUS}
+  ^4\s+\|\s+${PS4_STATUS} -> Record Start
+
+PowerSupply_Information
+  ^-+
+  ^${PS1_STATUS}\s+${PS2_STATUS} -> Switch_Record
+
+Fan_Information
+  ^-+
+  ^${FAN1_STATUS}\s+${FAN2_STATUS} -> Switch_Record
+
+Temperature_Alarm_Information
+  ^-+
+  ^${TEMP_ALARM_STATUS}
+  ^Thermal Threshold:\s+${THERMAL_THRESHOLD}
+  ^Temp alarm max threshold:\s+${TEMP_ALARM_MAX_THRESHOLD}
+  ^Temp alarm trap:\s+${TEMP_ALARM_TRAP}
+  ^Temp alarm syslog:\s+${TEMP_ALARM_SYSLOG} -> Record Start

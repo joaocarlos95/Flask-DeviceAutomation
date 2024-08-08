@@ -1,0 +1,16 @@
+Value PORT (ge\.\d+\.\d+|fe\.\d+\.\d+|lag\.\d+\.\d+)
+Value List TAGGED_VLAN (\d+(?:,\d+)*)
+Value List UNTAGGED_VLAN (\d+(?:,\d+)*)
+
+Start
+  ^\s+Port\s+VLAN\spIngress\spEgress
+  ^\s+Filter\s+Vlan
+  ^-+ -> Ports
+
+Ports
+  ^${PORT}\s+\d+\s+\w+\s+\w+\s+untagged\s+${UNTAGGED_VLAN} -> Record
+  ^${PORT}\s+\d+\s+\w+\s+\w+\s+tagged\s+${TAGGED_VLAN} -> Record
+  ^\s*${PORT}\s+\d+\s+\w+\s*untagged:\s*${UNTAGGED_VLAN}\s*tagged:\s*${TAGGED_VLAN} -> Record
+  ^\s*${PORT}\s+\d+\s+\w+\s*untagged:\s*${UNTAGGED_VLAN} -> Record
+  ^\s*${PORT}\s+\d+\s+\w+\s*tagged:\s*${TAGGED_VLAN} -> Record
+  ^\s*${PORT}\s+\d+\s+\w+ -> Record
