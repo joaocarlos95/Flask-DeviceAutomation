@@ -1,0 +1,12 @@
+---
+parsed_sample:
+  - jumbo: ""
+    status: "Port-based"
+    vlan_id: "1"
+    vlan_name: "DEFAULT_VLAN"
+    voice: "No"
+  - jumbo: ""
+    status: "Port-based"
+    vlan_id: "100"
+    vlan_name: "VoiceVlan"
+    voice: "Yes"

@@ -1,0 +1,11 @@
+---
+parsed_sample:
+  - advertising: "10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full"
+    auto_negotiation: "done"
+    full_duplex: ""
+    link_partner_advertising: ""
+    name: "ether30"
+    rate: ""
+    rx_flow_control: ""
+    status: "no-link"
+    tx_flow_control: ""
