@@ -1,0 +1,11 @@
+---
+parsed_sample:
+  - advertising: "10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full"
+    auto_negotiation: "done"
+    full_duplex: "yes"
+    link_partner_advertising: "10M-half,10M-full,100M-half,100M-full,1000M-full"
+    name: "ether1"
+    rate: "1Gbps"
+    rx_flow_control: "no"
+    status: "link-ok"
+    tx_flow_control: "no"
