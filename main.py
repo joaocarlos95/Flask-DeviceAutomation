@@ -12,7 +12,8 @@ from dep.panda.classes.netbox import Netbox
 
 
 NETWORK_HANDLER_NAME = "ANA Aeroportos"
-ROOT_DIRECTORY = f"{pathlib.Path(__file__).parent.resolve()}"
+ROOT_DIRECTORY = "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation"
+#ROOT_DIRECTORY = f"{pathlib.Path(__file__).parent.resolve()}"
 CONFIG_OPTIONS = {
     'set_configs': {
         'Authentication': [
@@ -44,46 +45,31 @@ app = Flask(__name__, template_folder='web/templates', static_folder='dep/')
 @app.route('/')
 def index():
     template_context = {}
-    if NETWORK_HANDLER_NAME is not None:
-        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
-    if ROOT_DIRECTORY is not None:
-        template_context['root_directory'] = ROOT_DIRECTORY
+    template_context['root_directory'] = ROOT_DIRECTORY
     return render_template('index.html', **template_context)
 
 @app.route('/get_configs')
 def get_configs():
     template_context = {}
-    if NETWORK_HANDLER_NAME is not None:
-        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
-    if ROOT_DIRECTORY is not None:
-        template_context['root_directory'] = ROOT_DIRECTORY
+    template_context['root_directory'] = ROOT_DIRECTORY
     return render_template('get_configs.html', config_options=CONFIG_OPTIONS['get_configs'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **template_context)
 
 @app.route('/set_configs')
 def set_configs():
     template_context = {}
-    if NETWORK_HANDLER_NAME is not None:
-        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
-    if ROOT_DIRECTORY is not None:
-        template_context['root_directory'] = ROOT_DIRECTORY
+    template_context['root_directory'] = ROOT_DIRECTORY
     return render_template('set_configs.html', config_options=CONFIG_OPTIONS['set_configs'], **template_context)
 
 @app.route('/generate_configs')
 def generate_configs():
     template_context = {}
-    if NETWORK_HANDLER_NAME is not None:
-        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
-    if ROOT_DIRECTORY is not None:
-        template_context['root_directory'] = ROOT_DIRECTORY
+    template_context['root_directory'] = ROOT_DIRECTORY
     return render_template('generate_configs.html', config_options=CONFIG_OPTIONS['set_configs'], **template_context)
 
 @app.route('/update_netbox')
 def update_netbox():
     template_context = {}
-    if NETWORK_HANDLER_NAME is not None:
-        template_context['NETWORK_HANDLER_name'] = NETWORK_HANDLER_NAME
-    if ROOT_DIRECTORY is not None:
-        template_context['root_directory'] = ROOT_DIRECTORY
+    template_context['root_directory'] = ROOT_DIRECTORY
     return render_template('update_netbox.html', config_options=CONFIG_OPTIONS['upd_netbox'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **template_context)
 
 @app.route('/update_device_group_options', methods=['POST'])
@@ -152,10 +138,6 @@ def run_get_configs():
 def run_set_configs():
     start_time = time.time()
 
-    if ROOT_DIRECTORY == None or NETWORK_HANDLER_NAME == None:
-        print(f"{Colors.NOK_RED}[>]{Colors.END} Please specify the NETWORK_HANDLER Name and Root Directory in the proper forms")
-        return Response(status=200)
-
     config_blocks = get_checked_options(method='set_configs')
 
     # Create a new NETWORK_HANDLER object and initialize all data (command list)
@@ -220,12 +202,7 @@ def init_config_options() -> None:
 def init_network_handler() -> None:
     ''' '''
     global NETWORK_HANDLER
-
-    if ROOT_DIRECTORY == None or NETWORK_HANDLER_NAME == None:
-        print(f"{Colors.NOK_RED}[>]{Colors.END} Please specify the NETWORK_HANDLER Name and Root Directory in the proper forms")
-        return Response(status=200)
-
-    NETWORK_HANDLER = NetworkHandler()
+    NETWORK_HANDLER = NetworkHandler(ROOT_DIRECTORY)
 
 
 def init_netbox() -> None:

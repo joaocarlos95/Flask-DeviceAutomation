@@ -42,9 +42,12 @@ class NetworkHandler:
         nornir (InitNornir): Nornir class to interact with the devices
     '''
 
-    def __init__(self, netbox_url: str=None, netbox_token: str=None, host_file: str=None, group_file: str=None, defaults_file: str=None):
+    def __init__(self, dir):
 
-        self.dir = os.path.join(os.path.dirname(__file__), '../outputfiles')
+        self.dir = f"{dir}/outputfiles"
+        self.init_nornir()
+
+    def init_nornir(self, netbox_url: str=None, netbox_token: str=None, host_file: str=None, group_file: str=None, defaults_file: str=None):
 
         if netbox_url and netbox_token:
             inventory = {
@@ -57,9 +60,9 @@ class NetworkHandler:
                 }
             }
         else:
-            host_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/hosts.yaml')
-            group_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/groups.yaml')
-            defaults_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/defaults.yaml')
+            host_file = os.path.join(self.dir, '../inputfiles/inventory/hosts.yaml') if not host_file else host_file
+            group_file = os.path.join(self.dir, '../inputfiles/inventory/groups.yaml') if not group_file else group_file
+            defaults_file = os.path.join(self.dir, '../inputfiles/inventory/defaults.yaml') if not defaults_file else defaults_file
 
             inventory = {
                 "plugin": "SimpleInventory",
@@ -238,7 +241,7 @@ class NetworkHandler:
             """
 
             # Get the commands to be sent to the device, based on Netmiko host platform
-            commands = self.nornir.config.user_defined['PANDA_data'][config_info]['commands'][task.host.platform]
+            commands = self.nornir.config.user_defined['device_data'][config_info]['commands'][task.host.platform]
 
             # Iterate over the commands and run them in the device, saving the output to a file
             for command in commands:

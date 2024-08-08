@@ -202,6 +202,24 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
 
+        var debounceTimer;
+        document.querySelectorAll('#rootDirectory').forEach(function(inputElement) {
+            inputElement.addEventListener('input', function(event) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    var rootDirectory = document.getElementById('rootDirectory').value;
+                    $.ajax({
+                        url: '/update_root_directory',
+                        type: 'POST',
+                        data: {root_directory: rootDirectory},
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }, 1000); // Adjust the delay (in milliseconds) as needed
+            });
+        });
+
         // Function to save selected options to local storage
         function saveDeviceGroupSelectedOptions(deviceGroupSelectedOptions) {
             sessionStorage.setItem('deviceGroupSelectedOptions', JSON.stringify(deviceGroupSelectedOptions));
