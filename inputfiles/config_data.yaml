@@ -1,0 +1,11 @@
+smart_account:
+  cssm_connection: On-Prem
+  url: http://10.170.0.49:80/Transportgateway/services/DeviceRequestHandler
+  led_conversion: true
+
+interfaces:
+  - id: tw1/0/20
+    description: Jinja2 configuration generation
+    mode: access
+    data_vlan: 48
+    voice_vlan: 47

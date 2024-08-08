@@ -1,0 +1,9 @@
+vendor_os,model,target_release
+cisco_ios,WS-C2960X-48FPS-L,15.2(7)E6
+cisco_ios,WS-C2960S-24PS-L,15.2(2)E9
+cisco_ios,WS-C2960-24LC-S,15.0(2)SE11
+cisco_ios,WS-C2960C-8TC-L,15.2(7)E6
+cisco_ios,WS-C2960C-8PC-L,15.2(7)E6
+cisco_ios,WS-C2960X-24PS-L,15.2(7)E6
+cisco_ios,WS-C2960-48TC-L,15.0(2)SE1
+cisco_ios,WS-C2960L-24PS-LL,15.2(7)E6

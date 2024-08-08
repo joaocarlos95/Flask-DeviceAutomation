@@ -1,0 +1,330 @@
+---
+parsed_sample:
+  - bundle_name: "Po105"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et5"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po106"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et6"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po107"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et7"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po108"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et8"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po109"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et9"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po110"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et10"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po111"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et11"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po112"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et12"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po113"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et13"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po114"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et14"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po115"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et15"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po116"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et16"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po117"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et17"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po118"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et18"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po119"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et19"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po120"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et20"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po121"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et21"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po122"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et22"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po123"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et23"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po124"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et24"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po125"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et25"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po126"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et26"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po127"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et27"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po128"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et28"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po129"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et29"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po130"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et30"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po131"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et31"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po132"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et32"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po133"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et33"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po134"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et34"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po135"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et35"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po136"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et36"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po137"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et37"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po138"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et38"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po139"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et39"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po140"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et40"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po141"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et41"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po142"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et42"
+    member_interface_status:
+      - "D"
+  - bundle_name: "Po146"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "aF*"
+    bundle_status: "D"
+    member_interface:
+      - "Et43"
+      - "Et46"
+      - "Et46"
+      - "Et46"
+      - "Et47"
+    member_interface_status:
+      - "D"
+      - "D"
+      - "D"
+      - "D"
+      - "D"
+  - bundle_name: "Po2000"
+    bundle_protocol: "LACP"
+    bundle_protocol_state: "a"
+    bundle_status: "U"
+    member_interface:
+      - "Et54/1"
+    member_interface_status:
+      - "PG+"

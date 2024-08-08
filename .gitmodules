@@ -1,0 +1,3 @@
+[submodule "dep/jinja2config"]
+	path = dep/jinja2config
+	url = https://github.com/joaocarlos95/Jinja2Config.git

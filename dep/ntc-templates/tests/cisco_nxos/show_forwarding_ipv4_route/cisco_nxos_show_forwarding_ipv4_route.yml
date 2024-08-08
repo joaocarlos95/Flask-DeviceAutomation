@@ -1,0 +1,1454 @@
+---
+parsed_sample:
+  - interface:
+      - "Null0"
+    ip_address: "0.0.0.0"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "Null0"
+    ip_address: "127.0.0.0"
+    nexthop:
+      - "Drop"
+    prefix_length: "8"
+  - interface:
+      - "sup-eth1"
+    ip_address: "255.255.255.255"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "0.0.0.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "0"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.1.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface: []
+    ip_address: "10.1.90.0"
+    nexthop:
+      - "Attached"
+    prefix_length: "24"
+  - interface:
+      - "Null0"
+    ip_address: "10.1.90.0"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "10.1.90.1"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "10.1.90.101"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Vlan1"
+    ip_address: "10.1.90.102"
+    nexthop:
+      - "10.1.90.102"
+    prefix_length: "32"
+  - interface:
+      - "Vlan1"
+    ip_address: "10.1.90.255"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.5.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+      - "Ethernet1/43"
+    ip_address: "10.5.90.0"
+    nexthop:
+      - "172.16.90.6"
+      - "172.16.90.10"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/46"
+    ip_address: "10.5.99.0"
+    nexthop:
+      - "172.16.90.33"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.5.224.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.5.225.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.5.226.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.9.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+      - "Ethernet1/43"
+    ip_address: "10.10.10.0"
+    nexthop:
+      - "172.16.90.6"
+      - "172.16.90.10"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.15.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.22.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "25"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.29.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.38.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.39.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "26"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.39.64"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "26"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.39.128"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "26"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.39.192"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "26"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.10.50.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.10.55.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.10.56.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.10.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+      - "Ethernet1/43"
+    ip_address: "10.10.90.0"
+    nexthop:
+      - "172.16.90.6"
+      - "172.16.90.10"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/46"
+    ip_address: "10.10.99.0"
+    nexthop:
+      - "172.16.90.33"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.192.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.224.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.225.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.226.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.254.1"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.254.2"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.255.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.255.7"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.10.255.8"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.11.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+      - "Ethernet1/43"
+    ip_address: "10.11.90.0"
+    nexthop:
+      - "172.16.90.6"
+      - "172.16.90.10"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.15.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.17.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.18.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.20.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.30.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Null0"
+    ip_address: "10.30.112.0"
+    nexthop:
+      - "Drop"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.30.113.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.35.29.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.35.44.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.35.45.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.35.46.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.35.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.35.90.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.35.192.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.40.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.77.100.0"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "28"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.77.100.96"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "28"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.90.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.100.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+      - "Ethernet1/43"
+    ip_address: "10.100.90.0"
+    nexthop:
+      - "172.16.90.6"
+      - "172.16.90.10"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/46"
+    ip_address: "10.100.99.0"
+    nexthop:
+      - "172.16.90.33"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.100.192.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.100.224.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.100.225.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.100.226.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.119.48.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "27"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.119.48.32"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "27"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.3.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.4.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.28.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.129.88.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.0"
+    nexthop:
+      - "Attached"
+    prefix_length: "24"
+  - interface:
+      - "Null0"
+    ip_address: "10.129.90.0"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "10.129.90.1"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.10"
+    nexthop:
+      - "10.129.90.10"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.11"
+    nexthop:
+      - "10.129.90.11"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.12"
+    nexthop:
+      - "10.129.90.12"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.13"
+    nexthop:
+      - "10.129.90.13"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.14"
+    nexthop:
+      - "10.129.90.14"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.15"
+    nexthop:
+      - "10.129.90.15"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.16"
+    nexthop:
+      - "10.129.90.16"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.17"
+    nexthop:
+      - "10.129.90.17"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.18"
+    nexthop:
+      - "10.129.90.18"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.19"
+    nexthop:
+      - "10.129.90.19"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.20"
+    nexthop:
+      - "10.129.90.20"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.21"
+    nexthop:
+      - "10.129.90.21"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.22"
+    nexthop:
+      - "10.129.90.22"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.23"
+    nexthop:
+      - "10.129.90.23"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.24"
+    nexthop:
+      - "10.129.90.24"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.25"
+    nexthop:
+      - "10.129.90.25"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.26"
+    nexthop:
+      - "10.129.90.26"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.28"
+    nexthop:
+      - "10.129.90.28"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.29"
+    nexthop:
+      - "10.129.90.29"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.30"
+    nexthop:
+      - "10.129.90.30"
+    prefix_length: "32"
+  - interface:
+      - "Vlan20"
+    ip_address: "10.129.90.255"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Vlan112"
+    ip_address: "10.129.91.0"
+    nexthop:
+      - "172.16.90.2"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+      - "Ethernet1/43"
+    ip_address: "10.129.92.0"
+    nexthop:
+      - "172.16.90.6"
+      - "172.16.90.10"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.100.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.192.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.200.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.224.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.225.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.226.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.227.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.228.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.229.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.129.230.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.150.201.130"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "31"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.150.202.0"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "27"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.150.202.64"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "27"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.150.202.64"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "28"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.150.202.80"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "28"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.152.202.16"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "28"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.200.130.0"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "29"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.222.48.192"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "26"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.249.0.8"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.17.0"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.18.0"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.37.1"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.37.2"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.37.3"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.37.4"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.37.5"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.37.6"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.5"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.6"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.12"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.13"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.14"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.64"
+    nexthop:
+      - "Attached"
+    prefix_length: "30"
+  - interface:
+      - "Null0"
+    ip_address: "10.249.38.64"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.65"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "10.249.38.66"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.67"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.38.68"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.39.36"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.39.50"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "31"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.40.36"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.249.56.192"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "26"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.250.0"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "25"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.253.219"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.253.220"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.253.225"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.253.226"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.253.231"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.253.232"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.253.251"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.249.254.1"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Vlan112"
+    ip_address: "10.249.254.64"
+    nexthop:
+      - "172.16.90.2"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.254.68"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.255.120"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "29"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.255.240"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "29"
+  - interface:
+      - "Ethernet1/1"
+    ip_address: "10.249.255.248"
+    nexthop:
+      - "10.249.38.65"
+    prefix_length: "29"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.255.28.1"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.255.88.1"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.255.88.253"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "10.255.90.1"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Vlan112"
+    ip_address: "10.255.90.2"
+    nexthop:
+      - "172.16.90.2"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.255.90.3"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/43"
+    ip_address: "10.255.90.4"
+    nexthop:
+      - "172.16.90.10"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "10.255.90.110"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/46"
+    ip_address: "10.255.99.1"
+    nexthop:
+      - "172.16.90.33"
+    prefix_length: "32"
+  - interface:
+      - "Vlan112"
+    ip_address: "10.255.99.2"
+    nexthop:
+      - "172.16.90.2"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.255.192.1"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.255.192.2"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.255.255.1"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "10.255.255.2"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "68.202.118.148"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "69.203.118.52"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "24"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "113.117.128.2"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "117.120.112.118"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "26"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "117.121.132.112"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "26"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "160.44.97.23"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "160.45.98.45"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "172.116.129.4"
+    nexthop:
+      - "Attached"
+    prefix_length: "30"
+  - interface:
+      - "Null0"
+    ip_address: "172.116.129.4"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "172.116.129.5"
+    nexthop:
+      - "172.16.29.5"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "172.116.129.6"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/3"
+    ip_address: "172.116.129.7"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "172.116.188.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "172.116.188.4"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "172.116.188.8"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/43"
+    ip_address: "172.116.188.16"
+    nexthop:
+      - "172.16.90.10"
+    prefix_length: "30"
+  - interface: []
+    ip_address: "172.116.190.0"
+    nexthop:
+      - "Attached"
+    prefix_length: "30"
+  - interface:
+      - "Null0"
+    ip_address: "172.116.190.0"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "172.116.190.1"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Vlan112"
+    ip_address: "172.116.190.2"
+    nexthop:
+      - "172.16.90.2"
+    prefix_length: "32"
+  - interface:
+      - "Vlan112"
+    ip_address: "172.116.190.3"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "172.116.190.4"
+    nexthop:
+      - "Attached"
+    prefix_length: "30"
+  - interface:
+      - "Null0"
+    ip_address: "172.116.190.4"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "172.116.190.5"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "172.116.190.6"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "172.116.190.7"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/43"
+    ip_address: "172.116.190.8"
+    nexthop:
+      - "Attached"
+    prefix_length: "30"
+  - interface:
+      - "Null0"
+    ip_address: "172.116.190.8"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "172.116.190.9"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/43"
+    ip_address: "172.116.190.10"
+    nexthop:
+      - "172.16.90.10"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/43"
+    ip_address: "172.116.190.11"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Vlan112"
+    ip_address: "172.116.190.12"
+    nexthop:
+      - "172.16.90.2"
+    prefix_length: "30"
+  - interface:
+      - "Vlan112"
+    ip_address: "172.116.190.16"
+    nexthop:
+      - "172.16.90.2"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/45"
+      - "Ethernet1/43"
+    ip_address: "172.116.190.20"
+    nexthop:
+      - "172.16.90.6"
+      - "172.16.90.10"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "172.120.93.24"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/43"
+    ip_address: "172.120.93.28"
+    nexthop:
+      - "172.16.90.10"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/46"
+    ip_address: "172.120.93.32"
+    nexthop:
+      - "Attached"
+    prefix_length: "30"
+  - interface:
+      - "Null0"
+    ip_address: "172.120.93.32"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/46"
+    ip_address: "172.120.93.33"
+    nexthop:
+      - "172.16.90.33"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "172.120.93.34"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/46"
+    ip_address: "172.120.93.35"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Vlan112"
+    ip_address: "172.120.93.36"
+    nexthop:
+      - "172.16.90.2"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/46"
+    ip_address: "172.120.93.0"
+    nexthop:
+      - "172.16.90.33"
+    prefix_length: "30"
+  - interface:
+      - "Ethernet1/41"
+    ip_address: "172.121.135.16"
+    nexthop:
+      - "Attached"
+    prefix_length: "30"
+  - interface:
+      - "Null0"
+    ip_address: "172.121.135.16"
+    nexthop:
+      - "Drop"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/41"
+    ip_address: "172.212.135.17"
+    nexthop:
+      - "172.30.135.17"
+    prefix_length: "32"
+  - interface:
+      - "sup-eth1"
+    ip_address: "172.213.135.18"
+    nexthop:
+      - "Receive"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/41"
+    ip_address: "172.214.135.19"
+    nexthop:
+      - "Attached"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "172.214.0.0"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "16"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.48"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "28"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.48"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.49"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.50"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.51"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.52"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.53"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.54"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.55"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.56"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.57"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.58"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.59"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.60"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.61"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/45"
+    ip_address: "192.200.54.62"
+    nexthop:
+      - "172.16.90.6"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/41"
+    ip_address: "203.45.179.33"
+    nexthop:
+      - "172.30.135.17"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/41"
+    ip_address: "203.46.179.34"
+    nexthop:
+      - "172.30.135.17"
+    prefix_length: "32"
+  - interface:
+      - "Ethernet1/41"
+    ip_address: "203.72.179.0"
+    nexthop:
+      - "172.30.135.17"
+    prefix_length: "25"
+  - interface:
+      - "Ethernet1/41"
+    ip_address: "203.72.179.128"
+    nexthop:
+      - "172.30.135.17"
+    prefix_length: "25"

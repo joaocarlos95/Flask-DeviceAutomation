@@ -1,0 +1,9 @@
+---
+parsed_sample:
+  - bia: "70:1F:53:12:34:56"
+    description: "Cisco 3500 Series Wireless LAN Controller"
+    max_ap_num: "150"
+    name: "Chassis"
+    pid: "AIR-CT3504-K9"
+    sn: "ABC1234D567"
+    vid: "V01"
