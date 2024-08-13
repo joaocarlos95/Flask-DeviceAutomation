@@ -245,12 +245,3 @@ user_defined:
                     - show mac address-table
                 extreme_exos:
                     - show fdb
-    Netbox_data:
-        # Netbox related information
-        device_type:
-            group: Device
-            label: Device Type
-            status: enabled
-            PANDA_reference:
-                - device_information
-    models_database: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/02. PANDA/inputfiles/inventory/device_database.yaml"
