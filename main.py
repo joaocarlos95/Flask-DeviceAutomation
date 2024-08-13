@@ -11,7 +11,6 @@ from dep.panda.classes.colors import Colors
 from dep.panda.classes.netbox import Netbox
 
 
-NETWORK_HANDLER_NAME = "ANA Aeroportos"
 ROOT_DIRECTORY = "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation"
 #ROOT_DIRECTORY = f"{pathlib.Path(__file__).parent.resolve()}"
 CONFIG_OPTIONS = {
@@ -78,12 +77,6 @@ def update_device_group_options():
     CONFIG_OPTIONS['device_group'] = request.json.get('device_group_options')
     return jsonify(success=True)
 
-@app.route('/update_NETWORK_HANDLER_name', methods=['POST'])
-def update_NETWORK_HANDLER_name():
-    global NETWORK_HANDLER_NAME
-    NETWORK_HANDLER_NAME = request.form.get('NETWORK_HANDLER_name')
-    return NETWORK_HANDLER_NAME
-
 @app.route('/update_root_directory', methods=['POST'])
 def update_root_directory():
     global ROOT_DIRECTORY
@@ -118,7 +111,6 @@ def run_get_configs():
     nornir_filtered = NETWORK_HANDLER.nornir.filter(nornir_group_filter)
     NETWORK_HANDLER.nornir_get_configs(get_configs_info=get_configs_info, nornir_filtered=nornir_filtered)
 
-    NETWORK_HANDLER.dir = ROOT_DIRECTORY
     script_data = NETWORK_HANDLER.nornir_generate_data_dict()
     output_parsed = NETWORK_HANDLER.nornir_generate_config_parsed(script_data)
 
@@ -141,7 +133,7 @@ def run_set_configs():
     config_blocks = get_checked_options(method='set_configs')
 
     # Create a new NETWORK_HANDLER object and initialize all data (command list)
-    NETWORK_HANDLER = NETWORK_HANDLER(ROOT_DIRECTORY, NETWORK_HANDLER_NAME)
+    NETWORK_HANDLER = NETWORK_HANDLER(ROOT_DIRECTORY)
     NETWORK_HANDLER.get_devices_from_csv()
     NETWORK_HANDLER.get_j2_template()
     NETWORK_HANDLER.get_j2_data()
@@ -202,7 +194,16 @@ def init_config_options() -> None:
 def init_network_handler() -> None:
     ''' '''
     global NETWORK_HANDLER
-    NETWORK_HANDLER = NetworkHandler(ROOT_DIRECTORY)
+
+    if os.path.exists(f"{ROOT_DIRECTORY}/inputfiles/inventory/hosts.yaml"):
+        hosts = f"{ROOT_DIRECTORY}/inputfiles/inventory/hosts.yaml"
+    if os.path.exists(f"{ROOT_DIRECTORY}/inputfiles/inventory/groups.yaml"):
+        groups = f"{ROOT_DIRECTORY}/inputfiles/inventory/groups.yaml"
+    if os.path.exists(f"{ROOT_DIRECTORY}/inputfiles/inventory/defaults.yaml"):
+        defaults = f"{ROOT_DIRECTORY}/inputfiles/inventory/defaults.yaml"
+
+    NETWORK_HANDLER = NetworkHandler(host_file=hosts, group_file=groups, defaults_file=defaults)
+    NETWORK_HANDLER.dir = ROOT_DIRECTORY
 
 
 def init_netbox() -> None:
@@ -288,29 +289,6 @@ def main():
 
     init_config_options()
     init_network_handler()
-    init_netbox()
-
-    ################################################################################
-    # TEMPORARY
-    #
-
-    # get_configs_info = ['device_information']
-    # nornir_group_filter = F(groups__contains='extreme_exos')
-    # nornir_filtered = NETWORK_HANDLER.nornir.filter(nornir_group_filter)
-    # NETWORK_HANDLER.nornir_get_configs(get_configs_info=get_configs_info, nornir_filtered=nornir_filtered)
-    # script_data = NETWORK_HANDLER.nornir_generate_data_dict()
-    # output_parsed = NETWORK_HANDLER.nornir_generate_config_parsed(script_data)
-
-    # manufacturer = 'Extreme Networks'
-    # platform = 'extreme_exos'
-    # role = 'Access Switch'
-    # site = 'LIS LAN'
-
-    # update_netbox_device(site, output_parsed)
-
-    #
-    # TEMPORARY
-    ################################################################################
 
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
