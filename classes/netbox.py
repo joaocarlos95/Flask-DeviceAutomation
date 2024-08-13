@@ -33,6 +33,17 @@ class Netbox:
 
         response = requests.post(f"{self.url}{endpoint}", headers=headers, json=data, verify=False)
         return self.handle_response(response)
+
+    def patch_request(self, endpoint, data=None):
+
+        headers = headers={
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': f'Token {self.token}' 
+        }
+
+        response = requests.patch(f"{self.url}{endpoint}", headers=headers, json=data, verify=False)
+        return self.handle_response(response)
     
     def handle_response(self, response):
 
@@ -60,7 +71,9 @@ class Netbox:
         except Exception as err:
             print(f"Other error occurred: {err}")
 
-    def add_device_type(self, manufacturer:str, model:str, u_height:int, is_full_depth:bool=None, platform:str=None):
+    # DCIM
+
+    def create_device_type(self, manufacturer:str, model:str, u_height:int, is_full_depth:bool=None, platform:str=None):
 
         data = {
             "manufacturer": self.get_manufacturer_id(manufacturer),
@@ -76,7 +89,15 @@ class Netbox:
         print(f"{Colors.OK_GREEN}[Netbox]{Colors.END} Creating new device type: {data['model']}")
         response = self.post_request(endpoint, data)
 
-    def add_device(self, role:str, model:str, site:str, hostname:str, serial_number:str, status:str='active'):
+    def get_device_type_by_model(self, model: str) -> int:
+
+        endpoint = f"/dcim/device-types?model={model}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Device type doesn't exist: {model}")
+        return response['results'][0]
+
+    def create_device(self, role:str, model:str, site:str, hostname:str, serial_number:str, status:str='active'):
 
         data = {
             "name": hostname,
@@ -91,80 +112,161 @@ class Netbox:
         print(f"{Colors.OK_GREEN}[Netbox]{Colors.END} Creating new device: {hostname}")
         response = self.post_request(endpoint, data)
 
-    def get_manufacturer_id(self, name: str) -> int:
+    def get_device_by_name(self, name: str) -> int:
+
+        endpoint = f"/dcim/devices/?name={name}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Device {name} doesn't exist")
+        return response['results'][0]
+
+    def create_interface(self, hostname, name, port_type, enabled, mode=None, tagged_vlan: list=[], untagged_vlan: int=None):
+
+        data = {
+            'device': self.get_device_by_name(hostname)['id'],
+            'name': name,
+            'type': port_type,
+            'enabled': enabled,
+            'mode': mode,
+            'tagged_vlans': tagged_vlan,
+            'untagged_vlan': untagged_vlan
+        }
+
+        endpoint = '/dcim/interfaces/'
+        print(f"{Colors.OK_GREEN}[Netbox]{Colors.END} Creating new interface {name} in device {hostname}")
+        response = self.post_request(endpoint, data)
+
+    def update_interface(self, device: str, name: str, port_type: str=None, enabled: bool=None, mode: str=None, tagged_vlan: list=[], untagged_vlan: int=None):
+
+        data = {
+            'type': port_type,
+            'enabled': enabled,
+            'mode': mode,
+            'tagged_vlans': tagged_vlan,
+            'untagged_vlan': untagged_vlan
+        }
+
+        interface = self.get_interface_by_name(device, name)
+        if not interface:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Interface {name} in device {device} doesn't exist")
+        
+        endpoint = f"/dcim/interfaces/{interface['id']}/"
+        print(f"{Colors.OK_GREEN}[Netbox]{Colors.END} Updating interface {name} in device {device}")
+        response = self.patch_request(endpoint, data)
+
+    def get_interface_by_name(self, device: str, name: str) -> int:
+
+        device_id = self.get_device_by_name(device)['id']
+        endpoint = f"/dcim/interfaces/?device_id={device_id}&name={name}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Interface {name} in device {device} doesn't exist")
+        return response['results'][0]
+
+    def get_manufacturer_by_name(self, name: str) -> int:
 
         endpoint = f"/dcim/manufacturers?name={name}"
         response = self.get_request(endpoint)
-        manufacturer_id = response['results'][0]['id']
-        return manufacturer_id
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Manufacturer {name} doesn't exist")
+        return response['results'][0]
     
-    def get_device_role_id(self, name: str) -> int:
+    def get_device_role_by_name(self, name: str) -> int:
 
         endpoint = f"/dcim/device-roles?name={name}"
         response = self.get_request(endpoint)
-        device_role_id = response['results'][0]['id']
-        return device_role_id
-
-    def get_device_type_id(self, model: str) -> int:
-
-        endpoint = f"/dcim/device-types?model={model}"
-        response = self.get_request(endpoint)
         if response['count'] == 0:
-            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Device type doesn't exist: {model}")
-        device_type_id = response['results'][0]['id']
-        return device_type_id
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Device role {name} doesn't exist")
+        return response['results'][0]
 
-    def get_site_id(self, name: str) -> int:
+    def get_site_by_name(self, name: str) -> int:
 
         endpoint = f"/dcim/sites?name={name}"
         response = self.get_request(endpoint)
-        site_id = response['results'][0]['id']
-        return site_id
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Site {name} doesn't exist")
+        return response['results'][0]
 
+    # Circuits
 
+    def get_provider_by_name(self, name: str) -> int:
 
+        endpoint = f"/circuits/providers?name={name}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Provider {name} doesn't exist")
+        return response['results'][0]
 
+    def get_provider_account_by_account_id(self, account_id: str) -> int:
 
-# def get_device_type(id=None):
+        endpoint = f"/circuits/provider-accounts?account={account_id}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Provider Account with ID {account_id} doesn't exist")
+        return response['results'][0]
 
-#     endpoint = 'dcim/device-types'
-#     response = requests.get(f'{url}{endpoint}', headers={'Authorization': f'Token {token}', 'Accept': 'application/json'}, verify=False)
-    
-#     if response.status_code != 200:
-#         print(f"Couldn't get information, status code: {response.status_code}")
-#         return response.status_code, None
-#     return response.status_code, response.json()['results']
+    def create_circuit(self, cid: str, provider: str, type: str, status: str, provider_account: str=None, tenant: str=None, commit_rate: str=None, description: str=None, custom_fields: dict=None):
 
-# def get_manufacturer():
-
-#     endpoint = 'dcim/device-types/?name={}'
-#     search = '?name'
-#     response = requests.get(f'{url}{endpoint}', headers={'Authorization': f'Token {token}', 'Accept': 'application/json'}, verify=False)
-    
-#     if response.status_code != 200:
-#         print(f"Couldn't get information, status code: {response.status_code}")
-#         return response.status_code, None
-#     return response.status_code, response.json()['results']
-
-# def set_device_type():
-
-#     body = {
+        data = {
+            "cid": cid,
+            "provider": self.get_provider_by_name(provider)["id"],
+            "type": self.get_circuit_type_by_name(type)["id"],
+            "status": status,
+            "provider_account": self.get_provider_account_by_account_id(provider_account)["id"],
+            "tenant": self.get_tenant_by_name(tenant)["id"],
+            "commit_rate": commit_rate,
+            "description": description,
+            "custom_fields": custom_fields
+        }
         
-#     }
+        endpoint = '/circuits/circuits/'
+        print(f"{Colors.OK_GREEN}[Netbox]{Colors.END} Creating new circuit {cid}")
+        response = self.post_request(endpoint, data)
 
-#     endpoint = 'dcim/device-types'
-#     response = requests.post(f'{url}{endpoint}', headers={'Authorization': f'Token {token}', 'Accept': 'application/json'}, verify=False)
+    def get_circuit_type_by_name(self, name: str) -> int:
 
-#     return response.status_code
+        endpoint = f"/circuits/circuit-types?name={name}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Circuit Type {name} doesn't exist")
+        return response['results'][0]
 
+    # Tenancy
 
+    def get_tenant_by_name(self, name: str) -> int:
 
-if __name__ == '__main__':
-    start_time = time.time()
+        endpoint = f"/tenancy/tenants?name={name}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Tenant {name} doesn't exist")
+        return response['results'][0]
 
-    url = 'https://10.168.10.81:443'
-    token = '4550ebdc9e1f2f5652fb77fa5a2b0def73cac0a7'
+    # IPAM
 
-    netbox = Netbox(url, token)
-    response = netbox.get_request('/device-types')
-    print(response.json())
+    def get_prefix_by_prefix(self, prefix: str) -> int:
+
+        endpoint = f"/ipam/prefixes/?prefix={prefix}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} Prefix {prefix} doesn't exist")
+        return response['results'][0]
+
+    def create_vlan(self, vid: int, name: str, status):
+
+        data = {
+            'vid': vid,
+            'name': name,
+            'status': status
+        }
+
+        endpoint = '/ipam/vlans/'
+        print(f"{Colors.OK_GREEN}[Netbox]{Colors.END} Creating new VLAN: {name} ({vid})")
+        response = self.post_request(endpoint, data)
+    
+    def get_vlan_by_vid(self, vid: int) -> int:
+
+        endpoint = f"/ipam/vlans/?vid={vid}"
+        response = self.get_request(endpoint)
+        if response['count'] == 0:
+            raise Exception(f"{Colors.NOK_RED}[Netbox]{Colors.END} VLAN {vid} doesn't exist")
+        return response['results'][0]

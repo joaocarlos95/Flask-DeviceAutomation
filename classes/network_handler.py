@@ -162,6 +162,14 @@ class NetworkHandler:
                 device = Device(self, row['vendor_os'], row['ip_address'], credentials)
                 self.device_list.append(device)
 
+    def get_device_filtered_by_name(self, hostname: str=None):
+        return self.nornir.filter(F(name__eq=hostname))
+    
+    def add_devices_credentials(self, nornir, username: str=None, password: str=None):
+        for hostname, host_obj in nornir.inventory.hosts.items():
+            host_obj.username = username
+            host_obj.password = password
+
     def get_kdbx_database(self, filename):
         '''
         Get keepass database from .kdbx file. This database will be later iterated through to get the device credentials
