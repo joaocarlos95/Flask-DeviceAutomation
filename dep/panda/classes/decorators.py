@@ -99,7 +99,7 @@ def write_to_file(func):
                 print(f"{Colors.OK_GREEN}[>]{Colors.END} Saving data to excel - {config}")
                 save_file(path, filename, output_data[config])
 
-        elif func.__qualname__ == 'Client.nornir_generate_config_parsed':
+        elif func.__qualname__ == 'NetworkHandler.nornir_generate_config_parsed':
             for config_info in output_data.keys():
                 path = f"{self.dir}/outputfiles/GetConfigs/{config_info}/{current_date}"
                 filename = f"[{current_datetime}] {config_info}.xlsx"
