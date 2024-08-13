@@ -23,7 +23,7 @@ user_defined:
                     - show running-config
                 cisco_nxos:
                     - show running-config
-                extreme:
+                enterasys:
                     - show config
                 extreme_exos:
                     - show config
@@ -48,7 +48,7 @@ user_defined:
                     - show version
                 cisco_nxos:
                     - show version
-                extreme:
+                enterasys:
                     - show system
                     - show time
                     - show system hardware
@@ -66,7 +66,7 @@ user_defined:
             label: Local Users
             status: enabled
             commands:
-                extreme:
+                enterasys:
                     - show system login
                 extreme_exos:
                     - show accounts
@@ -75,7 +75,7 @@ user_defined:
             label: Management
             status: enabled
             commands:
-                extreme:
+                enterasys:
                     - show ssh
                     - show telnet
                     - show webview
@@ -88,7 +88,7 @@ user_defined:
             label: Power Information
             status: enabled
             commands:
-                extreme:
+                enterasys:
                     - show system
                 extreme_exos:
                     - show power detail
@@ -115,7 +115,7 @@ user_defined:
             label: Status
             status: enabled
             commands:
-                extreme:
+                enterasys:
                     - show port status
                 extreme_exos:
                     - show ports no-refresh
@@ -124,7 +124,7 @@ user_defined:
             label: Transceiver Information
             status: enabled
             commands:
-                extreme:
+                enterasys:
                     - show port transceiver basic-only
                 extreme_exos:
                     - show ports transceiver information detail
@@ -133,7 +133,7 @@ user_defined:
             label: VLAN Ports
             status: disabled
             commands:
-                extreme:
+                enterasys:
                     - show vlan portinfo
                 extreme_exos:
                     - show ports information detail
@@ -190,7 +190,7 @@ user_defined:
                     - show lldp neighbors detail
                 cisco_wlc: 
                     - show cdp neighbors detail
-                extreme: 
+                enterasys: 
                     - show neighbors
                     - show lldp port remote-info
                 extreme_exos: 
@@ -201,7 +201,7 @@ user_defined:
             label: Configuration
             status: enabled
             commands:
-                extreme: 
+                enterasys: 
                     - show ciscodp
                 extreme_exos:
                     - show cdp
@@ -217,7 +217,7 @@ user_defined:
                     - show cdp neighbors detail
                 cisco_wlc:
                     - show cdp neighbors detail
-                extreme:
+                enterasys:
                     - show neighbors
                 extreme_exos:
                     - show cdp neighbor detail
@@ -232,7 +232,7 @@ user_defined:
                     - show lldp neighbors detail
                 cisco_nxos:
                     - show lldp neighbors detail
-                extreme:
+                enterasys:
                     - show lldp port remote-info
                 extreme_exos:
                     - show lldp neighbor detailed
@@ -245,12 +245,3 @@ user_defined:
                     - show mac address-table
                 extreme_exos:
                     - show fdb
-    Netbox_data:
-        # Netbox related information
-        device_type:
-            group: Device
-            label: Device Type
-            status: enabled
-            PANDA_reference:
-                - device_information
-    models_database: "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/02. PANDA/inputfiles/inventory/device_database.yaml"

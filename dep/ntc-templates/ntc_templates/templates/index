@@ -560,6 +560,21 @@ edgecore_show_version.textfsm, .*, edgecore, show version
 edgecore_show_system.textfsm, .*, edgecore, show system
 edgecore_show_vlan.textfsm, .*, edgecore, show vlan
 
+enterasys_show_port_transceiver_basic-only.textfsm, .*, enterasys, sh[[ow]] por[[t]] tran[[sceiver]] b[[asic-only]]
+enterasys_show_lldp_port_remote-info.textfsm, .*, enterasys, sh[[ow]] ll[[dp]] p[[ort]] r[[emote-info]]
+enterasys_show_system_hardware.textfsm, .*, enterasys, sh[[ow]] sy[[stem]] h[[ardware]]
+enterasys_show_logging_server.textfsm, .*, enterasys, sh[[ow]] logg[[ing]] s[[erver]]
+enterasys_show_vlan_portinfo.textfsm, .*, enterasys, sh[[ow]] vlan p[[ortinfo]]
+enterasys_show_system_login.textfsm, .*, enterasys, sh[[ow]] sy[[stem]] log[[in]]
+enterasys_show_port_status.textfsm, .*, enterasys, sh[[ow]] por[[t]] st[[atus]]
+enterasys_show_neighbors.textfsm, .*, enterasys, sh[[ow]] nei[[ghbors]]
+enterasys_show_ciscodp.textfsm, .*, enterasys, sh[[ow]] ci[[scodp]]
+enterasys_show_webview.textfsm, .*, enterasys, sh[[ow]] we[[bview]]
+enterasys_show_system.textfsm, .*, enterasys, sh[[ow]] sy[[stem]]
+enterasys_show_telnet.textfsm, .*, enterasys, sh[[ow]] te[[lnet]]
+enterasys_show_time.textfsm, .*, enterasys, sh[[ow]] ti[[me]]
+enterasys_show_ssh.textfsm, .*, enterasys, sh[[ow]] ssh
+
 eltex_show_interfaces_description.textfsm, .*, eltex, sh[[ow]] int[[erfaces]] de[[scription]]
 eltex_show_interfaces_switchport.textfsm, .*, eltex, sh[[ow]] int[[erfaces]] sw[[itchport]]
 eltex_show_interfaces_status.textfsm, .*, eltex, sh[[ow]] int[[erfaces]] st[[atus]]
@@ -601,21 +616,6 @@ extreme_exos_show_system.textfsm, .*, extreme_exos, sh[[ow]] sy[[stem]]
 extreme_exos_show_iparp.textfsm, .*, extreme_exos, show iparp
 extreme_exos_show_cdp.textfsm, .*, extreme_exos, sh[[ow]] cd[[p]]
 extreme_exos_show_fdb.textfsm, .*, extreme_exos, sh[[ow]] fd[[b]]
-
-extreme_show_port_transceiver_basic-only.textfsm, .*, extreme, sh[[ow]] por[[t]] tran[[sceiver]] b[[asic-only]]
-extreme_show_lldp_port_remote-info.textfsm, .*, extreme, sh[[ow]] ll[[dp]] p[[ort]] r[[emote-info]]
-extreme_show_system_hardware.textfsm, .*, extreme, sh[[ow]] sy[[stem]] h[[ardware]]
-extreme_show_logging_server.textfsm, .*, extreme, sh[[ow]] logg[[ing]] s[[erver]]
-extreme_show_vlan_portinfo.textfsm, .*, extreme, sh[[ow]] vlan p[[ortinfo]]
-extreme_show_system_login.textfsm, .*, extreme, sh[[ow]] sy[[stem]] log[[in]]
-extreme_show_port_status.textfsm, .*, extreme, sh[[ow]] por[[t]] st[[atus]]
-extreme_show_neighbors.textfsm, .*, extreme, sh[[ow]] nei[[ghbors]]
-extreme_show_ciscodp.textfsm, .*, extreme, sh[[ow]] ci[[scodp]]
-extreme_show_webview.textfsm, .*, extreme, sh[[ow]] we[[bview]]
-extreme_show_system.textfsm, .*, extreme, sh[[ow]] sy[[stem]]
-extreme_show_telnet.textfsm, .*, extreme, sh[[ow]] te[[lnet]]
-extreme_show_time.textfsm, .*, extreme, sh[[ow]] ti[[me]]
-extreme_show_ssh.textfsm, .*, extreme, sh[[ow]] ssh
 
 fortinet_get_router_info_routing-table_all.textfsm, .*, fortinet, g[[et]] r[[outer]] info ro[[uting-table]] a[[ll]]
 fortinet_get_router_info_bgp_neighbors.textfsm, .*, fortinet, g[[et]] r[[outer]] info bg[[p]] nei[[ghbors]]

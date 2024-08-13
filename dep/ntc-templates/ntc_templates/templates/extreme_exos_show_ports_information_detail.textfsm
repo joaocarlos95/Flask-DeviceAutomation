@@ -1,4 +1,4 @@
-Value INTERFACE (\d+)
+Value INTERFACE (\d+:\d+|\d+)
 Value DESCRIPTION (.*)
 Value VIRTUAL_ROUTER (.*)
 Value TYPE (.*)
@@ -9,7 +9,8 @@ Value LINK_UPS_NUM (\d+)
 Value LINK_UPS_LAST (.*)
 Value LINK_DOWNS_NUM (\d+)
 Value LINK_DOWNS_LAST (.*)
-Value List VLAN_ID (\d+)
+Value List TAGGED_VLAN (\d+)
+Value List UNTAGGED_VLAN (\d+)
 
 Start
   ^\s*Port:.*$$ -> Continue.Record
@@ -23,4 +24,5 @@ Start
   ^\s*Link\s+Ups:\s*${LINK_UPS_NUM}\s+Last:\s*${LINK_UPS_LAST}\s*$$
   ^\s*Link\s+Downs:\s*${LINK_DOWNS_NUM}\s+Last:\s*${LINK_DOWNS_LAST}\s*$$
 	^\s*VLAN\s+cfg:\s*$$
-  ^.*VLAN\s+ID:\s*${VLAN_ID}\s*$$
+  ^.*Internal\s+Tag\s+=\s+${UNTAGGED_VLAN},\s+
+  ^.*VLAN\s+ID:\s*${TAGGED_VLAN}\s*$$

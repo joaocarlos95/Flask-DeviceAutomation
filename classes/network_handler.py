@@ -1,7 +1,9 @@
 import csv
 import inspect
 import json
+import logging
 import os
+import re
 import yaml
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -9,12 +11,12 @@ from datetime import datetime
 from getpass import getpass
 from jinja2 import Environment, FileSystemLoader
 from N2G import yed_diagram
-from netmiko.utilities import get_structured_data
 from nornir import InitNornir
 from nornir.core.task import Result, Task
 from nornir_netmiko import netmiko_send_command
 from nornir_salt.plugins.functions import ResultSerializer
 from nornir_utils.plugins.tasks.files import write_file
+from ntc_templates.parse import parse_output
 from OuiLookup import OuiLookup
 from typing import Literal
 
@@ -23,9 +25,10 @@ from .device import Device
 from .colors import Colors
 
 
+#logging.basicConfig(level=logging.DEBUG)
 
 # Define environment variable for TextFSM, so that the package can get the correct templates
-os.environ['NET_TEXTFSM'] = os.path.join(os.path.dirname(__file__), '../../dep/ntc-templates/ntc_templates/templates')
+os.environ['NTC_TEMPLATES_DIR'] = os.path.join(os.path.dirname(__file__), '../dep/ntc-templates/ntc_templates/templates')
 
 MAX_WORKERS = 40
 
@@ -44,8 +47,6 @@ class NetworkHandler:
 
     def __init__(self, netbox_url: str=None, netbox_token: str=None, host_file: str=None, group_file: str=None, defaults_file: str=None):
 
-        self.dir = os.path.join(os.path.dirname(__file__), '../outputfiles')
-
         if netbox_url and netbox_token:
             inventory = {
                 "plugin": "NetBoxInventory2",
@@ -57,9 +58,9 @@ class NetworkHandler:
                 }
             }
         else:
-            host_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/hosts.yaml')
-            group_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/groups.yaml')
-            defaults_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/defaults.yaml')
+            host_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/hosts.yaml') if not host_file else host_file
+            group_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/groups.yaml') if not group_file else group_file
+            defaults_file = os.path.join(os.path.dirname(__file__), '../inputfiles/inventory/defaults.yaml') if not defaults_file else defaults_file
 
             inventory = {
                 "plugin": "SimpleInventory",
@@ -161,6 +162,14 @@ class NetworkHandler:
                 device = Device(self, row['vendor_os'], row['ip_address'], credentials)
                 self.device_list.append(device)
 
+    def get_device_filtered_by_name(self, hostname: str=None):
+        return self.nornir.filter(F(name__eq=hostname))
+    
+    def add_devices_credentials(self, nornir, username: str=None, password: str=None):
+        for hostname, host_obj in nornir.inventory.hosts.items():
+            host_obj.username = username
+            host_obj.password = password
+
     def get_kdbx_database(self, filename):
         '''
         Get keepass database from .kdbx file. This database will be later iterated through to get the device credentials
@@ -238,7 +247,13 @@ class NetworkHandler:
             """
 
             # Get the commands to be sent to the device, based on Netmiko host platform
-            commands = self.nornir.config.user_defined['PANDA_data'][config_info]['commands'][task.host.platform]
+            commands = self.nornir.config.user_defined['device_data'][config_info]['commands'][task.host.platform]
+
+            # Adjust read_timeout value for potencial longer commands
+            if 'read_timeout' in self.nornir.config.user_defined['device_data'][config_info]:
+                read_timeout = self.nornir.config.user_defined['device_data'][config_info]['read_timeout']
+            else:
+                read_timeout = 10
 
             # Iterate over the commands and run them in the device, saving the output to a file
             for command in commands:
@@ -253,10 +268,11 @@ class NetworkHandler:
                         name=command,
                         task=netmiko_send_command,
                         command_string=command,
-                        expect_string=prompt
+                        expect_string=re.escape(prompt),
+                        read_timeout=read_timeout
                     )
                 except Exception as exception:
-                    print(exception)
+                    print("XXX - " + str(exception))
 
                 path = f"{self.dir}/outputfiles/GetConfigs/{config_info}/{datetime.now().strftime('%Y%m%d')}/{command.replace(' ', '_')}"
                 filename = f"[{datetime.now().strftime('%Y%m%d%H%M%S')}] {task.host.name} ({task.host.hostname}) - {command}.txt"
@@ -354,7 +370,7 @@ class NetworkHandler:
                         device_information=self.nornir.inventory.hosts[host],
                         config_info=config_info,
                         textfsm_args={
-                            'raw_output': command_result['result'],
+                            'data': command_result['result'],
                             'platform': self.nornir.inventory.hosts[host].platform,
                             'command': command
                         }   
@@ -382,7 +398,7 @@ class NetworkHandler:
                
         try:
             print(f"{Colors.OK_GREEN}[{device_information.hostname}]{Colors.END} Parsing output: {textfsm_args['command']}")
-            output_parsed = get_structured_data(**textfsm_args)
+            output_parsed = parse_output(**textfsm_args)
             # Delete output_parsed variable since output couldn't be converted
             if isinstance(output_parsed, str):
                 print(f"{Colors.NOK_RED}[{device_information.hostname}]{Colors.END} Couldn't parse the output of the command: {textfsm_args['command']}")
