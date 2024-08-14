@@ -1,4 +1,0 @@
-{#- LLDP (Link Layer Discovery Protocol) configuration -#}
-
-set lldp port status both {{ lldp.enabled_ports | join(';') }}
-set lldp port tx-tlv all {{ lldp.enabled_ports | join(';') }}

@@ -1,7 +1,0 @@
-{#-
-Spanning-Tree related configurations:
-    - Edge ports: admin disabled or enabled
--#}
-
-enable switch locally-administered-address
-configure stpd {{ spanning_tree.domain }} ports link-type edge {{ spanning_tree.edge_ports | join(',') }} edge-safeguard enable bpdu-restrict recovery-timeout 180
