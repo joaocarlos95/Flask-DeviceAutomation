@@ -1,0 +1,9 @@
+{# VARIABLES                                                    #}
+{#- ---------------------------------------------------------- -#}
+
+{% for port in cdp.enabled_ports %}
+    set ciscodp port status enable
+{% endfor %}
+{% for port in cdp.disabled_ports %}
+    set ciscodp port status disable
+{% endfor %}
