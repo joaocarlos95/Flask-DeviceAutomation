@@ -1,0 +1,11 @@
+{#- Configure TACACS+ server -#}
+
+{% if tacacs.primary_server is defined %}
+    set tacacs enable
+    set tacacs server 1 {{ tacacs.primary_server.addr }} {{ tacacs.primary_server.port }} {{ tacacs.primary_server.shared_secret }}
+    set tacacs session accounting enable
+{% else %}
+    set tacacs disable
+    set tacacs session accounting disable
+{% endif %}
+
