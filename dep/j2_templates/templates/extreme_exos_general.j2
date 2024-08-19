@@ -1,0 +1,34 @@
+{#- Basic configuration -#}
+configure snmp sysName "{{ general.hostname }}"
+configure snmp sysLocation "{{ general.location }}"
+configure snmp sysContact "{{ general.contact }}"
+
+{# configure banner before-login save-to-configuration
++---------------------------------------------------------------------+
+|                           EXTREME NETWORKS                          |
++---------------------------------------------------------------------+
+|                                                                     |
+|                           !!! WARNING !!!                           |
+|              UNAUTHORIZED ACCESS IS STRICTLY PROHIBITED             |
+|                                                                     |
+|   This device is property of {{ general.client_name }}.{% for _ in range(37 - general.client_name|length) %} {% endfor %} |
+|   Unauthorized access, tampering, or any malicious activity is      |
+|   strictly forbidden.                                               |
+|                                                                     |
+|   All access attempts are recorded.                                 |
+|                                                                     |
+|   By proceeding, you agree to comply with the security policies     |
+|   and legal agreements in place.                                    |
+|                                                                     |
++---------------------------------------------------------------------+
+|   Device Name: {{ general.hostname }}{% for _ in range(52 - general.hostname|length) %} {% endfor %} |
+|   Location: {{ general.location }}{% for _ in range(55 - general.location|length) %} {% endfor %} |
+|   Contact: {{ general.contact }}{% for _ in range(56 - general.contact|length) %} {% endfor %} |
++---------------------------------------------------------------------+
+
+enable dos-protect simulated
+enable cli config-logging expansion
+enable jumbo-frame ports all
+
+configure cli journal size 150
+configure cli max-sessions 5 #}

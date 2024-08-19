@@ -1,0 +1,63 @@
+{# Delete default configurations #}
+configure snmpv3 delete group "v1v2c_ro" user "v1v2c_ro" sec-model snmpv1
+configure snmpv3 delete group "v1v2c_rw" user "v1v2c_rw" sec-model snmpv1
+configure snmpv3 delete group "v1v2c_ro" user "v1v2c_ro" sec-model snmpv2c
+configure snmpv3 delete group "v1v2c_rw" user "v1v2c_rw" sec-model snmpv2c
+configure snmpv3 delete access "admin" sec-model usm sec-level priv
+configure snmpv3 delete access "initial" sec-model usm sec-level noauth
+configure snmpv3 delete access "initial" sec-model usm sec-level authnopriv
+configure snmpv3 delete access "v1v2c_ro" sec-model snmpv1 sec-level noauth
+configure snmpv3 delete access "v1v2c_ro" sec-model snmpv2c sec-level noauth
+configure snmpv3 delete access "v1v2c_rw" sec-model snmpv1 sec-level noauth
+configure snmpv3 delete access "v1v2c_rw" sec-model snmpv2c sec-level noauth
+configure snmpv3 delete access "v1v2cNotifyGroup" sec-model snmpv1 sec-level noauth
+configure snmpv3 delete access "v1v2cNotifyGroup" sec-model snmpv2c sec-level noauth
+configure snmpv3 delete notify "defaultNotify"
+disable snmp access vr "VR-Mgmt"
+
+{# Configure SNMPv3 #}
+{% if snmpv3 is defined %}
+enable snmp access
+enable snmp access snmpv3
+    {% if snmpv3.groups is defined %}
+        {% for group in snmpv3.groups %}
+            {% for user in group.users %}
+configure snmpv3 add user "{{ user.username }}" authentication {{ user.auth_algorithm }} {{ user.auth_password }} privacy {{ user.priv_algorithm }} {{ user.priv_password }}
+configure snmpv3 add group "{{ group.name }}" user "{{ user.username }}" sec-model usm
+            {% endfor %}
+configure snmpv3 add access "{{ group.name }}" sec-model usm sec-level priv notify-view defaultAdminView read-view defaultAdminView
+        {% endfor %}
+    {% endif %}
+
+    {# Configure SNMPv3 Traps #}
+    {% if snmpv3.traps is defined %}
+        {% set traps = snmpv3.traps %}
+configure snmpv3 add target-addr "{{ traps.server_name }}_Address" param "{{ traps.server_name }}_Parameters" ipaddress {{ traps.server_addr }} transport-port {{ traps.port_number | default("162", true) }} vr {{ traps.vrf | default("VR-Default", true) }} tag-list "{{ traps.server_name }}_Tag" 
+configure snmpv3 add target-params "{{ traps.server_name }}_Parameters" user {{ traps.username }} mp-model snmpv3 sec-model usm sec-level priv
+configure snmpv3 add notify "{{ traps.server_name }}_Notification" tag "{{ traps.server_name }}_Tag" type inform
+configure snmpv3 add filter-profile "{{ traps.server_name }}_Filter" param "{{ traps.server_name }}_Parameters"
+configure snmpv3 add filter "{{ traps.server_name }}_Filter" subtree 1.0/00 type included
+        {% for oid in excluded_oid %}
+configure snmpv3 add filter "{{ traps.server_name }}_Filter" subtree {{ oid }} type excluded
+        {% endfor %}
+    {% endif %}
+{% else %}
+disable snmp access snmpv3
+{% endif %}
+
+{# Configure SNMPv2c #}
+{% if snmpv2c is defined %}
+enable snmp access
+enable snmp access snmp-v1v2c
+    {% if snmpv2c.groups is defined %}
+        {% for group in snmpv2c.groups %}
+            {% for user in group.users %}
+configure snmpv3 add community "{{ user.community }}" name {{ user.community }}" user "{{ user.username }}"
+configure snmpv3 add group "{{ group.name }}" user "{{ user.username }}" sec-model snmpv2c
+            {% endfor %}
+configure snmpv3 add access "{{ group.name }}" sec-model snmpv2c sec-level noauth read-view "defaultAdminView" notify-view "defaultAdminView"
+        {% endfor %}
+    {% endif %}
+{% else %}
+disable snmp access snmp-v1v2c
+{% endif %}

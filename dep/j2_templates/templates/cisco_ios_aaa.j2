@@ -1,0 +1,46 @@
+{# VARIABLES                                                    #}
+{#- ---------------------------------------------------------- -#}
+{% set auth_type = aaa.auth_type %}
+{% set server_list = aaa.server_list %}
+
+
+{# DESCRIPTION: CONFIGURATION FOR AAA WITHOUT SERVER GROUP      #}
+{#- ---------------------------------------------------------- -#}
+{% macro default_configuration() %}
+aaa authentication login LOCAL-AUTH local-case
+{%- endmacro %}
+
+
+{# DESCRIPTION: CONFIGURATION FOR AAA WITH SERVER GROUP         #}
+{#- ---------------------------------------------------------- -#}
+{% macro server_group_configuration() %}
+{% for server in server_list %}
+    {% if auth_type == "radius" -%}
+        radius server SERVER-{{ server.ip_address }}
+    {% else -%}
+        tacacs server SERVER-{{ server.ip_address }}
+    {% endif %}
+    address ipv4 {{ server.ip_address }}
+    key {{ server.shared_key }}
+{% endfor %}
+!
+aaa group server {{ auth_type }} SERVER-GROUP
+    {% for server in server_list %}
+        server name SERVER-{{ server.ip_address }}
+    {% endfor %}
+!
+aaa authentication login SERVER-AUTH group SERVER-GROUP local-case
+{%- endmacro %}
+
+
+{# DESCRIPTION: AAA BASE CONFIGURATION                          #}
+{#- ---------------------------------------------------------- -#}
+aaa new-model
+!
+{% if aaa.auth_type == "local" -%}
+    {{ default_configuration() }}
+{% else -%}
+    {{ server_group_configuration() }}
+{% endif %}
+aaa authentication login CONSOLE local-case
+aaa authentication enable default enable
