@@ -1,0 +1,16 @@
+{{ comment_char }} ----------------------------------------
+{{ comment_char }} Template generated via Jinja2
+{{ comment_char }} Timestamp: {{ timestamp }}
+{{ comment_char }} Device: {{ ip_address }}
+{{ comment_char }} ----------------------------------------
+
+{{ comment_char }} ----------------------------------------
+{{ comment_char }} Start of SNMP configuration block
+{{ comment_char }} Using template: extreme_exos_snmp.j2
+{{ comment_char }} ----------------------------------------
+
+{% include "templates/extreme_exos_snmp.j2" %}
+
+{{ comment_char }} --------------------------------------
+{{ comment_char }} End of {{ block }} configuration block
+{{ comment_char }} --------------------------------------

@@ -6,14 +6,13 @@ import os
 import re
 import yaml
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from getpass import getpass
 from jinja2 import Environment, FileSystemLoader
 from N2G import yed_diagram
 from nornir import InitNornir
 from nornir.core.task import Result, Task
-from nornir_netmiko import netmiko_send_command
+from nornir_netmiko import netmiko_send_command, netmiko_send_config, netmiko_multiline
 from nornir_salt.plugins.functions import ResultSerializer
 from nornir_utils.plugins.tasks.files import write_file
 from ntc_templates.parse import parse_output
@@ -25,7 +24,13 @@ from .device import Device
 from .colors import Colors
 
 
-#logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
+    filename='PANDA.log', 
+    filemode='w'
+)
+
 
 # Define environment variable for TextFSM, so that the package can get the correct templates
 os.environ['NTC_TEMPLATES_DIR'] = os.path.join(os.path.dirname(__file__), '../dep/ntc-templates/ntc_templates/templates')
@@ -36,6 +41,7 @@ MAX_WORKERS = 40
 
 class NetworkHandler:
     '''
+    
     Class used to define client variables, which are used by other classes, and 
     to define the script main execution, namely import and export data.
 
@@ -296,41 +302,68 @@ class NetworkHandler:
                 config_info=config_info
             )
             self.get_config_results[config_info] = result
+
+    def nornir_set_configs(self, nornir_filtered, device_config_list: dict) -> None:
+        """
+        """
+
+        def run_set_configs(task: Task, device_config_list: dict) -> Result:
+            '''
+            '''
+
+            # path = f"{self.dir}/outputfiles/SetConfigs/jinja2_config/{datetime.now().strftime('%Y%m%d')}/"
+            # filename = f"[{datetime.now().strftime('%Y%m%d%H%M%S')}] {task.host.name} ({task.host.hostname}) - jinja2_config.txt"
+            # os.makedirs(f"{path}", exist_ok=True)
+            # with open(f"{path}/{filename}", mode='w', encoding='utf-8') as file:
+            #     file.write(device_config_list[task.host.hostname])
+
+            try:
+                
+                # Temporary, since there is an issue with send_config for Enterasys
+                if task.host.platform == 'enterasys':
+                    # Get device prompt in order to use it as expect_string when running a command
+                    connection = task.host.get_connection('netmiko', task.nornir.config)
+                    prompt = connection.find_prompt()
+                    result = task.run(
+                        name="set_configs",
+                        task=netmiko_multiline,
+                        commands=device_config_list[task.host.hostname].split('\n'),
+                        expect_string=re.escape(prompt),
+                        read_timeout=10
+                    )
+                else:
+                    # Send the configuration to the device
+                    result = task.run(
+                        name="set_configs",
+                        task=netmiko_send_config,
+                        config_commands=device_config_list[task.host.hostname].split('\n')
+                    )
+            except Exception as exception:
+                print(f"{Colors.NOK_RED}[{task.host.hostname}]{Colors.END} {str(exception)}")
+
+            return
+
+
+
+            task.run(
+                name="save_to_file",
+                task=write_file,
+                filename=f"{path}/{filename}",
+                content=result.result
+            )
+
+            return Result(host=task.host)
+        
+        self.get_config_results = {}
+        result = nornir_filtered.run(
+            name="set_configs",
+            task=run_set_configs,
+            device_config_list=device_config_list
+        )
+        return
+
+
             
-
-    def get_concurrent_configs(self, get_configs_info: list) -> None:
-        '''
-        Function used to interact with the devices in a concurrent way (using concurrent.futures),
-        takind advantage of threading to get information from the devices at the same time
-        '''
-
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            future_list = [executor.submit(device.get_configs, get_configs_info) for device in self.device_list]
-            for future in as_completed(future_list):
-                future.result()
-    
-    def set_concurrent_configs(self, config_blocks: list) -> None:
-        '''
-        Function used to interact with the devices in a concurrent way (using concurrent.futures),
-        takind advantage of threading to get information from the devices at the same time
-        '''
-
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            future_list = [executor.submit(device.set_configs, config_blocks) for device in self.device_list]
-            for future in as_completed(future_list):
-                future.result()
-    
-    def generate_concurrent_configs(self, config_blocks: list) -> None:
-        '''
-        Function used to interact with the devices in a concurrent way (using concurrent.futures),
-        takind advantage of threading to get information from the devices at the same time
-        '''
-
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            future_list = [executor.submit(device.generate_config, config_blocks) for device in self.device_list]
-            for future in as_completed(future_list):
-                future.result()
-
     @write_to_file
     def nornir_generate_data_dict(self) -> dict:
         '''

@@ -1,0 +1,21 @@
+{% if smart_account.cssm_connection == "On-Prem" %}
+call-home
+    no http secure server-identity-check
+    profile CiscoTAC-1
+        reporting smart-licensing-data
+        destination transport-method http
+        destination address http {{ smart_account.url }}
+        active
+        exit
+    exit
+crypto pki trustpoint SLA-TrustPoint
+revocation-check none
+{% endif %}
+end
+!
+{% if smart_account.token %}
+license smart register idtoken {{ smart_account.token }}
+{% endif %}
+{% if smart_account.led_conversion == true | default(false, true) %}
+license smart conversion start
+{% endif %}

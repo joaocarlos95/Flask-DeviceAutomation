@@ -1,0 +1,18 @@
+{{ comment_char }} ----------------------------------------
+{{ comment_char }} Template generated via Jinja2
+{{ comment_char }} Timestamp: {{ timestamp }}
+{{ comment_char }} Device: {{ hostname }}
+{{ comment_char }} ----------------------------------------
+
+{% for block in config_blocks %}{% set child_template =  "templates/" + vendor_os + "_" + block + ".j2" %}
+{{ comment_char }} ----------------------------------------
+{{ comment_char }} Start of {{ block }} configuration block
+{{ comment_char }} Using template: {{ child_template }}
+{{ comment_char }} ----------------------------------------
+
+{% include child_template %}
+
+{{ comment_char }} --------------------------------------
+{{ comment_char }} End of {{ block }} configuration block
+{{ comment_char }} --------------------------------------
+{% endfor %}

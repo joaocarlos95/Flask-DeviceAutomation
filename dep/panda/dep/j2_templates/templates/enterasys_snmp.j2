@@ -1,0 +1,24 @@
+
+{# Configure SNMPv3 #}
+{% if snmpv3 is defined %}
+    {% if snmpv3.groups is defined %}
+        {% for group in snmpv3.groups %}
+            {% for user in group.users %}
+                set snmp user {{ user.username }} authentication {{ user.auth_algorithm }} {{ user.auth_password }} encryption {{ user.priv_algorithm }} privacy {{ user.priv_password }} nonvolatile
+                set snmp group {{ group.name }} user {{ user.username }} security-model usm nonvolatile
+            {% endfor %}
+            set snmp access {{ group.name }} security-model usm privacy exact read All notify All nonvolatile
+        {% endfor %}
+    {% endif %}
+
+    {# Configure SNMPv3 Traps #}
+    {% if snmpv3.traps is defined %}
+        {% set traps = snmpv3.traps %}
+        set snmp targetaddr {{ traps.server_name }}_Address {{ traps.server_addr }} param {{ traps.server_name }}_Parameters udpport {{ traps.port_number | default("162", true) }} taglist {{ traps.server_name }}_Tag nonvolatile
+        set snmp targetparams {{ traps.server_name }}_Parameters user {{ traps.username }} security-model usm message-processing v3 privacy nonvolatile
+        set snmp notify {{ traps.server_name }}_Notification tag {{ traps.server_name }}_Tag inform nonvolatile
+    {% endif %}
+{% endif %}
+
+
+
