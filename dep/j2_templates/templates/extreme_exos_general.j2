@@ -3,7 +3,7 @@ configure snmp sysName "{{ general.hostname }}"
 configure snmp sysLocation "{{ general.location }}"
 configure snmp sysContact "{{ general.contact }}"
 
-configure banner before-login save-to-configuration
+{# configure banner before-login save-to-configuration
 +---------------------------------------------------------------------+
 |                           EXTREME NETWORKS                          |
 +---------------------------------------------------------------------+
@@ -11,7 +11,7 @@ configure banner before-login save-to-configuration
 |                           !!! WARNING !!!                           |
 |              UNAUTHORIZED ACCESS IS STRICTLY PROHIBITED             |
 |                                                                     |
-|   This device is property of ANA, Aeroportos de Portugal.           |
+|   This device is property of {{ general.client_name }}.{% for _ in range(37 - general.client_name|length) %} {% endfor %} |
 |   Unauthorized access, tampering, or any malicious activity is      |
 |   strictly forbidden.                                               |
 |                                                                     |
@@ -31,4 +31,4 @@ enable cli config-logging expansion
 enable jumbo-frame ports all
 
 configure cli journal size 150
-configure cli max-sessions 5
+configure cli max-sessions 5 #}
