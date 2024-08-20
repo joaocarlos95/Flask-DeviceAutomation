@@ -62,7 +62,7 @@ def generate_config(nornir_filtered, device_data_list) -> dict:
 
 def main():
 
-    csv_file = f"{ROOT_DIRECTORY}/inputfiles/change_general_information.csv"
+    csv_file = f"{ROOT_DIRECTORY}/inputfiles/update_general_information.csv"
     device_list_info = get_general_information_from_csv(csv_file)
 
     init_network_handler()
