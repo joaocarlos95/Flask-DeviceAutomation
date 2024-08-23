@@ -11,7 +11,7 @@ configure banner before-login save-to-configuration
 |                           !!! WARNING !!!                           |
 |              UNAUTHORIZED ACCESS IS STRICTLY PROHIBITED             |
 |                                                                     |
-|   This device is property of ANA, Aeroportos de Portugal.           |
+|   This device is property of {{ general.client_name }}.{% for _ in range(37 - general.client_name|length) %} {% endfor %} |
 |   Unauthorized access, tampering, or any malicious activity is      |
 |   strictly forbidden.                                               |
 |                                                                     |

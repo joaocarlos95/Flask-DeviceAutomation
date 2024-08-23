@@ -1,7 +1,8 @@
 {#- VLAN creation -#}
 
 {% for vlan in vlan %}
-    create vlan "{{ vlan.name }}" tag {{ vlan.id }}
+    create vlan {{ vlan.id }}
+    configure vlan {{ vlan.id }} name "{{ vlan.name }}"
     enable stpd {{ vlan.spanning_tree_domain }} auto-bind vlan {{ vlan.name }}
     {% if vlan.tagged_ports is defined and vlan.tagged_ports is not none %}
         configure vlan {{ vlan.id }} add ports {{ vlan.tagged_ports | join(',') }} tagged
