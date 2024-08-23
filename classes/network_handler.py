@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 from N2G import yed_diagram
 from nornir import InitNornir
 from nornir.core.task import Result, Task
-from nornir_netmiko import netmiko_send_command, netmiko_send_config, netmiko_multiline
+from nornir_netmiko import netmiko_send_command, netmiko_send_config, netmiko_multiline, netmiko_save_config
 from nornir_salt.plugins.functions import ResultSerializer
 from nornir_utils.plugins.tasks.files import write_file
 from ntc_templates.parse import parse_output
@@ -306,16 +306,10 @@ class NetworkHandler:
     def nornir_set_configs(self, nornir_filtered, device_config_list: dict) -> None:
         """
         """
-
+           
         def run_set_configs(task: Task, device_config_list: dict) -> Result:
             '''
             '''
-
-            # path = f"{self.dir}/outputfiles/SetConfigs/jinja2_config/{datetime.now().strftime('%Y%m%d')}/"
-            # filename = f"[{datetime.now().strftime('%Y%m%d%H%M%S')}] {task.host.name} ({task.host.hostname}) - jinja2_config.txt"
-            # os.makedirs(f"{path}", exist_ok=True)
-            # with open(f"{path}/{filename}", mode='w', encoding='utf-8') as file:
-            #     file.write(device_config_list[task.host.hostname])
 
             try:
                 
@@ -329,7 +323,14 @@ class NetworkHandler:
                         task=netmiko_multiline,
                         commands=device_config_list[task.host.hostname].split('\n'),
                         expect_string=re.escape(prompt),
-                        read_timeout=10
+                        read_timeout=10,
+                    )
+                    task.run(
+                        name="save_config",
+                        task=netmiko_send_command,
+                        command_string="save config",
+                        expect_string=re.escape(prompt),
+                        read_timeout=10,
                     )
                 else:
                     # Send the configuration to the device
@@ -338,6 +339,11 @@ class NetworkHandler:
                         task=netmiko_send_config,
                         config_commands=device_config_list[task.host.hostname].split('\n')
                     )
+                    task.run(
+                        name="save_config",
+                        task=netmiko_save_config
+                    )
+
             except Exception as exception:
                 print(f"{Colors.NOK_RED}[{task.host.hostname}]{Colors.END} {str(exception)}")
 
