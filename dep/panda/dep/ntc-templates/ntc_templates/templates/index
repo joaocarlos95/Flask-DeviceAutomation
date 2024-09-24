@@ -566,6 +566,7 @@ enterasys_show_system_hardware.textfsm, .*, enterasys, sh[[ow]] sy[[stem]] h[[ar
 enterasys_show_logging_server.textfsm, .*, enterasys, sh[[ow]] logg[[ing]] s[[erver]]
 enterasys_show_vlan_portinfo.textfsm, .*, enterasys, sh[[ow]] vlan p[[ortinfo]]
 enterasys_show_system_login.textfsm, .*, enterasys, sh[[ow]] sy[[stem]] log[[in]]
+enterasys_show_vlan_static.textfsm, .*, enterasys, sh[[ow]] vlan s[[tatic]]
 enterasys_show_port_status.textfsm, .*, enterasys, sh[[ow]] por[[t]] st[[atus]]
 enterasys_show_neighbors.textfsm, .*, enterasys, sh[[ow]] nei[[ghbors]]
 enterasys_show_ciscodp.textfsm, .*, enterasys, sh[[ow]] ci[[scodp]]
@@ -574,6 +575,7 @@ enterasys_show_system.textfsm, .*, enterasys, sh[[ow]] sy[[stem]]
 enterasys_show_telnet.textfsm, .*, enterasys, sh[[ow]] te[[lnet]]
 enterasys_show_time.textfsm, .*, enterasys, sh[[ow]] ti[[me]]
 enterasys_show_ssh.textfsm, .*, enterasys, sh[[ow]] ssh
+enterasys_show_mac.textfsm, .*, enterasys, sh[[ow]] mac
 
 eltex_show_interfaces_description.textfsm, .*, eltex, sh[[ow]] int[[erfaces]] de[[scription]]
 eltex_show_interfaces_switchport.textfsm, .*, eltex, sh[[ow]] int[[erfaces]] sw[[itchport]]

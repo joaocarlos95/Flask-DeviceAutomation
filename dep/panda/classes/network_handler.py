@@ -278,7 +278,7 @@ class NetworkHandler:
                         read_timeout=read_timeout
                     )
                 except Exception as exception:
-                    print("XXX - " + str(exception))
+                    print(f"{Colors.NOK_RED}[{task.host.hostname}]{Colors.END} {str(exception)}")
 
                 path = f"{self.dir}/outputfiles/GetConfigs/{config_info}/{datetime.now().strftime('%Y%m%d')}/{command.replace(' ', '_')}"
                 filename = f"[{datetime.now().strftime('%Y%m%d%H%M%S')}] {task.host.name} ({task.host.hostname}) - {command}.txt"

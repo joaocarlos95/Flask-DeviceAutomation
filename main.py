@@ -177,14 +177,13 @@ def init_config_options() -> None:
 
         upd_netbox = defaultdict(list)
         # Iterate through all the user-defined options in the config.yaml file, specifically for the Netbox
-        for key, value in config['user_defined']['Netbox_data'].items():
+        for key, value in config['user_defined']['device_data'].items():
             # Append the current option to the corresponding group
             upd_netbox[value['group']].append({
                 'id': key,
                 'name': key,
                 'label': value['label'],
                 'status': value['status'],
-                'get_configs': value['PANDA_reference']
             })
 
     CONFIG_OPTIONS['get_configs'] = dict(get_configs)
