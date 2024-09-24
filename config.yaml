@@ -128,10 +128,18 @@ user_defined:
                     - show port transceiver basic-only
                 extreme_exos:
                     - show ports transceiver information detail
+        vlan:
+            group: VLAN
+            label: VLAN
+            status: enabled
+            commands:
+                enterasys:
+                    - show vlan static
+            read_timeout: 600
         vlan_ports:
-            group: Interface
+            group: VLAN
             label: VLAN Ports
-            status: disabled
+            status: enabled
             commands:
                 enterasys:
                     - show vlan portinfo
@@ -243,5 +251,8 @@ user_defined:
             commands:
                 cisco_ios:
                     - show mac address-table
+                enterasys:
+                    - show mac
                 extreme_exos:
                     - show fdb
+            read_timeout: 600
