@@ -15,6 +15,7 @@ Value List UNTAGGED_VLAN (\d+)
 Start
   ^\s*Port:.*$$ -> Continue.Record
   ^\s*Port:\s*${INTERFACE}\s*$$
+  ^\s*Port:\s*${INTERFACE}(\S+)\s*$$
   ^\s*Description\s+String:\s*\"${DESCRIPTION}\"\s*$$
   ^\s*Virtual-router:\s*${VIRTUAL_ROUTER}\s*$$
   ^\s*Type:\s*${TYPE}\s*$$
