@@ -1,0 +1,132 @@
+Value TACACS_STATUS (enabled|disabled)
+Value TACACS_AUTHZ_STATUS (enabled|disabled)
+Value TACACS_AUTHZ_PRIV_LEVEL (\S+)
+Value FALLBACK_AUTH (\S+)
+Value ACCOUNTING_STATUS (enabled|disabled)
+Value CONNECT_TIMEOUT (\d+)
+Value PRI_NAME (.*)
+Value PRI_IP (\S+)
+Value PRI_PORT (\d+)
+Value PRI_CLIENT (\S+)
+Value PRI_VRF (\S+)
+Value PRI_SECRET (\S+)
+Value PRI_AUTH_REQ (\d+)
+Value PRI_AUTH_RESP (\d+)
+Value PRI_AUTH_PASS (\d+)
+Value PRI_AUTH_FAIL (\d+)
+Value PRI_AUTHZ_REQ (\d+)
+Value PRI_AUTHZ_RESP (\d+)
+Value PRI_AUTHZ_PASS (\d+)
+Value PRI_AUTHZ_FAIL (\d+)
+Value SEC_NAME (.*)
+Value SEC_IP (\S+)
+Value SEC_PORT (\d+)
+Value SEC_CLIENT (\S+)
+Value SEC_VRF (\S+)
+Value SEC_SECRET (\S+)
+Value SEC_AUTH_REQ (\d+)
+Value SEC_AUTH_RESP (\d+)
+Value SEC_AUTH_PASS (\d+)
+Value SEC_AUTH_FAIL (\d+)
+Value SEC_AUTHZ_REQ (\d+)
+Value SEC_AUTHZ_RESP (\d+)
+Value SEC_AUTHZ_PASS (\d+)
+Value SEC_AUTHZ_FAIL (\d+)
+Value ACCT_CONNECT_TIMEOUT (\d+)
+Value PRI_ACCT_NAME (.*)
+Value PRI_ACCT_IP (\S+)
+Value PRI_ACCT_PORT (\d+)
+Value PRI_ACCT_CLIENT (\S+)
+Value PRI_ACCT_VRF (\S+)
+Value PRI_ACCT_SECRET (\S+)
+Value PRI_ACCT_REQ (\d+)
+Value PRI_ACCT_RESP (\d+)
+Value PRI_ACCT_SUCCESS (\d+)
+Value PRI_ACCT_ERROR (\d+)
+Value PRI_ACCT_FOLLOW (\d+)
+Value SEC_ACCT_NAME (.*)
+Value SEC_ACCT_IP (\S+)
+Value SEC_ACCT_PORT (\d+)
+Value SEC_ACCT_CLIENT (\S+)
+Value SEC_ACCT_VRF (\S+)
+Value SEC_ACCT_SECRET (\S+)
+Value SEC_ACCT_REQ (\d+)
+Value SEC_ACCT_RESP (\d+)
+Value SEC_ACCT_SUCCESS (\d+)
+Value SEC_ACCT_ERROR (\d+)
+Value SEC_ACCT_FOLLOW (\d+)
+
+Start
+  ^Admin Status\s+:\s+${TACACS_STATUS}
+  ^Authorization\s+:\s+${TACACS_AUTHZ_STATUS}
+  ^Authorization priv-lvl\s+:\s+${TACACS_AUTHZ_PRIV_LEVEL}
+  ^Fallback Authentication\s+:\s+${FALLBACK_AUTH}
+  ^Accounting\s+:\s+${ACCOUNTING_STATUS}
+  ^Server Connect Timeout\s+:\s+${CONNECT_TIMEOUT}\s+sec
+  ^Primary Server\s+: -> Authentication_Server
+
+Authentication_Server
+  ^\s+Server name\s+:\s*${PRI_NAME}
+  ^\s+IP address\s+:\s+${PRI_IP}
+  ^\s+Server IP Port:\s+${PRI_PORT}
+  ^\s+Client address:\s+${PRI_CLIENT}\s+\(${PRI_VRF}\)
+  ^\s+Shared secret\s+:\s+${PRI_SECRET}
+  ^\s+Authentication:\s*$$ -> Primary_Authentication_Counters
+  ^\s+Authorization:\s*$$ -> Primary_Authorization_Counters
+  ^Secondary Server\s+: -> Secondary_Authentication_Server
+
+Primary_Authentication_Counters
+  ^\s+Requests\s+:\s+${PRI_AUTH_REQ}\s+Responses\s+:\s+${PRI_AUTH_RESP}
+  ^\s+Password\s+:\s+\d+
+  ^\s+Passed\s+:\s+${PRI_AUTH_PASS}\s+Failed\s+:\s+${PRI_AUTH_FAIL} -> Authentication_Server
+
+Primary_Authorization_Counters
+  ^\s+Requests\s+:\s+${PRI_AUTHZ_REQ}\s+Responses\s+:\s+${PRI_AUTHZ_RESP}
+  ^\s+Passed\s+:\s+${PRI_AUTHZ_PASS}\s+Failed\s+:\s+${PRI_AUTHZ_FAIL} -> Authentication_Server
+
+Secondary_Authentication_Server
+  ^\s+Server name\s+:\s*${SEC_NAME}
+  ^\s+IP address\s+:\s+${SEC_IP}
+  ^\s+Server IP Port:\s+${SEC_PORT}
+  ^\s+Client address:\s+${SEC_CLIENT}\s+\(${SEC_VRF}\)
+  ^\s+Shared secret\s+:\s+${SEC_SECRET}
+  ^\s+Authentication:\s*$$ -> Secondary_Authentication_Counters
+  ^\s+Authorization:\s*$$ -> Secondary_Authorization_Counters
+  ^Acct Server Connect Timeout\s+:\s+${ACCT_CONNECT_TIMEOUT}\s+sec
+  ^Primary Accounting Server\s+: -> Accounting_Server
+
+Secondary_Authentication_Counters
+  ^\s+Requests\s+:\s+${SEC_AUTH_REQ}\s+Responses\s+:\s+${SEC_AUTH_RESP}
+  ^\s+Password\s+:\s+\d+
+  ^\s+Passed\s+:\s+${SEC_AUTH_PASS}\s+Failed\s+:\s+${SEC_AUTH_FAIL} -> Secondary_Authentication_Server
+
+Secondary_Authorization_Counters
+  ^\s+Requests\s+:\s+${SEC_AUTHZ_REQ}\s+Responses\s+:\s+${SEC_AUTHZ_RESP}
+  ^\s+Passed\s+:\s+${SEC_AUTHZ_PASS}\s+Failed\s+:\s+${SEC_AUTHZ_FAIL} -> Secondary_Authentication_Server
+
+Accounting_Server
+  ^\s+Server name\s+:\s*${PRI_ACCT_NAME}
+  ^\s+IP address\s+:\s+${PRI_ACCT_IP}
+  ^\s+Server IP Port:\s+${PRI_ACCT_PORT}
+  ^\s+Client address:\s+${PRI_ACCT_CLIENT}\s+\(${PRI_ACCT_VRF}\)
+  ^\s+Shared secret\s+:\s+${PRI_ACCT_SECRET}
+  ^\s+Accounting:\s*$$ -> Primary_Acct_Authentication_Counters
+  ^Secondary Accounting Server\s+: -> Secondary_Accounting_Server
+
+Primary_Acct_Authentication_Counters
+  ^\s+Requests\s+:\s+${PRI_ACCT_REQ}\s+Responses\s+:\s+${PRI_ACCT_RESP}
+  ^\s+Successes\s+:\s+${PRI_ACCT_SUCCESS}\s+Errors\s+:\s+${PRI_ACCT_ERROR}
+  ^\s+Follows\s+:\s+${PRI_ACCT_FOLLOW} -> Accounting_Server
+
+Secondary_Accounting_Server
+  ^\s+Server name\s+:\s*${SEC_ACCT_NAME}
+  ^\s+IP address\s+:\s+${SEC_ACCT_IP}
+  ^\s+Server IP Port:\s+${SEC_ACCT_PORT}
+  ^\s+Client address:\s+${SEC_ACCT_CLIENT}\s+\(${SEC_ACCT_VRF}\)
+  ^\s+Shared secret\s+:\s+${SEC_ACCT_SECRET}
+  ^\s+Accounting:\s*$$ -> Secondary_Acct_Authentication_Counters
+
+Secondary_Acct_Authentication_Counters
+  ^\s+Requests\s+:\s+${SEC_ACCT_REQ}\s+Responses\s+:\s+${SEC_ACCT_RESP}
+  ^\s+Successes\s+:\s+${SEC_ACCT_SUCCESS}\s+Errors\s+:\s+${SEC_ACCT_ERROR}
+  ^\s+Follows\s+:\s+${SEC_ACCT_FOLLOW} -> Secondary_Accounting_Server

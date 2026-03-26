@@ -622,6 +622,7 @@ extreme_exos_show_system.textfsm, .*, extreme_exos, sh[[ow]] sy[[stem]]
 extreme_exos_show_iparp.textfsm, .*, extreme_exos, show iparp
 extreme_exos_show_cdp.textfsm, .*, extreme_exos, sh[[ow]] cd[[p]]
 extreme_exos_show_fdb.textfsm, .*, extreme_exos, sh[[ow]] fd[[b]]
+extreme_exos_show_tacacs.textfsm, .*, extreme_exos, sh[[ow]] ta[[cacs]]
 
 fortinet_get_router_info_routing-table_all.textfsm, .*, fortinet, g[[et]] r[[outer]] info ro[[uting-table]] a[[ll]]
 fortinet_get_router_info_bgp_neighbors.textfsm, .*, fortinet, g[[et]] r[[outer]] info bg[[p]] nei[[ghbors]]
