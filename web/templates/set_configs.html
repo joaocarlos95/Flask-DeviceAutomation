@@ -3,9 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAPymiko</title>
+    <title>PANDA - Python Automation for Network Device Access</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <style>
+        .clickable {
+            cursor: pointer;
+        }
+        .select2-container .select2-selection--multiple, 
+        .select2-container .select2-selection--single {
+            border: none !important;
+        }
+        /* Custom CSS */
+        .modal-header {
+            background-color: #0B7285; /* Change this to the desired color */
+            color: #fff; /* Text color */
+        }
+    </style>
 </head>
 <body class="layout-top-nav" style="height: auto;">
     <div class="wrapper">
@@ -13,7 +28,7 @@
         <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
             <div class="container">
                 <a href="/" class="navbar-brand">
-                    <span class="brand-text font-weight-light">NAPymiko</span>
+                    <span class="brand-text font-weight-light"><b>PANDA</b></span>
                  </a>
                 <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,10 +36,13 @@
                 <div class="collapse navbar-collapse order-3" id="navbarCollapse">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a href="/get_configs" class="nav-link">Get Configs</a>
+                            <a href="/get_configs" class="nav-link">Get Configurations</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">Set Configs</a>
+                            <a href="#" class="nav-link">Set Configurations</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Update Netbox</a>
                         </li>
                     </ul>
             
@@ -62,11 +80,11 @@
             <div class="content">
                 <div class="container">
                     <div class="form-group row">
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" id="clientName" name="clientName" placeholder="Client Name" value="{{ client_name }}">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="clientName" name="clientName" placeholder="Client Name" value="{{ client_name }}" style="font-size: smaller;">
                         </div>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="rootDirectory" name="rootDirectory"  placeholder="Root Directory" value="{{ root_directory }}">
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="rootDirectory" name="rootDirectory"  placeholder="Root Directory" value="{{ root_directory }}" style="font-size: smaller;">
                         </div>
                     </div>
                     <div class="row">
@@ -79,11 +97,8 @@
                                     <div id="accordion">
                                         {% for group_name, options in config_options.items() %}
                                             <div class="card card-light">
-                                                <div class="card-header">
-                                                    <h4 class="card-title m-0">{{ group_name }}</h4>
-                                                    <div class="card-tools">
-                                                        <button class="btn btn-block btn-light btn-xs" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">show/hide</button>
-                                                    </div>
+                                                <div class="card-header clickable" data-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                                                    <h4 class="card-title m-0" id="{{ group_name }}">{{ group_name }}</h4>
                                                 </div>
                                                 <div id="collapse{{ loop.index }}" class="collapse" aria-labelledby="heading{{ loop.index }}" data-parent="#accordion">
                                                     <div class="card-body">
@@ -92,15 +107,11 @@
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <div class="form-check">
-                                                                        <input class="form-check-input" type="checkbox" id="{{ option['id'] }}" name="{{ option['name'] }}" {{ option['status'] }}>
+                                                                        <input class="form-check-input" type="checkbox" id="{{ option['id'] }}" name="{{ option['name'] }}" {{ option['status'] }} onchange="updateInformationDataSelected()">
                                                                         <label class="form-check-label" for="{{ option['id'] }}">{{ option['label'] }}</label>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            {% if loop.index % 3 == 0 %}
-                                                        </div>
-                                                        <div class="row">
-                                                            {% endif %}
                                                             {% endfor %}
                                                         </div>
                                                     </div>                                                
@@ -118,134 +129,78 @@
                             <div class="card card-outline card-danger">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        Information Data <small>(selected)</small>
+                                        Device Groups
                                     </h3>
-                                    <div class="card-tools">
-                                        <button class="btn btn-block btn-light btn-xs" type="button" id="refreshInformationData">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
-                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    {% for group_name, options in config_options.items() %}
-                                        {% set selected_options = [] %}
-                                        {% for option in options %}
-                                            {% if option['status'] == 'checked' %}
-                                                {% set _ = selected_options.append(option['label']) %}
-                                            {% endif %}
+                                    <div class="select2-light">
+                                        <select id="device_group_options" class="select2 select2-accessible" multiple="multiple" data-placeholder="Select the device groups" style="width: 100%;" tabindex="-1">
+                                            {% for group_name in device_groups.keys() %}
+                                                <option value="{{ group_name }}">{{ group_name }}</option>
                                         {% endfor %}
-                                        {% if selected_options %}
-                                            <dl>
-                                                <dt>{{ group_name }}</dt>
-                                                <dd>
-                                                    <ul class="list-unstyled">
-                                                        {% for option in selected_options %}
-                                                            <li>&nbsp;&nbsp;&nbsp;&#8226; {{ option }}</li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </dd>
-                                            </dl>
-                                        {% endif %}
-                                    {% endfor %}
+                                    </select>
                                 </div>
-                            </div>
-                            <form id="runSetConfigsForm" action="/run_set_configs" method="POST">
-                                <button type="submit" class="btn btn-block btn-success mb-3">Run</button>
-                            </form>
+                            </div>                            
                         </div>
+                        <div class="card card-outline card-danger" id="informationDataCard">
+                            <div class="card-header" id="refreshInformationData">
+                                <h3 class="card-title">
+                                    Information Data <small>(selected)</small>
+                                </h3>
+                            </div>
+                            <div class="card-body" id="informationDataSelectedBody">
+                                <!-- Information data will be dynamically updated here -->
+                            </div>
+                            </div>
+                            <button type="button" class="btn btn-block btn-success mb-3" data-toggle="modal" data-target="#runSetConfigsModal">Run</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="runSetConfigsModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Run Set Configurations</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">×</span></button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <h5 style="color: #dc3546;">Device Groups</h5>
+                        <div id="selectedDeviceGroupsModal"></div>
+                        <hr>
+                        <h5 style="color: #dc3546;">Information Data</h5>
+                        <div id="informationDataModal"></div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <form id="runSetConfigsForm" action="/run_set_configs" method="POST">
+                            <input type="hidden" id="selectedDeviceGroupsFlask" name="selectedDeviceGroupsFlask">
+                            <button type="button" class="btn btn-success" data-dismiss="modal" id="runScriptBtn">Run Script</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     
         <!-- Footer -->
-        <footer class="main-footer">
+        <!-- <footer class="main-footer">
             <div class="float-right d-none d-sm-block">
                 <b>Version</b> 3.1.0
             </div>
             <strong>&copy; 2022 AdminLTE.io</strong> All rights reserved.
-        </footer>
+        </footer> -->
     </div>
     <!-- JavaScript at the bottom of the page for faster page loading -->
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        function updateConfigOptions() {
-            var updatedData = {};
-
-            document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
-                var group = checkbox.closest('.card').querySelector('.card-title').innerText.trim();
-                var id = checkbox.id;
-                var label = checkbox.nextElementSibling.innerText.trim();
-                var status = checkbox.disabled ? 'disabled' : (checkbox.checked ? 'checked' : '');
-
-                if (!updatedData[group]) {
-                    updatedData[group] = [];
-                }
-
-                updatedData[group].push({
-                    id: id,
-                    name: id,
-                    label: label,
-                    status: status
-                });
-            });
-
-            updatedData.method = 'set_configs';
-
-            fetch('/update_config_options', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(updatedData)
-            })
-            .then(response => response.json())
-            .then(data => updateSelectedOptions(data))
-            .catch(error => console.error('Error:', error));
-        }
-
-        function updateSelectedOptions(data) {
-            var selectedOptionsHTML = '';
-
-            // Loop through data to generate HTML for selected options
-            for (var group in data) {
-                if (data.hasOwnProperty(group)) {
-                    var options = data[group];
-                    var selectedOptions = options.filter(option => option.status === 'checked');
-                    if (selectedOptions.length > 0) {
-                        selectedOptionsHTML += '<dl class="row">';
-                        selectedOptionsHTML += '<dt class="col-sm-4">' + group + '</dt>';
-                        selectedOptionsHTML += '<dd class="col-sm-8">';
-                        selectedOptionsHTML += '<ul class="list-unstyled">';
-                        selectedOptions.forEach(option => {
-                            selectedOptionsHTML += '<li>&#8226; ' + option.label + '</li>';
-                        });
-                        selectedOptionsHTML += '</ul>';
-                        selectedOptionsHTML += '</dd>';
-                        selectedOptionsHTML += '</dl>';
-                    }
-                }
-            }
-
-            // Update selected options section in the DOM
-            var selectedOptionsContainer = document.getElementById('selectedOptions');
-            selectedOptionsContainer.innerHTML = selectedOptionsHTML;
-        }
-
-        document.addEventListener('change', function(event) {
-            var target = event.target;
-            if (target && target.type === 'checkbox') {
-                updateConfigOptions();
-            }
-        });
-
-        // Add event listener to the refresh button
-        document.getElementById('refreshInformationData').addEventListener('click', function() {
-            // Refresh the page when the button is clicked
-            location.reload();
-        });
 
         var debounceTimer;
         document.querySelectorAll('#rootDirectory').forEach(function(inputElement) {
@@ -265,49 +220,191 @@
             });
         });
 
-        document.querySelectorAll('#clientName').forEach(function(inputElement) {
-            inputElement.addEventListener('input', function(event) {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(function() {
-                    var clientName = document.getElementById('clientName').value;
+        // Function to save selected options to local storage
+        function saveDeviceGroupSelectedOptions(deviceGroupSelectedOptions) {
+            sessionStorage.setItem('deviceGroupSelectedOptions', JSON.stringify(deviceGroupSelectedOptions));
+        }
+    
+        // Function to load selected options from local storage
+        function loadDeviceGroupSelectedOptions() {
+            var deviceGroupSelectedOptions = JSON.parse(sessionStorage.getItem('deviceGroupSelectedOptions'));
+            if (deviceGroupSelectedOptions) {
+                $('#device_group_options').val(deviceGroupSelectedOptions).trigger('change');
+            }
+        }
+    
+        function updateInformationDataSelected() {
+    
+            const selectedOptions = {};
+            const checkboxes = document.querySelectorAll('.form-check-input');
+            checkboxes.forEach(checkbox => {
+                const groupName = checkbox.closest('.card').querySelector('.card-header .card-title').textContent.trim();
+                const optionId = checkbox.id;
+                const isChecked = checkbox.checked;
+                if (!selectedOptions[groupName]) {
+                    selectedOptions[groupName] = {};
+                }
+                selectedOptions[groupName][optionId] = isChecked;
+                sessionStorage.setItem('checkboxState', JSON.stringify(selectedOptions));
+            });
+    
+            const informationDataBody = document.getElementById('informationDataSelectedBody');
+            const informationDataModal = document.getElementById('informationDataModal');
+            informationDataBody.innerHTML = ''; // Clear previous content
+            informationDataModal.innerHTML = ''; // Clear previous content
+    
+            for (const groupName in selectedOptions) {
+                if (selectedOptions.hasOwnProperty(groupName)) {
+                    // Check if there are selected options for this group
+                    const groupHasSelectedOptions = Object.values(selectedOptions[groupName]).some(option => option);
+    
+                    if (groupHasSelectedOptions) {
+                        const groupHeader = document.createElement('h7');
+                        groupHeader.textContent = groupName;
+                        groupHeader.style.fontWeight = 'bold';
+                        informationDataBody.appendChild(groupHeader);
+                        informationDataModal.appendChild(groupHeader.cloneNode(true));
+    
+                        const ul = document.createElement('ul');
+                        ul.style.fontSize = '0.9em';
+    
+                        for (const optionId in selectedOptions[groupName]) {
+                            if (selectedOptions[groupName].hasOwnProperty(optionId) && selectedOptions[groupName][optionId]) {
+                                const optionLabel = document.querySelector(`label[for="${optionId}"]`).textContent.trim();
+                                const li = document.createElement('li');
+                                li.textContent = optionLabel;
+                                li.style.listStyleType = 'disc';
+                                ul.appendChild(li);
+                            }
+                        }
+                        informationDataBody.appendChild(ul);
+                        informationDataModal.appendChild(ul.cloneNode(true));
+                    }
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // Apply saved checkbox states from sessionStorage
+            const savedCheckboxState = JSON.parse(sessionStorage.getItem('checkboxState'));
+            if (savedCheckboxState) {
+                for (const groupName in savedCheckboxState) {
+                    if (savedCheckboxState.hasOwnProperty(groupName)) {
+                        const options = savedCheckboxState[groupName];
+                        for (const optionId in options) {
+                            if (options.hasOwnProperty(optionId)) {
+                                const isChecked = options[optionId];
+                                const checkbox = document.getElementById(optionId);
+                                if (checkbox) {
+                                    checkbox.checked = isChecked;
+                                    checkbox.addEventListener('change', updateInformationDataSelected);
+                                }
+                            }
+                        }
+                    }
+                }
+                updateInformationDataSelected();
+            }
+
+            // Apply saved state to each collapsible content within the accordion
+            const accordionItems = document.querySelectorAll('.collapse');
+            accordionItems.forEach(collapse => {
+                const target = collapse.id;
+                const accordionState = sessionStorage.getItem(target);
+                if (accordionState === 'expanded') {
+                    collapse.classList.add('show');
+                }
+            });
+
+            // Add event listeners to accordion headers to toggle their corresponding collapse element
+            const accordionHeaders = document.querySelectorAll('.clickable');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    const collapse = document.querySelector(target);
+                    const currentState = collapse.classList.contains('show') ? 'collapsed' : 'expanded';
+                    collapse.classList.toggle('show');
+                    sessionStorage.setItem(target, currentState);
+                    // Store the state of the header (expanded/collapsed)
+                    sessionStorage.setItem(target + '-header', currentState);
+                });
+
+                // Restore the state of the header (expanded/collapsed) when the page is refreshed
+                const target = header.getAttribute('data-target');
+                const headerState = sessionStorage.getItem(target + '-header');
+                if (headerState === 'expanded') {
+                    const collapse = document.querySelector(target);
+                    collapse.classList.add('show');
+                }
+            });
+
+        });
+    
+        $(document).ready(function() {
+
+            $('#device_group_options').select2();
+
+            loadDeviceGroupSelectedOptions();
+
+            $('#runScriptBtn').click(function() {
+                // Get the selected device groups
+                var selectedDeviceGroups = $('#device_group_options').val();
+                // Get the information data selected
+                var informationDataSelected = [];
+                $('.form-check-input:checked').each(function() {
+                    informationDataSelected.push($(this).attr('id'));
+                });
+                // Make sure some device groups and information data are selected
+                if (selectedDeviceGroups.length > 0 && informationDataSelected.length > 0) {
+                    // Convert the data to a JSON string
+                    var jsonData = JSON.stringify({
+                        'selectedDeviceGroups': selectedDeviceGroups,
+                        'informationDataSelected': informationDataSelected
+                    });
+                    // Send AJAX POST request
                     $.ajax({
-                        url: '/update_client_name',
+                        url: '/run_set_configs',
                         type: 'POST',
-                        data: {client_name: clientName},
+                        contentType: 'application/json',
+                        data: jsonData,
+                        success: function(response) {
+                            // Handle success response from Flask
+                            console.log(response);
+                        },
                         error: function(xhr, status, error) {
-                            console.error('Error:', error);
+                            // Handle error
+                            console.error(xhr.responseText);
                         }
                     });
-                }, 1000); // Adjust the delay (in milliseconds) as needed
+                } else {
+                    // Handle case where no device groups or information data are selected
+                    console.log('No device groups or information data selected.');
+                }
             });
         });
 
-        $(document).ready(function() {
-            // Intercept form submission event
-            $('#runSetConfigsForm').submit(function(event) {
-                // Prevent default form submission behavior
-                event.preventDefault();
-
-                // Serialize form data
-                var formData = $(this).serialize();
-
-                // Send AJAX request
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        console.log('AJAX request successful');
-                        // Handle success response if needed
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX request failed:', error);
-                        // Handle error if needed
-                    }
-                });
-            });
+        // Save selected options when the selection changes
+        $('#device_group_options').on('change', function() {
+            var deviceGroupSelectedOptions = $('#device_group_options').val();
+    
+            saveDeviceGroupSelectedOptions(deviceGroupSelectedOptions);
+    
+            const listElement = document.getElementById('selectedDeviceGroupsModal');
+            listElement.innerHTML = ''; // Clear previous content
+    
+            const ul = document.createElement('ul');
+            ul.style.fontSize = '0.9em';
+            deviceGroupSelectedOptions.forEach(option => {
+                const li = document.createElement('li');
+                li.textContent = option;
+                li.style.listStyleType = 'disc';
+                ul.appendChild(li);
+            })
+            listElement.appendChild(ul)
         });
+
     </script>
-    </script>
+
 </body>
 </html>

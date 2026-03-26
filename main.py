@@ -3,6 +3,7 @@ import pathlib
 import time
 import yaml
 from collections import defaultdict
+ from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify, Response
 from nornir.core.filter import F
 
@@ -11,8 +12,10 @@ from dep.panda.classes.colors import Colors
 from dep.panda.classes.netbox import Netbox
 
 
-ROOT_DIRECTORY = "C:/Users/jlcosta/OneDrive - A2itwb Tecnologia S.A/01. Clientes/ANA Aeroportos/04. Automation"
-#ROOT_DIRECTORY = f"{pathlib.Path(__file__).parent.resolve()}"
+load_dotenv()
+
+
+ROOT_DIRECTORY = os.getenv("root_directory")
 CONFIG_OPTIONS = {
     'set_configs': {
         'Authentication': [
@@ -57,7 +60,7 @@ def get_configs():
 def set_configs():
     template_context = {}
     template_context['root_directory'] = ROOT_DIRECTORY
-    return render_template('set_configs.html', config_options=CONFIG_OPTIONS['set_configs'], **template_context)
+    return render_template('set_configs.html', config_options=CONFIG_OPTIONS['set_configs'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **template_context)
 
 @app.route('/generate_configs')
 def generate_configs():
@@ -84,16 +87,16 @@ def update_root_directory():
     return ROOT_DIRECTORY
 
 
-def get_checked_options(method: str):
-    checked_options = []
-    for category, options in CONFIG_OPTIONS[method].items():
-        for option in options:
-            if option['status'] == 'checked' and method == 'get_configs':
-                checked_options.append(option['id'])
-            elif option['status'] == 'checked' and method == 'set_configs':
-                checked_options.append(option['id'])
+# def get_checked_options(method: str):
+#     checked_options = []
+#     for category, options in CONFIG_OPTIONS[method].items():
+#         for option in options:
+#             if option['status'] == 'checked' and method == 'get_configs':
+#                 checked_options.append(option['id'])
+#             elif option['status'] == 'checked' and method == 'set_configs':
+#                 checked_options.append(option['id'])
 
-    return checked_options
+#     return checked_options
 
 
 @app.route('/run_get_configs', methods=['POST'])
@@ -130,16 +133,18 @@ def run_get_configs():
 def run_set_configs():
     start_time = time.time()
 
-    config_blocks = get_checked_options(method='set_configs')
+    selected_data = request.get_json()
+    set_configs_info = selected_data['informationDataSelected']
 
-    # Create a new NETWORK_HANDLER object and initialize all data (command list)
-    NETWORK_HANDLER = NETWORK_HANDLER(ROOT_DIRECTORY)
-    NETWORK_HANDLER.get_devices_from_csv()
-    NETWORK_HANDLER.get_j2_template()
-    NETWORK_HANDLER.get_j2_data()
+    selected_groups = selected_data['selectedDeviceGroups']
+    nornir_group_filter = F(groups__contains=selected_groups[0])
+    for group in selected_groups[1:]:
+        nornir_group_filter |= F(groups__contains=group)
 
-    # Get device information for each information requested
-    NETWORK_HANDLER.set_concurrent_configs(config_blocks=config_blocks)
+    nornir_filtered = NETWORK_HANDLER.nornir.filter(nornir_group_filter)
+
+    NETWORK_HANDLER.nornir_generate_configs(nornir_filtered=nornir_filtered, set_configs_info=set_configs_info)
+    NETWORK_HANDLER.nornir_set_configs(nornir_filtered=nornir_filtered)
 
     # Generate script data, converting all class objects to nested dicts
     # script_data = NETWORK_HANDLER.generate_data_dict()

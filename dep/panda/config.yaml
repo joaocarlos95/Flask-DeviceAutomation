@@ -83,6 +83,13 @@ user_defined:
                 extreme_exos:
                     - show management
                     - show accounts
+        aaa_information:
+            group: Device
+            label: AAA
+            status: enabled
+            commands:
+                extreme_exos:
+                    - show tacacs
         device_power_information:
             group: Device
             label: Power Information

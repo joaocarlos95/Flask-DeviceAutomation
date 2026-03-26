@@ -22,6 +22,7 @@ from typing import Literal
 from .decorators import write_to_file
 from .device import Device
 from .colors import Colors
+from ..dep.j2_templates.classes.templater import Templater
 
 
 logging.basicConfig(
@@ -83,28 +84,28 @@ class NetworkHandler:
             inventory=inventory
         )
 
-    def get_j2_template(self):
-        '''
-        Define the directory of jinja2 templates and specify the base template (skeleton) to be loaded
-        The base_config.j2 template will then be extended by the child templates, specified by the 
-        config_blocks variable passed in the constructor
-        '''
+    # def get_j2_template(self):
+    #     '''
+    #     Define the directory of jinja2 templates and specify the base template (skeleton) to be loaded
+    #     The base_config.j2 template will then be extended by the child templates, specified by the 
+    #     config_blocks variable passed in the constructor
+    #     '''
 
-        # Load the base template and assign it to a variable for further usage
-        env = Environment(
-            loader=FileSystemLoader(f"{os.path.dirname(__file__)}/../jinja2_templates"), 
-            trim_blocks=True, 
-            lstrip_blocks=True)
-        self.j2_template = env.get_template('base_config.j2')
+    #     # Load the base template and assign it to a variable for further usage
+    #     env = Environment(
+    #         loader=FileSystemLoader(f"{os.path.dirname(__file__)}/../jinja2_templates"), 
+    #         trim_blocks=True, 
+    #         lstrip_blocks=True)
+    #     self.j2_template = env.get_template('base_config.j2')
 
-    def get_j2_data(self):
-        '''
-        Get the data to be used in the jinja2 template, from a YAML file
-        '''
+    # def get_j2_data(self):
+    #     '''
+    #     Get the data to be used in the jinja2 template, from a YAML file
+    #     '''
 
-        # Open the default config_data.yaml file and load the content to a variable
-        with open(f"{self.dir}/inputfiles/config_data.yaml") as file:
-            self.j2_data = yaml.safe_load(file)
+    #     # Open the default config_data.yaml file and load the content to a variable
+    #     with open(f"{self.dir}/inputfiles/config_data.yaml") as file:
+    #         self.j2_data = yaml.safe_load(file)
 
 
     # def nornir_get_devices(self):
@@ -176,50 +177,50 @@ class NetworkHandler:
             host_obj.username = username
             host_obj.password = password
 
-    def get_kdbx_database(self, filename):
-        '''
-        Get keepass database from .kdbx file. This database will be later iterated through to get the device credentials
-        '''
+    # def get_kdbx_database(self, filename):
+    #     '''
+    #     Get keepass database from .kdbx file. This database will be later iterated through to get the device credentials
+    #     '''
 
-        try:
-            kdbx_password = getpass(f"{Colors.OK_YELLOW}[>]{Colors.END} Please insert your Keepass password: ")
-            # Load .kdbx file, passing in the argument the filename and respective password
-            kdbx_database = PyKeePass(filename, password=kdbx_password)
-        except Exception as exception:
-            if 'No such file or directory:' in str(exception):
-                print(f"{Colors.NOK_RED}[!]{Colors.END} Error getting keepass database)")
-                raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Error getting keepass database)")
-            elif len(str(exception)) == 0:
-                print(f"{Colors.NOK_RED}[!]{Colors.END} Wrong keepass password")
-                raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Wrong keepass password")
-            else:
-                raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Error in {inspect.currentframe().f_code.co_name}", exception)
+    #     try:
+    #         kdbx_password = getpass(f"{Colors.OK_YELLOW}[>]{Colors.END} Please insert your Keepass password: ")
+    #         # Load .kdbx file, passing in the argument the filename and respective password
+    #         kdbx_database = PyKeePass(filename, password=kdbx_password)
+    #     except Exception as exception:
+    #         if 'No such file or directory:' in str(exception):
+    #             print(f"{Colors.NOK_RED}[!]{Colors.END} Error getting keepass database)")
+    #             raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Error getting keepass database)")
+    #         elif len(str(exception)) == 0:
+    #             print(f"{Colors.NOK_RED}[!]{Colors.END} Wrong keepass password")
+    #             raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Wrong keepass password")
+    #         else:
+    #             raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Error in {inspect.currentframe().f_code.co_name}", exception)
         
-        return kdbx_database
+    #     return kdbx_database
 
 
-    def get_kdbx_credentials(self, kdbx_database, ip_address):
-        '''
-        Get device credentials from keepass database, specifying the client name and device
-        IP address.
-        '''
+    # def get_kdbx_credentials(self, kdbx_database, ip_address):
+    #     '''
+    #     Get device credentials from keepass database, specifying the client name and device
+    #     IP address.
+    #     '''
     
-        # Find client group within keepass, using its name
-        group = kdbx_database.find_groups(name=self.name, first=True)
-        if not group:
-            print(f"{Colors.NOK_RED}[!]{Colors.END} Group {self.name} doesn't exist in keepass database")
-            raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Group {self.name} doesn't exist in keepass database")
+    #     # Find client group within keepass, using its name
+    #     group = kdbx_database.find_groups(name=self.name, first=True)
+    #     if not group:
+    #         print(f"{Colors.NOK_RED}[!]{Colors.END} Group {self.name} doesn't exist in keepass database")
+    #         raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Group {self.name} doesn't exist in keepass database")
 
-        # Find device credentials, using its IP address 
-        entry = kdbx_database.find_entries(group=group, url=ip_address, tags=['SSH', 'Telnet'], recursive=True, first=True)
-        if not entry:
-            # Find device credentials, using common entry (usually credentials for all devices)
-            entry = kdbx_database.find_entries(group=group, title='RADIUS', first=True)
-            if not entry:
-                print(f"{Colors.NOK_RED}[!]{Colors.END} Couldn't find credentials for device with IP: {ip_address}")
-                raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Couldn't find credentials for device with IP: {ip_address}")
+    #     # Find device credentials, using its IP address 
+    #     entry = kdbx_database.find_entries(group=group, url=ip_address, tags=['SSH', 'Telnet'], recursive=True, first=True)
+    #     if not entry:
+    #         # Find device credentials, using common entry (usually credentials for all devices)
+    #         entry = kdbx_database.find_entries(group=group, title='RADIUS', first=True)
+    #         if not entry:
+    #             print(f"{Colors.NOK_RED}[!]{Colors.END} Couldn't find credentials for device with IP: {ip_address}")
+    #             raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Couldn't find credentials for device with IP: {ip_address}")
 
-        return {'username': entry.username, 'password': entry.password, 'enable_secret': None}
+    #     return {'username': entry.username, 'password': entry.password, 'enable_secret': None}
 
 
     def get_commands(self):
@@ -303,16 +304,25 @@ class NetworkHandler:
             )
             self.get_config_results[config_info] = result
 
-    def nornir_set_configs(self, nornir_filtered, device_config_list: dict) -> None:
+    def nornir_set_configs(self, nornir_filtered, device_config_list: dict=None) -> None:
         """
         """
-           
-        def run_set_configs(task: Task, device_config_list: dict) -> Result:
+
+        def run_set_configs(task: Task, device_config_list: dict=None) -> Result:
             '''
             '''
 
             try:
+
+                if task.host.get('generated_config'):
+                    config = task.host.get('generated_config')
+                elif device_config_list.get(task.host.name):
+                    config = device_config_list[task.host.name]
+                else:
+                    print(f"{Colors.NOK_RED}[!]{Colors.END} No configuration found for {task.host.name}")
+                    raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} No configuration found for {task.host.name}")
                 
+                print(f"{Colors.OK_GREEN}[{task.host.hostname}]{Colors.END} Applying configuration to {task.host.name}")
                 # Temporary, since there is an issue with send_config for Enterasys
                 if task.host.platform == 'enterasys':
                     # Get device prompt in order to use it as expect_string when running a command
@@ -321,7 +331,7 @@ class NetworkHandler:
                     result = task.run(
                         name="set_configs",
                         task=netmiko_multiline,
-                        commands=device_config_list[task.host.hostname].split('\n'),
+                        commands=config.split('\n'),
                         expect_string=re.escape(prompt),
                         read_timeout=10,
                     )
@@ -337,7 +347,7 @@ class NetworkHandler:
                     result = task.run(
                         name="set_configs",
                         task=netmiko_send_config,
-                        config_commands=device_config_list[task.host.hostname].split('\n')
+                        config_commands=config.split('\n')
                     )
                     task.run(
                         name="save_config",
@@ -347,20 +357,15 @@ class NetworkHandler:
             except Exception as exception:
                 print(f"{Colors.NOK_RED}[{task.host.hostname}]{Colors.END} {str(exception)}")
 
-            return
+        #     task.run(
+        #         name="save_to_file",
+        #         task=write_file,
+        #         filename=f"{path}/{filename}",
+        #         content=result.result
+        #     )
 
-
-
-            task.run(
-                name="save_to_file",
-                task=write_file,
-                filename=f"{path}/{filename}",
-                content=result.result
-            )
-
-            return Result(host=task.host)
+        #     return Result(host=task.host)
         
-        self.get_config_results = {}
         result = nornir_filtered.run(
             name="set_configs",
             task=run_set_configs,
@@ -369,6 +374,53 @@ class NetworkHandler:
         return
 
 
+    def nornir_generate_configs(self, nornir_filtered, set_configs_info: dict) -> dict:
+
+        def deep_merge(data_1, data_2):
+
+            for key, value in data_2.items():
+                if isinstance(value, dict) and key in data_1 and isinstance(data_1[key], dict):
+                    deep_merge(data_1[key], value)  # Recursively merge nested dictionaries
+                else:
+                    data_1[key] = value  # Override or add new key-value pairs
+            return data_1
+
+        def run_generate_configs(task: Task, set_configs_info: dict) -> Result:
+
+            templater = Templater(vendor_os=task.host.platform, config_blocks=set_configs_info)
+            j2_template = templater.get_j2_template()
+
+            if os.path.exists(f"{self.dir}/inputfiles/configs/{task.host.name}.yaml"):
+                print(f"{Colors.OK_GREEN}[{task.host.hostname}]{Colors.END} Generating configuration for {task.host.name}")
+                defaults_data = templater.get_j2_data_from_file(f"{self.dir}/inputfiles/configs/defaults.yaml")
+                if not defaults_data: defaults_data = {}
+                device_data = templater.get_j2_data_from_file(f"{self.dir}/inputfiles/configs/{task.host.name}.yaml")
+                if not device_data: device_data = {}
+                data = {key: value for d in deep_merge(defaults_data, device_data).values() for key, value in d.items()}
+                task.host['generated_config'] = templater.render_config(j2_template, data, hostname=task.host.name)
+
+                print(f"{Colors.OK_GREEN}[{task.host.hostname}]{Colors.END} Saving configuration from {task.host.name} to file")
+                path = f"{self.dir}/outputfiles/GenerateConfig/{datetime.now().strftime('%Y%m%d')}"
+                filename = f"[{datetime.now().strftime('%Y%m%d%H%M%S')}] {task.host.name} ({task.host.hostname}) - jinja2_config.txt"
+                os.makedirs(f"{path}", exist_ok=True)
+
+                task.run(
+                    name="save_to_file",
+                    task=write_file,
+                    filename=f"{path}/{filename}",
+                    content=task.host['generated_config']
+                )
+
+            else:
+                print(f"{Colors.NOK_RED}[!]{Colors.END} Data file for {task.host.name} doesn't exist in root directory")
+
+            return Result(host=task.host, result=task.host['generated_config'])
+
+        nornir_filtered.run(
+            name="generate_configs",
+            task=run_generate_configs,
+            set_configs_info=set_configs_info
+        )
             
     @write_to_file
     def nornir_generate_data_dict(self) -> dict:
