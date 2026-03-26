@@ -3,7 +3,7 @@ import pathlib
 import time
 import yaml
 from collections import defaultdict
- from dotenv import load_dotenv
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify, Response
 from nornir.core.filter import F
 
