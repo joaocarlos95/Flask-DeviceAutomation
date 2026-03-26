@@ -1,0 +1,14 @@
+Value LOCAL_PORT (\S+)
+Value REMOTE_PORT (.+)
+Value REMOTE_HOST (.+)
+Value REMOTE_IP_ADDRESS (\d+\.\d+\.\d+\.\d+)
+ 
+Start
+  ^\s+
+  ^-+ -> Neighbor
+
+Neighbor
+  ^LLDP Port ${LOCAL_PORT}
+  ^\s+Port ID\s+: "${REMOTE_PORT}"
+  ^\s+\- System Name: "${REMOTE_HOST}"
+  ^\s+Management Address\s+: ${REMOTE_IP_ADDRESS} -> Record Start

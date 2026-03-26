@@ -1,0 +1,29 @@
+---
+parsed_sample:
+  - admin: "up"
+    interface: "vlan 1"
+    ipv6_address:
+      - "fe80::1a:3e00:6ed1:1585/64"
+      - "2001::1/64"
+    protocol: "up"
+  - admin: "up"
+    interface: "vlan 390"
+    ipv6_address:
+      - "unassigned"
+    protocol: "up"
+  - admin: "up"
+    interface: "vlan 991"
+    ipv6_address:
+      - "fe80::1a:3e00:6ed1:1585/64"
+      - "2a01:9e73:433f:109::6/64"
+    protocol: "up"
+  - admin: "up"
+    interface: "vlan 992"
+    ipv6_address:
+      - "unassigned"
+    protocol: "up"
+  - admin: "up"
+    interface: "loopback"
+    ipv6_address:
+      - "fe80::1a:3e00:6ed1:1585/64"
+    protocol: "up"

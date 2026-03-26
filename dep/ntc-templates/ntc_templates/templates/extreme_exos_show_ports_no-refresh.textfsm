@@ -1,0 +1,15 @@
+Value PORT_ID (\d+|\d+:\d+)
+Value PORT_DESCRIPTION (\S+|\s{26})
+Value VLAN (\( \d+ \)|\s{20}|\S+)
+Value PORT_STATE (D|E|F|L)
+Value LINK_STATE (A|R|NP|L|D|d|B)
+Value SPEED (10|100|1000|2.5G|10G|\s+)
+Value DUPLEX (FULL|HALF|\s+)
+
+Start
+  ^Port\s+Display\s+VLAN\s+Name\s+Port\s+Link\s+Speed\s+Duplex
+  ^#\s+String\s+(or\s+#\s+VLANs)\s+State\s+State\s+Actual\s+Actual
+  ^=+ -> Port
+
+Port
+  ^(${PORT_ID})\s+(${PORT_DESCRIPTION})?\s+(${VLAN})\s+(${PORT_STATE})\s+(${LINK_STATE})\s+(${SPEED})?\s+(${DUPLEX})? -> Record

@@ -1,0 +1,15 @@
+Value FILTER_PROFILE (.+)
+Value SUBTREE (.+)
+Value MASK (.+)
+Value TYPE (.+)
+Value STORAGE_TYPE (.+)
+Value ROW_STATUS (.+)
+
+Start
+  ^\s+
+  ^Profile Name\s+: ${FILTER_PROFILE}
+  ^Subtree\s+: ${SUBTREE}
+  ^Mask\s+: ${MASK}
+  ^Type\s+: ${TYPE}
+  ^Storage Type\s+: ${STORAGE_TYPE}
+  ^Row Status\s+: ${ROW_STATUS} -> Record

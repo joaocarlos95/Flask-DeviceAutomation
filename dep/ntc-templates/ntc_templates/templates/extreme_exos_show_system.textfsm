@@ -1,0 +1,32 @@
+Value LOCATION (.+)
+Value MAC_ADDR (\S+:\S+:\S+:\S+:\S+:\S+)
+Value CURRENT_TIME (.+)
+Value LAST_BOOT (.+)
+Value UPTIME (.+)
+Value VERSION (\S+)
+Value List SERIAL_NUMBER (\S+\-\S+)
+Value List HARDWARE (\S+)
+
+Start
+  ^SysLocation:\s+${LOCATION}
+  ^System MAC:\s+${MAC_ADDR}
+  ^Current Time:\s+${CURRENT_TIME}
+  ^Boot Time:\s+${LAST_BOOT}
+  ^System UpTime:\s+${UPTIME}
+  ^show version -> Serial_Number_Version
+  ^show temperature -> Hardware
+  ^show power -> Record
+  
+Serial_Number_Version
+  ^Slot-\d+\s+\:\s+\S+\s+${SERIAL_NUMBER}\s+Rev
+  ^Switch\s+\:\s+\S+\s+${SERIAL_NUMBER}\s+Rev
+  ^\s+
+  ^Image\s+:\s+Extreme\s+Networks\s+Switch\s+Engine\s+version\s+${VERSION}\s+ -> Start
+  ^Image\s+:\s+ExtremeXOS\s+version\s+\S+\s+${VERSION} -> Start
+
+Hardware
+  ^Field Replaceable Units
+  ^-+
+  ^Slot-\d+\s+\:\s+${HARDWARE}\s+\d+
+  ^Switch\s+:\s+${HARDWARE}\s+\d+
+  ^\s+ -> Start

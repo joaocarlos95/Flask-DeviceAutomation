@@ -1,0 +1,7 @@
+Value SSH_STATUS (Disabled|Enabled)
+
+Start
+  ^\s+SSH\s+Server\s+status:\s+${SSH_STATUS}
+  ^\s+SSH\s+Server\s+state:\s+${SSH_STATUS}
+  ^SSH Server:
+  ^\s+State:\s++${SSH_STATUS}

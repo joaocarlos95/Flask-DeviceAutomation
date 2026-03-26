@@ -1,0 +1,11 @@
+Value TARGET_PARAMETERS_PROFILE (.+)
+Value FILTER_PROFILE (.+)
+Value STORAGE_TYPE (.+)
+Value ROW_STATUS (.+)
+
+Start
+  ^\s+
+  ^Filter Profile Params Name\s+: ${TARGET_PARAMETERS_PROFILE}
+  ^Name\s+: ${FILTER_PROFILE}
+  ^Storage Type\s+: ${STORAGE_TYPE}
+  ^Row Status\s+: ${ROW_STATUS} -> Record

@@ -1,0 +1,15 @@
+Value PORT_ID (\w+.\d+.\d+)
+Value PORT_DESCRIPTION (.+)
+Value PORT_STATE (Up|Down)
+Value LINK_STATE (Up|Down)
+Value SPEED (10.0M|100.0M|1.0G|10.0G|N/A|\s+)
+Value DUPLEX (full|half|N/A|\s+)
+Value TYPE (.+)
+
+Start
+  ^\s+Alias\s+Oper\s+Admin\s+Speed
+  ^Port\s+(truncated)\s+Status\s+Status\s+(bps)\s+Duplex\s+Type
+  ^-+ -> Port
+
+Port
+  ^(${PORT_ID})\s+(${PORT_DESCRIPTION})?\s+(${LINK_STATE})\s+(${PORT_STATE})\s+(${SPEED})\s+(${DUPLEX})?\s+(${TYPE})? -> Record

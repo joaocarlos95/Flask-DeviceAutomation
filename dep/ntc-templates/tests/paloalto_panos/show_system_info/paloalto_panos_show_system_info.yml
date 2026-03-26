@@ -1,0 +1,18 @@
+---
+parsed_sample:
+  - family: "vm"
+    gateway: "10.0.0.2"
+    hostname: "pa1"
+    ip_address: "10.0.0.90"
+    mac_address: "00:0c:29:6d:c6:7e"
+    model: "PA-VM"
+    multi_vsys: "off"
+    netmask: "255.255.255.0"
+    operational_mode: "normal"
+    os: "7.0.1"
+    platform_family: "vm"
+    serial: "unknown"
+    uptime: "2 days, 2:38:49"
+    vm_license: "none"
+    vm_mode: "VMWare ESXi"
+    vpn_disable_mode: "off"

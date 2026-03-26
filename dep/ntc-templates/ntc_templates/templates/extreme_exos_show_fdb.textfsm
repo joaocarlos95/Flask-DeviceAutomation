@@ -1,0 +1,10 @@
+Value MAC_ADDRESS (\S+:\S+:\S+:\S+:\S+:\S+)
+Value VLAN_NAME (.+)
+Value VLAN_ID (\d+)
+Value AGE (\d+)
+Value PORT (\d+:\d+|\d+)
+
+Start
+  ^MAC\s+VLAN Name( Tag)\s+Age\s+Flags\s+Port / Virtual Port List
+  ^-+
+  ^${MAC_ADDRESS}\s+${VLAN_NAME}\(${VLAN_ID}\)\s+${AGE}\s+d m\s+${PORT} -> Record
