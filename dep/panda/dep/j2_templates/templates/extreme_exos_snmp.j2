@@ -25,7 +25,7 @@ enable snmp access snmpv3
 configure snmpv3 add user "{{ user.username }}" authentication {{ user.auth_algorithm }} {{ user.auth_password }} privacy {{ user.priv_algorithm }} {{ user.priv_password }}
 configure snmpv3 add group "{{ group.name }}" user "{{ user.username }}" sec-model usm
             {% endfor %}
-configure snmpv3 add access "{{ group.name }}" sec-model usm sec-level priv notify-view defaultAdminView read-view defaultAdminView
+configure snmpv3 add access "{{ group.name }}" sec-model usm sec-level priv notify-view defaultAdminView read-view defaultAdminView write-view defaultAdminView
         {% endfor %}
     {% endif %}
 
@@ -45,7 +45,7 @@ configure snmpv3 add filter "{{ traps.server_name }}_Filter" subtree {{ oid }} t
 disable snmp access snmpv3
 {% endif %}
 
-{# Configure SNMPv2c #}
+{# Configure SNMPv2c
 {% if snmpv2c is defined %}
 enable snmp access
 enable snmp access snmp-v1v2c
@@ -60,4 +60,4 @@ configure snmpv3 add access "{{ group.name }}" sec-model snmpv2c sec-level noaut
     {% endif %}
 {% else %}
 disable snmp access snmp-v1v2c
-{% endif %}
+{% endif %} #}
