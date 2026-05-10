@@ -1,0 +1,305 @@
+.workflow-page {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.workflow-main,
+.workflow-scroll {
+    min-height: 0;
+}
+
+.workflow-main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.workflow-scroll {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 14px;
+    overflow: auto;
+    padding-right: 2px;
+    scrollbar-width: none;
+}
+
+.workflow-scroll::-webkit-scrollbar,
+.review-body::-webkit-scrollbar,
+.panel-body::-webkit-scrollbar {
+    display: none;
+}
+
+.workflow-card {
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: visible;
+}
+
+.workflow-card:not(.panel-collapsed) {
+    min-height: 360px;
+}
+
+.workflow-card:not(.panel-collapsed):last-child {
+    flex: 1 0 auto;
+}
+
+.workflow-card .panel-header {
+    background: var(--surface);
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    min-height: 72px;
+    overflow: hidden;
+    padding: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.workflow-card .panel-header::before {
+    background: var(--bg);
+    bottom: 100%;
+    content: "";
+    height: 14px;
+    left: -1px;
+    pointer-events: none;
+    position: absolute;
+    right: -1px;
+    z-index: -1;
+}
+
+.workflow-card .panel-header::after {
+    display: none;
+}
+
+.workflow-card .panel-body {
+    padding: 12px;
+}
+
+.workflow-card .toolbar {
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.workflow-card .toolbar-actions {
+    gap: 6px;
+}
+
+.workflow-card .secondary-button {
+    min-height: 34px;
+    padding: 0 10px;
+}
+
+.workflow-card .search-box .form-control {
+    height: 38px;
+}
+
+.workflow-card .choice-section {
+    margin-bottom: 8px;
+}
+
+.workflow-card.panel-collapsed {
+    flex: 0 0 auto;
+    min-height: 0;
+}
+
+.workflow-card.panel-collapsed .panel-header {
+    border-bottom: 0;
+    border-radius: var(--radius);
+    position: relative;
+    top: auto;
+}
+
+.workflow-card .panel-body {
+    border: 0;
+    border-radius: 0;
+    max-height: none;
+    overflow: visible;
+    scrollbar-width: none;
+}
+
+.workflow-card .choice-section:last-child {
+    margin-bottom: 0;
+}
+
+.review-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.review-header {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.review-metrics {
+    display: grid;
+    gap: 10px;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.review-metrics div {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 12px;
+}
+
+.review-metrics strong {
+    color: var(--ink);
+    display: block;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.review-metrics span {
+    color: var(--muted);
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    margin-top: 6px;
+}
+
+.review-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 16px;
+}
+
+.review-body:empty::before {
+    color: var(--muted);
+    content: "Nothing selected yet.";
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.review-footer {
+    background: var(--surface-soft);
+    border-top: 1px solid var(--border);
+    flex: 0 0 auto;
+    padding: 14px;
+}
+
+.run-button {
+    width: 100%;
+}
+
+.review-section {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+}
+
+.review-section:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.review-section + .review-section {
+    margin-top: 14px;
+}
+
+.review-section-title {
+    align-items: center;
+    color: #334155;
+    display: flex;
+    font-size: 13px;
+    font-weight: 850;
+    gap: 8px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.review-block {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 12px;
+}
+
+.review-block + .review-block {
+    margin-top: 10px;
+}
+
+.review-block-header {
+    align-items: center;
+    display: flex;
+    font-size: 12px;
+    font-weight: 850;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.modal-metrics {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 16px;
+}
+
+.modal-metrics div {
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 14px;
+}
+
+.modal-metrics strong {
+    display: block;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.modal-metrics span {
+    color: var(--muted);
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    margin-top: 6px;
+}
+
+.run-modal .modal-body {
+    max-height: 65vh;
+    overflow: auto;
+    scrollbar-width: none;
+}
+
+.run-modal .modal-body::-webkit-scrollbar {
+    display: none;
+}
+
+.choice-card.hidden,
+.choice-section.hidden {
+    display: none;
+}
+
+@media (max-width: 1200px) {
+    .workflow-page {
+        grid-template-columns: minmax(0, 1fr) 340px;
+    }
+}
+
+@media (max-width: 900px) {
+    .workflow-page {
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+    }
+
+    .workflow-scroll,
+    .review-body {
+        overflow: visible;
+    }
+}

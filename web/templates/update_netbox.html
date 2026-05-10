@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "macros/page.html" as page %}
+
+{% set active_page = "update_netbox" %}
+
+{% block title %}Update NetBox | PANDA{% endblock %}
+
+{% block content %}
+<div class="page">
+    {{ page.header("PANDA Collection", "Update NetBox", "Prepare inventory synchronization workflows from collected device data.") }}
+
+    <section class="content-grid two-columns">
+        {% call page.card("Collect First", "Gather fresh data before updating inventory records.", "fa-download", "", "home-panel") %}
+            <a class="panel-link primary-panel-link" href="/get_configs">Open workflow</a>
+        {% endcall %}
+        {% call page.card("Dashboard", "Return to the main application dashboard.", "fa-house", "", "home-panel") %}
+            <a class="panel-link" href="/">Open dashboard</a>
+        {% endcall %}
+    </section>
+
+    <section class="meta-card">
+        <span>NetBox endpoint</span>
+        <strong>{{ netbox_url or "Not configured" }}</strong>
+    </section>
+</div>
+{% endblock %}

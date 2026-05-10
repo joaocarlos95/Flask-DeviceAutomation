@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "macros/page.html" as page %}
+
+{% set active_page = "home" %}
+
+{% block title %}PANDA | Network Automation{% endblock %}
+
+{% block content %}
+<div class="page">
+    {{ page.header("PANDA Collection", "Python Automation for Network Device Access", "Operate network inventory workflows from one focused dashboard.") }}
+
+    <section class="content-grid two-columns">
+        {% call page.card("Get Configurations", "Collect selected information from groups or individual devices.", "fa-download", "", "home-panel") %}
+            <a class="panel-link primary-panel-link" href="/get_configs">Open workflow</a>
+        {% endcall %}
+        {% call page.card("Update NetBox", "Prepare inventory updates and synchronization workflows.", "fa-database", "", "home-panel") %}
+            <a class="panel-link" href="/update_netbox">Open workflow</a>
+        {% endcall %}
+    </section>
+
+    <section class="meta-card">
+        <span>Inventory folder</span>
+        <strong>{{ inventory_directory or "Not configured" }}</strong>
+    </section>
+</div>
+{% endblock %}

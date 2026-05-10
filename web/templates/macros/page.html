@@ -1,0 +1,35 @@
+{% macro header(kicker, title, subtitle) %}
+<header class="page-header">
+    <span class="page-kicker">{{ kicker }}</span>
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+</header>
+{% endmacro %}
+
+{% macro card(title, subtitle="", icon="fa-circle", badge="", class_name="") %}
+<section class="panel {{ class_name }}">
+    <header class="panel-header" data-toggle-panel>
+        <div class="panel-title-group">
+            <span class="icon-tile"><i class="fas {{ icon }}" aria-hidden="true"></i></span>
+            <span>
+                <strong>{{ title }}</strong>
+                {% if subtitle %}<small>{{ subtitle }}</small>{% endif %}
+            </span>
+        </div>
+        {% if badge %}<span class="tag">{{ badge }}</span>{% endif %}
+    </header>
+    <div class="panel-body">
+        {{ caller() }}
+    </div>
+</section>
+{% endmacro %}
+
+{% macro action_card(href, title, text, icon, is_primary=False) %}
+<a class="action-card{% if is_primary %} action-card-primary{% endif %}" href="{{ href }}">
+    <span class="icon-tile"><i class="fas {{ icon }}" aria-hidden="true"></i></span>
+    <span>
+        <strong>{{ title }}</strong>
+        <small>{{ text }}</small>
+    </span>
+</a>
+{% endmacro %}
