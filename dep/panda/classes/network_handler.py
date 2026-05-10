@@ -16,7 +16,7 @@ from nornir_netmiko import netmiko_send_command, netmiko_send_config, netmiko_mu
 from nornir_salt.plugins.functions import ResultSerializer
 from nornir_utils.plugins.tasks.files import write_file
 from ntc_templates.parse import parse_output
-from OuiLookup import OuiLookup
+#from OuiLookup import OuiLookup
 from typing import Literal
 
 from .decorators import write_to_file

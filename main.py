@@ -15,7 +15,27 @@ from dep.panda.classes.netbox import Netbox
 load_dotenv()
 
 
-ROOT_DIRECTORY = os.getenv("root_directory")
+PROJECT_ROOT = pathlib.Path(__file__).resolve().parent
+DEFAULT_INVENTORY_DIRECTORY = PROJECT_ROOT / "inputfiles" / "inventory"
+
+
+def normalize_inventory_directory(path_value: str | None = None) -> str:
+    inventory_path = pathlib.Path(path_value).expanduser() if path_value else DEFAULT_INVENTORY_DIRECTORY
+
+    if (inventory_path / "inputfiles" / "inventory").is_dir():
+        inventory_path = inventory_path / "inputfiles" / "inventory"
+
+    return str(inventory_path)
+
+
+ROOT_DIRECTORY = normalize_inventory_directory(
+    os.getenv("inventory_directory") or os.getenv("INVENTORY_DIRECTORY") or os.getenv("root_directory")
+)
+NETBOX_URL = os.getenv('netbox_url') or os.getenv('NETBOX_URL') or ''
+NETBOX_TOKEN = os.getenv('netbox_token') or os.getenv('NETBOX_TOKEN') or ''
+TARGET_SOURCE_INVENTORY = "inventory"
+TARGET_SOURCE_NETBOX = "netbox"
+VALID_TARGET_SOURCES = {TARGET_SOURCE_INVENTORY, TARGET_SOURCE_NETBOX}
 CONFIG_OPTIONS = {
     'set_configs': {
         'Authentication': [
@@ -42,37 +62,100 @@ CONFIG_OPTIONS = {
 }
 
 
-app = Flask(__name__, template_folder='web/templates', static_folder='dep/')
+app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
+
+
+def get_template_context() -> dict:
+    return {
+        'inventory_directory': ROOT_DIRECTORY,
+        'root_directory': ROOT_DIRECTORY,
+        'netbox_url': NETBOX_URL,
+    }
+
+
+def normalize_target_source(source: str | None) -> str:
+    if source in VALID_TARGET_SOURCES:
+        return source
+    return TARGET_SOURCE_INVENTORY
+
 
 @app.route('/')
 def index():
-    template_context = {}
-    template_context['root_directory'] = ROOT_DIRECTORY
-    return render_template('index.html', **template_context)
+    return render_template('index.html', **get_template_context())
 
 @app.route('/get_configs')
 def get_configs():
-    template_context = {}
-    template_context['root_directory'] = ROOT_DIRECTORY
-    return render_template('get_configs.html', config_options=CONFIG_OPTIONS['get_configs'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **template_context)
+    target_source = normalize_target_source(request.args.get('target_source'))
+    target_options = get_target_options(target_source)
+
+    return render_template(
+        'get_configs.html',
+        config_options=CONFIG_OPTIONS['get_configs'],
+        device_groups=target_options['device_groups'],
+        inventory_hosts=target_options['inventory_hosts'],
+        group_devices=target_options['group_devices'],
+        target_source=target_options['source'],
+        target_source_error=target_options.get('error', ''),
+        **get_template_context()
+    )
 
 @app.route('/set_configs')
 def set_configs():
-    template_context = {}
-    template_context['root_directory'] = ROOT_DIRECTORY
-    return render_template('set_configs.html', config_options=CONFIG_OPTIONS['set_configs'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **template_context)
+    return render_template('set_configs.html', config_options=CONFIG_OPTIONS['set_configs'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **get_template_context())
 
 @app.route('/generate_configs')
 def generate_configs():
-    template_context = {}
-    template_context['root_directory'] = ROOT_DIRECTORY
-    return render_template('generate_configs.html', config_options=CONFIG_OPTIONS['set_configs'], **template_context)
+    return render_template('generate_configs.html', config_options=CONFIG_OPTIONS['set_configs'], **get_template_context())
 
 @app.route('/update_netbox')
 def update_netbox():
-    template_context = {}
-    template_context['root_directory'] = ROOT_DIRECTORY
-    return render_template('update_netbox.html', config_options=CONFIG_OPTIONS['upd_netbox'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **template_context)
+    return render_template('update_netbox.html', config_options=CONFIG_OPTIONS['upd_netbox'], device_groups=NETWORK_HANDLER.nornir.inventory.groups, **get_template_context())
+
+
+@app.route('/target_options')
+def target_options():
+    target_source = normalize_target_source(request.args.get('source'))
+    options = get_target_options(target_source)
+
+    if options.get('error'):
+        return jsonify(options), 400
+
+    return jsonify(options)
+
+
+@app.route('/browse_folders')
+def browse_folders():
+    requested_path = request.args.get('path') or ROOT_DIRECTORY
+    folder_path = pathlib.Path(requested_path).expanduser()
+
+    try:
+        folder_path = folder_path.resolve()
+        folders = [
+            {
+                'name': child.name,
+                'path': str(child),
+                'hasInventoryFiles': all(
+                    (child / filename).exists()
+                    for filename in ["defaults.yaml", "groups.yaml", "hosts.yaml"]
+                ),
+            }
+            for child in folder_path.iterdir()
+            if child.is_dir() and not child.name.startswith('.')
+        ]
+    except (OSError, RuntimeError):
+        return jsonify(error='Could not open that folder.'), 400
+
+    folders.sort(key=lambda item: item['name'].lower())
+
+    return jsonify({
+        'currentPath': str(folder_path),
+        'parentPath': str(folder_path.parent) if folder_path.parent != folder_path else '',
+        'hasInventoryFiles': all(
+            (folder_path / filename).exists()
+            for filename in ["defaults.yaml", "groups.yaml", "hosts.yaml"]
+        ),
+        'folders': folders,
+    })
 
 @app.route('/update_device_group_options', methods=['POST'])
 def update_device_group_options():
@@ -83,8 +166,183 @@ def update_device_group_options():
 @app.route('/update_root_directory', methods=['POST'])
 def update_root_directory():
     global ROOT_DIRECTORY
-    ROOT_DIRECTORY = request.form.get('root_directory')
+    ROOT_DIRECTORY = normalize_inventory_directory(request.form.get('root_directory'))
     return ROOT_DIRECTORY
+
+
+@app.route('/target_settings', methods=['POST'])
+def target_settings():
+    global ROOT_DIRECTORY, NETBOX_URL, NETBOX_TOKEN
+
+    settings = request.get_json() or {}
+    root_directory = settings.get('rootDirectory')
+    netbox_url = settings.get('netboxUrl')
+    netbox_token = settings.get('netboxToken')
+
+    if root_directory is not None and root_directory.strip():
+        ROOT_DIRECTORY = normalize_inventory_directory(root_directory.strip())
+        init_network_handler()
+
+    if netbox_url is not None:
+        NETBOX_URL = netbox_url.strip()
+
+    if netbox_token:
+        NETBOX_TOKEN = netbox_token.strip()
+
+    return jsonify(success=True)
+
+
+def get_target_options(source: str) -> dict:
+    if source == TARGET_SOURCE_NETBOX:
+        return get_netbox_targets_for_template()
+
+    inventory_hosts, group_devices = get_inventory_hosts_for_template()
+    device_groups = {group_name: {} for group_name in sorted(group_devices.keys())}
+
+    if not device_groups:
+        device_groups = {group_name: {} for group_name in NETWORK_HANDLER.nornir.inventory.groups.keys()}
+
+    return {
+        'source': TARGET_SOURCE_INVENTORY,
+        'device_groups': device_groups,
+        'inventory_hosts': inventory_hosts,
+        'group_devices': group_devices,
+    }
+
+
+def get_inventory_hosts_for_template() -> tuple[list[dict], dict[str, list[str]]]:
+    hosts_file = f"{ROOT_DIRECTORY}/hosts.yaml"
+    inventory_hosts = []
+    group_devices = defaultdict(list)
+    network_handler = globals().get('NETWORK_HANDLER')
+
+    if network_handler and network_handler.nornir.inventory.hosts:
+        for host_name, host in network_handler.nornir.inventory.hosts.items():
+            host_groups = [group.name for group in host.groups]
+
+            inventory_hosts.append({
+                'name': host_name,
+                'hostname': host.hostname or '',
+                'groups': host_groups,
+            })
+
+            for group_name in host_groups:
+                group_devices[group_name].append(host_name)
+
+        return sorted_hosts(inventory_hosts), sort_group_devices(group_devices)
+
+    if not os.path.exists(hosts_file):
+        return inventory_hosts, {}
+
+    with open(hosts_file, 'r') as hosts_data:
+        hosts = yaml.safe_load(hosts_data) or {}
+
+    for host_name, host_data in hosts.items():
+        host_data = host_data or {}
+        host_groups = host_data.get('groups') or []
+
+        inventory_hosts.append({
+            'name': host_name,
+            'hostname': host_data.get('hostname', ''),
+            'groups': host_groups,
+        })
+
+        for group_name in host_groups:
+            group_devices[group_name].append(host_name)
+
+    return sorted_hosts(inventory_hosts), sort_group_devices(group_devices)
+
+
+def get_netbox_targets_for_template() -> dict:
+    if not NETBOX_URL or not NETBOX_TOKEN:
+        return {
+            'source': TARGET_SOURCE_NETBOX,
+            'device_groups': {},
+            'inventory_hosts': [],
+            'group_devices': {},
+            'error': 'NetBox URL/token are not configured.',
+        }
+
+    netbox = Netbox(NETBOX_URL.rstrip('/'), NETBOX_TOKEN)
+
+    try:
+        response = netbox.get_request('/dcim/devices/', params={'limit': 0})
+    except Exception as exception:
+        return {
+            'source': TARGET_SOURCE_NETBOX,
+            'device_groups': {},
+            'inventory_hosts': [],
+            'group_devices': {},
+            'error': f'Could not load NetBox devices: {exception}',
+        }
+
+    if not response:
+        return {
+            'source': TARGET_SOURCE_NETBOX,
+            'device_groups': {},
+            'inventory_hosts': [],
+            'group_devices': {},
+            'error': 'NetBox did not return device data.',
+        }
+
+    inventory_hosts = []
+    group_devices = defaultdict(list)
+
+    for device in response.get('results', []):
+        device_name = device.get('name') or device.get('display') or ''
+
+        if not device_name:
+            continue
+
+        site = device.get('site') or {}
+        role = device.get('role') or {}
+        platform = device.get('platform') or {}
+        primary_ip = device.get('primary_ip4') or device.get('primary_ip') or {}
+        host_groups = []
+
+        for group_name in [
+            site.get('name'),
+            role.get('name'),
+            platform.get('name'),
+        ]:
+            if group_name and group_name not in host_groups:
+                host_groups.append(group_name)
+
+        if not host_groups:
+            host_groups.append('NetBox devices')
+
+        inventory_hosts.append({
+            'name': device_name,
+            'hostname': normalize_netbox_ip(primary_ip.get('address', '')),
+            'groups': host_groups,
+        })
+
+        for group_name in host_groups:
+            group_devices[group_name].append(device_name)
+
+    group_devices = sort_group_devices(group_devices)
+
+    return {
+        'source': TARGET_SOURCE_NETBOX,
+        'device_groups': {group_name: {} for group_name in group_devices.keys()},
+        'inventory_hosts': sorted_hosts(inventory_hosts),
+        'group_devices': group_devices,
+    }
+
+
+def normalize_netbox_ip(address: str) -> str:
+    return address.split('/')[0] if address else ''
+
+
+def sorted_hosts(hosts: list[dict]) -> list[dict]:
+    return sorted(hosts, key=lambda host: host['name'])
+
+
+def sort_group_devices(group_devices: defaultdict | dict) -> dict[str, list[str]]:
+    return {
+        group_name: sorted(devices)
+        for group_name, devices in sorted(group_devices.items())
+    }
 
 
 # def get_checked_options(method: str):
@@ -103,15 +361,20 @@ def update_root_directory():
 def run_get_configs():
     start_time = time.time()
 
-    selected_data = request.get_json()
-    get_configs_info = selected_data['informationDataSelected']
+    selected_data = request.get_json() or {}
+    get_configs_info = selected_data.get('informationDataSelected', [])
+    nornir_target_filter = build_nornir_target_filter(
+        selected_groups=selected_data.get('selectedDeviceGroups', []),
+        selected_devices=selected_data.get('selectedDevices', [])
+    )
 
-    selected_groups = selected_data['selectedDeviceGroups']
-    nornir_group_filter = F(groups__contains=selected_groups[0])
-    for group in selected_groups[1:]:
-        nornir_group_filter |= F(groups__contains=group)
+    if not get_configs_info:
+        return jsonify(error='No information data selected.'), 400
 
-    nornir_filtered = NETWORK_HANDLER.nornir.filter(nornir_group_filter)
+    if not nornir_target_filter:
+        return jsonify(error='No device groups or devices selected.'), 400
+
+    nornir_filtered = NETWORK_HANDLER.nornir.filter(nornir_target_filter)
     NETWORK_HANDLER.nornir_get_configs(get_configs_info=get_configs_info, nornir_filtered=nornir_filtered)
 
     script_data = NETWORK_HANDLER.nornir_generate_data_dict()
@@ -127,6 +390,20 @@ def run_get_configs():
     
     print(f"{Colors.OK_GREEN}[>]{Colors.END} Execution time: {time.time() - start_time} seconds")
     return Response(status=204)
+
+
+def build_nornir_target_filter(selected_groups: list[str], selected_devices: list[str]):
+    nornir_target_filter = None
+
+    for group in selected_groups:
+        group_filter = F(groups__contains=group)
+        nornir_target_filter = group_filter if nornir_target_filter is None else nornir_target_filter | group_filter
+
+    for device in selected_devices:
+        device_filter = F(name=device)
+        nornir_target_filter = device_filter if nornir_target_filter is None else nornir_target_filter | device_filter
+
+    return nornir_target_filter
 
 
 @app.route('/run_set_configs', methods=['POST'])
@@ -199,12 +476,16 @@ def init_network_handler() -> None:
     ''' '''
     global NETWORK_HANDLER
 
-    if os.path.exists(f"{ROOT_DIRECTORY}/inputfiles/inventory/hosts.yaml"):
-        hosts = f"{ROOT_DIRECTORY}/inputfiles/inventory/hosts.yaml"
-    if os.path.exists(f"{ROOT_DIRECTORY}/inputfiles/inventory/groups.yaml"):
-        groups = f"{ROOT_DIRECTORY}/inputfiles/inventory/groups.yaml"
-    if os.path.exists(f"{ROOT_DIRECTORY}/inputfiles/inventory/defaults.yaml"):
-        defaults = f"{ROOT_DIRECTORY}/inputfiles/inventory/defaults.yaml"
+    hosts = None
+    groups = None
+    defaults = None
+
+    if os.path.exists(f"{ROOT_DIRECTORY}/hosts.yaml"):
+        hosts = f"{ROOT_DIRECTORY}/hosts.yaml"
+    if os.path.exists(f"{ROOT_DIRECTORY}/groups.yaml"):
+        groups = f"{ROOT_DIRECTORY}/groups.yaml"
+    if os.path.exists(f"{ROOT_DIRECTORY}/defaults.yaml"):
+        defaults = f"{ROOT_DIRECTORY}/defaults.yaml"
 
     NETWORK_HANDLER = NetworkHandler(host_file=hosts, group_file=groups, defaults_file=defaults)
     NETWORK_HANDLER.dir = ROOT_DIRECTORY
@@ -294,7 +575,7 @@ def main():
     init_config_options()
     init_network_handler()
 
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 5001))
     app.run(debug=True, host='0.0.0.0', port=port)
 
 

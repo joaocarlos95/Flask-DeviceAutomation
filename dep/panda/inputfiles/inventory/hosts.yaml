@@ -1,10 +1,113 @@
 ---
-host1.group1:
-    hostname: 1.1.1.1
-    groups:
-        - group1
-host2.group2:
-    hostname: 2.2.2.2
-    username: username
-    password: password
-    platform: extreme_exos
+# Template for a larger inventory, for example ~400 devices.
+# Recommended naming:
+#   <site>-<role>-<vendor/os>-<number>
+# Recommended groups per host:
+#   - one platform group
+#   - one role group
+#   - one site group
+
+lisbon-access-cisco-001:
+  hostname: 10.10.1.11
+  groups:
+    - cisco_ios
+    - access_switches
+    - site_lisbon
+
+lisbon-access-cisco-002:
+  hostname: 10.10.1.12
+  groups:
+    - cisco_ios
+    - access_switches
+    - site_lisbon
+
+lisbon-dist-aruba-001:
+  hostname: 10.10.2.11
+  groups:
+    - aruba_aoscx
+    - distribution_switches
+    - site_lisbon
+
+lisbon-core-cisco-001:
+  hostname: 10.10.3.11
+  groups:
+    - cisco_ios
+    - core_switches
+    - site_lisbon
+
+lisbon-wlc-cisco-001:
+  hostname: 10.10.4.11
+  groups:
+    - cisco_wlc
+    - wireless_controllers
+    - site_lisbon
+
+porto-access-extreme-001:
+  hostname: 10.20.1.11
+  groups:
+    - extreme_exos
+    - access_switches
+    - site_porto
+
+porto-access-extreme-002:
+  hostname: 10.20.1.12
+  groups:
+    - extreme_exos
+    - access_switches
+    - site_porto
+
+porto-dist-cisco-001:
+  hostname: 10.20.2.11
+  groups:
+    - cisco_ios
+    - distribution_switches
+    - site_porto
+
+porto-wlc-aruba-001:
+  hostname: 10.20.4.11
+  groups:
+    - aruba_wlc
+    - wireless_controllers
+    - site_porto
+
+madrid-access-aruba-001:
+  hostname: 10.30.1.11
+  groups:
+    - aruba_aoscx
+    - access_switches
+    - site_madrid
+
+madrid-access-aruba-002:
+  hostname: 10.30.1.12
+  groups:
+    - aruba_aoscx
+    - access_switches
+    - site_madrid
+
+madrid-core-cisco-001:
+  hostname: 10.30.3.11
+  groups:
+    - cisco_ios
+    - core_switches
+    - site_madrid
+
+barcelona-access-cisco-001:
+  hostname: 10.40.1.11
+  groups:
+    - cisco_ios
+    - access_switches
+    - site_barcelona
+
+barcelona-dist-extreme-001:
+  hostname: 10.40.2.11
+  groups:
+    - extreme_exos
+    - distribution_switches
+    - site_barcelona
+
+barcelona-wlc-aruba-001:
+  hostname: 10.40.4.11
+  groups:
+    - aruba_wlc
+    - wireless_controllers
+    - site_barcelona
