@@ -1,0 +1,50 @@
+<div class="modal" id="sourceSettingsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content app-modal">
+            <div class="modal-header">
+                <div>
+                    <h4 class="modal-title">Target Sources</h4>
+                    <p class="modal-subtitle">Configure inventory files or NetBox access.</p>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <section class="settings-section">
+                    <h5>Inventory folder</h5>
+                    <label for="inventoryRootDirectory">Directory</label>
+                    <div class="input-with-button">
+                        <input class="form-control" id="inventoryRootDirectory" type="text" value="{{ inventory_directory or '' }}" placeholder="/path/to/inventory">
+                        <button class="btn secondary-button" id="openInventoryBrowser" type="button">
+                            <i class="fas fa-folder-open" aria-hidden="true"></i>
+                            Browse
+                        </button>
+                    </div>
+                    <small>Folder must contain <code>defaults.yaml</code>, <code>groups.yaml</code>, and <code>hosts.yaml</code>.</small>
+                    <div class="folder-browser" id="inventoryFolderBrowser" hidden>
+                        <div class="folder-browser-header">
+                            <button class="btn secondary-button btn-sm" id="folderBrowserUp" type="button">
+                                <i class="fas fa-level-up-alt" aria-hidden="true"></i>
+                            </button>
+                            <span id="folderBrowserPath"></span>
+                        </div>
+                        <div class="folder-browser-list" id="folderBrowserList"></div>
+                        <button class="btn primary-button btn-sm" id="useCurrentFolder" type="button">Use this folder</button>
+                    </div>
+                </section>
+
+                <section class="settings-section">
+                    <h5>NetBox</h5>
+                    <label for="netboxUrl">URL</label>
+                    <input class="form-control" id="netboxUrl" type="url" value="{{ netbox_url or '' }}" placeholder="https://netbox.example.com">
+                    <label for="netboxToken">API key</label>
+                    <input class="form-control" id="netboxToken" type="password" placeholder="Paste API token">
+                </section>
+                <div class="settings-message" id="targetSettingsMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary-button" type="button" data-dismiss="modal">Cancel</button>
+                <button class="btn primary-button" id="saveTargetSettings" type="button">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

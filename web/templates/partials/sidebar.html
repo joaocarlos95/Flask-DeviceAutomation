@@ -1,0 +1,38 @@
+<aside class="sidebar" aria-label="Primary navigation">
+    <button class="sidebar-brand sidebar-toggle" type="button" aria-label="Toggle navigation">
+        <span class="brand-icon panda-mark" aria-hidden="true">
+            <img src="https://cdn-icons-png.flaticon.com/512/8372/8372002.png" alt="">
+        </span>
+        <span class="brand-copy">
+            <strong>PANDA</strong>
+            <small>Collection</small>
+        </span>
+    </button>
+
+    <nav class="sidebar-nav">
+        <a class="sidebar-item{% if active_page == 'home' %} active{% endif %}" href="/" title="Home">
+            <i class="fas fa-house" aria-hidden="true"></i>
+            <span>Home</span>
+        </a>
+        <a class="sidebar-item{% if active_page == 'get_configs' %} active{% endif %}" href="/get_configs" title="Get Configurations">
+            <i class="fas fa-download" aria-hidden="true"></i>
+            <span>Get Configurations</span>
+        </a>
+        <a class="sidebar-item{% if active_page == 'update_netbox' %} active{% endif %}" href="/update_netbox" title="Update NetBox">
+            <img class="sidebar-icon-img" src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/netbox-dark.svg" alt="" aria-hidden="true">
+            <span>Update NetBox</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-tools" aria-label="Target source">
+        <button class="sidebar-item sidebar-button source-switch target-source-button active" type="button" data-target-source="inventory" title="Toggle target source">
+            <i class="fas fa-folder-tree" data-source-switch-folder aria-hidden="true"></i>
+            <img class="sidebar-icon-img source-switch-img" src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/netbox-dark.svg" data-source-switch-netbox alt="" aria-hidden="true" hidden>
+            <span data-source-current>Inventory</span>
+        </button>
+        <button class="sidebar-item sidebar-button" type="button" data-toggle="modal" data-target="#sourceSettingsModal" title="Settings">
+            <i class="fas fa-gear" aria-hidden="true"></i>
+            <span>Settings</span>
+        </button>
+    </div>
+</aside>
