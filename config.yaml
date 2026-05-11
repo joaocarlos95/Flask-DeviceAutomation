@@ -83,6 +83,15 @@ user_defined:
                 extreme_exos:
                     - show management
                     - show accounts
+        aaa_information:
+            group: Device
+            label: AAA
+            status: enabled
+            commands:
+                enterasys:
+                    - show tacacs
+                extreme_exos:
+                    - show tacacs
         device_power_information:
             group: Device
             label: Power Information
@@ -92,6 +101,13 @@ user_defined:
                     - show system
                 extreme_exos:
                     - show power detail
+        registered_aps:
+            group: Device
+            label: Registered APs
+            status: enabled
+            commands:
+                aruba_os:
+                    - show ap database long
         # Interface related information
         interface_information:
             group: Interface
@@ -190,6 +206,8 @@ user_defined:
             commands:
                 alcatel_aos: 
                     - show lldp remote-system
+                aruba_os:
+                    - show ap lldp neighbors
                 cisco_ios: 
                     - show cdp neighbors detail
                     - show lldp neighbors detail
@@ -256,3 +274,19 @@ user_defined:
                 extreme_exos:
                     - show fdb
             read_timeout: 600
+        l2_cpu_packets:
+            group: Others
+            label: L2 CPU Packets
+            status: enabled
+            commands:
+                extreme_exos:
+                    - show l2stats
+        ntp:
+            group: Others
+            label: NTP
+            status: enabled
+            commands:
+                extreme_exos:
+                    - show ntp
+                    - show sntp-client
+                    - show time detail
