@@ -1,18 +1,32 @@
 ---
-username: netops
-password: CHANGE_ME
+# =============================================================================
+# DEFAULT SETTINGS
+# These values are applied to ALL hosts in the inventory unless overridden 
+# at the Group or Host level.
+# =============================================================================
+
+# Global credentials for device access
+username: username
+password: password
+
+# =============================================================================
+# CONNECTION OPTIONS
+# Plugin-specific settings, were the parameters for the Netmiko driver 
+# are defined.
+# =============================================================================
 connection_options:
   netmiko:
     extras:
+      global_delay_factor: 10
       conn_timeout: 20
       banner_timeout: 30
       auth_timeout: 20
       fast_cli: false
+
+# =============================================================================
+# GLOBAL DATA
+# Custom variables available to all devices via the 'data' dictionary.
+# =============================================================================
 data:
-  domain_name: example.local
-  ntp_servers:
-    - 10.10.10.10
-    - 10.10.10.11
   syslog_servers:
     - 10.10.20.10
-  snmp_location: TEMPLATE
