@@ -646,7 +646,7 @@
             this.hostSelect.innerHTML = '';
             this.groupSelect.dataset.targetSource = data.source || 'inventory';
             this.setSourceButtonState(this.groupSelect.dataset.targetSource);
-            Object.keys(data.device_groups || {}).forEach(function(group) {
+            Object.keys(groupDevices).forEach(function(group) {
                 var option = document.createElement('option');
                 option.value = group;
                 option.textContent = group;

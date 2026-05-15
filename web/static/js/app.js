@@ -25,10 +25,20 @@
             this.browser = document.getElementById('inventoryFolderBrowser');
             this.browserPath = document.getElementById('folderBrowserPath');
             this.browserList = document.getElementById('folderBrowserList');
+            this.browserStatus = document.getElementById('folderBrowserStatus');
+            this.netboxStatus = document.getElementById('netboxConnectionStatus');
             this.browserUp = document.getElementById('folderBrowserUp');
-            this.useFolder = document.getElementById('useCurrentFolder');
-            this.saveSettings = document.getElementById('saveTargetSettings');
             this.settingsMessage = document.getElementById('targetSettingsMessage');
+            this.settingsSaveButton = document.getElementById('targetSettingsSave');
+            this.netboxUrlInput = document.getElementById('netboxUrl');
+            this.netboxTokenInput = document.getElementById('netboxToken');
+            this.toastHost = document.getElementById('appToastHost');
+            if (!this.toastHost) {
+                this.toastHost = document.createElement('div');
+                this.toastHost.id = 'appToastHost';
+                this.toastHost.className = 'app-toast-host';
+                document.body.appendChild(this.toastHost);
+            }
         },
 
         applySidebarState: function() {
@@ -106,33 +116,40 @@
 
             if (this.browserButton && this.inventoryInput) {
                 this.browserButton.addEventListener('click', function() {
-                    self.loadFolder(self.inventoryInput.value);
+                    if (self.browser && !self.browser.hidden) {
+                        self.browser.hidden = true;
+                        return;
+                    }
+                    self.loadFolder(self.inventoryInput.value, true);
                 });
             }
 
             if (this.browserUp) {
                 this.browserUp.addEventListener('click', function() {
                     if (self.browserUp.dataset.path) {
-                        self.loadFolder(self.browserUp.dataset.path);
+                        self.loadFolder(self.browserUp.dataset.path, true);
                     }
                 });
             }
 
-            if (this.useFolder && this.inventoryInput) {
-                this.useFolder.addEventListener('click', function() {
-                    self.inventoryInput.value = self.useFolder.dataset.path || self.inventoryInput.value;
-                });
-            }
+            $('#sourceSettingsModal').on('shown.bs.modal', function() {
+                if (self.inventoryInput) {
+                    self.loadFolder(self.inventoryInput.value, false);
+                }
+                self.refreshNetboxStatus();
+            });
+
         },
 
-        loadFolder: function(path) {
+        loadFolder: function(path, showBrowser) {
             var self = this;
+            var shouldShowBrowser = showBrowser !== false;
 
             $.ajax({
                 url: '/browse_folders',
                 data: {path: path},
                 success: function(data) {
-                    self.renderFolders(data);
+                    self.renderFolders(data, shouldShowBrowser);
                 },
                 error: function() {
                     self.showSettingsMessage('Could not open that folder.');
@@ -140,19 +157,25 @@
             });
         },
 
-        renderFolders: function(data) {
+        renderFolders: function(data, showBrowser) {
             var self = this;
+            var shouldShowBrowser = showBrowser !== false;
 
-            if (!this.browser || !this.browserList || !this.browserPath || !this.browserUp || !this.useFolder) {
+            if (!this.browser || !this.browserList || !this.browserPath || !this.browserUp || !this.browserStatus) {
                 return;
             }
 
-            this.browser.hidden = false;
+            this.browser.hidden = !shouldShowBrowser;
             this.browserPath.textContent = data.currentPath;
             this.browserUp.disabled = !data.parentPath;
             this.browserUp.dataset.path = data.parentPath || '';
-            this.useFolder.dataset.path = data.currentPath;
-            this.useFolder.textContent = data.hasInventoryFiles ? 'Use this inventory folder' : 'Use this folder';
+            if (this.inventoryInput) {
+                this.inventoryInput.value = data.currentPath;
+            }
+            this.browserStatus.className = 'folder-browser-status ' + (data.hasInventoryFiles ? 'valid' : 'invalid');
+            this.browserStatus.textContent = data.hasInventoryFiles
+                ? 'Inventory files found.'
+                : 'Inventory files missing.';
             this.browserList.innerHTML = '';
 
             if (!data.folders.length) {
@@ -168,10 +191,17 @@
             var self = this;
             var button = document.createElement('button');
             var name = document.createElement('span');
+            var icon = document.createElement('i');
+            var label = document.createElement('span');
 
             button.type = 'button';
             button.className = 'folder-option';
-            name.textContent = folder.name;
+            name.className = 'folder-option-name';
+            icon.className = 'fas fa-folder';
+            icon.setAttribute('aria-hidden', 'true');
+            label.textContent = folder.name;
+            name.appendChild(icon);
+            name.appendChild(label);
             button.appendChild(name);
 
             if (folder.hasInventoryFiles) {
@@ -195,30 +225,56 @@
             return message;
         },
 
-        bindSettings: function() {
+        refreshNetboxStatus: function() {
             var self = this;
 
-            if (!this.saveSettings) {
+            if (!this.netboxStatus) {
                 return;
             }
 
-            this.saveSettings.addEventListener('click', function() {
-                $.ajax({
-                    url: '/target_settings',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        rootDirectory: self.inventoryInput ? self.inventoryInput.value : '',
-                        netboxUrl: document.getElementById('netboxUrl').value,
-                        netboxToken: document.getElementById('netboxToken').value
-                    }),
-                    success: function() {
-                        self.showSettingsMessage('Settings saved.');
-                    },
-                    error: function() {
-                        self.showSettingsMessage('Could not save settings.');
-                    }
+            $.ajax({
+                url: '/netbox_status',
+                success: function(data) {
+                    var connected = !!(data && data.connected);
+                    self.netboxStatus.className = 'folder-browser-status ' + (connected ? 'valid' : 'invalid');
+                    self.netboxStatus.textContent = connected ? 'Connected' : (data && data.message ? data.message : 'Not connected');
+                },
+                error: function() {
+                    self.netboxStatus.className = 'folder-browser-status invalid';
+                    self.netboxStatus.textContent = 'Not connected';
+                }
+            });
+        },
+
+        bindSettings: function() {
+            var self = this;
+            if (this.settingsSaveButton) {
+                this.settingsSaveButton.addEventListener('click', function() {
+                    self.saveSettingsNow();
                 });
+            }
+        },
+
+        saveSettingsNow: function() {
+            var self = this;
+            $.ajax({
+                url: '/target_settings',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    inventoryDirectory: self.inventoryInput ? self.inventoryInput.value : '',
+                    netboxUrl: self.netboxUrlInput ? self.netboxUrlInput.value : '',
+                    netboxToken: self.netboxTokenInput ? self.netboxTokenInput.value : ''
+                }),
+                success: function() {
+                    self.showSettingsMessage('');
+                    self.showToast('Settings saved', 'success');
+                    self.refreshNetboxStatus();
+                },
+                error: function() {
+                    self.showSettingsMessage('Could not save');
+                    self.showToast('Could not save settings', 'error');
+                }
             });
         },
 
@@ -227,8 +283,35 @@
                 return;
             }
 
-            this.settingsMessage.textContent = text;
-            this.settingsMessage.classList.add('visible');
+            this.settingsMessage.textContent = text || '';
+            if (text) {
+                this.settingsMessage.classList.add('visible');
+            } else {
+                this.settingsMessage.classList.remove('visible');
+            }
+        },
+
+        showToast: function(text, type) {
+            if (!this.toastHost) {
+                return;
+            }
+
+            var toast = document.createElement('div');
+            var icon = document.createElement('i');
+            var body = document.createElement('span');
+            var toastType = type || 'info';
+
+            toast.className = 'app-toast ' + toastType;
+            icon.className = toastType === 'success' ? 'fas fa-check-circle' : (toastType === 'error' ? 'fas fa-circle-exclamation' : 'fas fa-info-circle');
+            icon.setAttribute('aria-hidden', 'true');
+            body.textContent = text;
+            toast.appendChild(icon);
+            toast.appendChild(body);
+            this.toastHost.appendChild(toast);
+
+            setTimeout(function() {
+                toast.remove();
+            }, 2600);
         },
 
         bindSections: function() {

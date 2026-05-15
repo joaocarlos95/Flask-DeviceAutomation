@@ -69,7 +69,7 @@
 
                 <div class="hidden-selects">
                     <select id="device_group_options" multiple data-target-source="{{ target_source }}">
-                        {% for group_name in device_groups.keys() %}
+                        {% for group_name in group_devices.keys() %}
                         <option value="{{ group_name }}" data-devices="{{ group_devices.get(group_name, [])|join(' ') }}">{{ group_name }}</option>
                         {% endfor %}
                     </select>

@@ -10,7 +10,10 @@
             </div>
             <div class="modal-body">
                 <section class="settings-section">
-                    <h5>Inventory folder</h5>
+                    <div class="settings-section-heading">
+                        <h5>Inventory folder</h5>
+                        <div class="folder-browser-status" id="folderBrowserStatus"></div>
+                    </div>
                     <label for="inventoryRootDirectory">Directory</label>
                     <div class="input-with-button">
                         <input class="form-control" id="inventoryRootDirectory" type="text" value="{{ inventory_directory or '' }}" placeholder="/path/to/inventory">
@@ -22,18 +25,20 @@
                     <small>Folder must contain <code>defaults.yaml</code>, <code>groups.yaml</code>, and <code>hosts.yaml</code>.</small>
                     <div class="folder-browser" id="inventoryFolderBrowser" hidden>
                         <div class="folder-browser-header">
-                            <button class="btn secondary-button btn-sm" id="folderBrowserUp" type="button">
+                            <button class="btn secondary-button btn-sm folder-up-button" id="folderBrowserUp" type="button">
                                 <i class="fas fa-level-up-alt" aria-hidden="true"></i>
                             </button>
                             <span id="folderBrowserPath"></span>
                         </div>
                         <div class="folder-browser-list" id="folderBrowserList"></div>
-                        <button class="btn primary-button btn-sm" id="useCurrentFolder" type="button">Use this folder</button>
                     </div>
                 </section>
 
                 <section class="settings-section">
-                    <h5>NetBox</h5>
+                    <div class="settings-section-heading">
+                        <h5>NetBox</h5>
+                        <div class="folder-browser-status" id="netboxConnectionStatus"></div>
+                    </div>
                     <label for="netboxUrl">URL</label>
                     <input class="form-control" id="netboxUrl" type="url" value="{{ netbox_url or '' }}" placeholder="https://netbox.example.com">
                     <label for="netboxToken">API key</label>
@@ -41,9 +46,11 @@
                 </section>
                 <div class="settings-message" id="targetSettingsMessage"></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn secondary-button" type="button" data-dismiss="modal">Cancel</button>
-                <button class="btn primary-button" id="saveTargetSettings" type="button">Save</button>
+            <div class="modal-footer modal-footer-right">
+                <button class="btn primary-button" id="targetSettingsSave" type="button">
+                    <i class="fas fa-save" aria-hidden="true"></i>
+                    Save
+                </button>
             </div>
         </div>
     </div>

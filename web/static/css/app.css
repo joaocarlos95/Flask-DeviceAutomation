@@ -23,6 +23,74 @@
     --font-size: 15px;
 }
 
+.app-toast-host {
+    display: grid;
+    gap: 8px;
+    position: fixed;
+    right: 18px;
+    top: 18px;
+    width: min(360px, calc(100vw - 28px));
+    z-index: 2000;
+}
+
+.app-toast {
+    align-items: center;
+    animation: toast-in 180ms ease-out;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-left-width: 4px;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    color: #334155;
+    display: grid;
+    font-size: 13px;
+    font-weight: 700;
+    gap: 10px;
+    grid-template-columns: 16px minmax(0, 1fr);
+    min-height: 44px;
+    padding: 10px 12px;
+}
+
+.app-toast i {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.app-toast.success {
+    border-left-color: #16a34a;
+}
+
+.app-toast.success i {
+    color: #16a34a;
+}
+
+.app-toast.error {
+    border-left-color: #dc2626;
+}
+
+.app-toast.error i {
+    color: #dc2626;
+}
+
+.app-toast.info {
+    border-left-color: #0284c7;
+}
+
+.app-toast.info i {
+    color: #0284c7;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 html,
 body {
     box-sizing: border-box;
@@ -713,6 +781,7 @@ html.sidebar-expanded .app-main {
     display: none;
     font-size: 14px;
     font-weight: 700;
+    min-height: 20px;
 }
 
 .empty-state.visible,
@@ -737,9 +806,20 @@ html.sidebar-expanded .app-main {
     overflow: hidden;
 }
 
+#sourceSettingsModal .modal-dialog {
+    max-width: 760px;
+    width: min(760px, calc(100vw - 32px));
+}
+
 .app-modal .modal-header {
     background: var(--surface-soft);
     border-bottom: 1px solid var(--border);
+}
+
+.app-modal .modal-footer-right {
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
 }
 
 .modal-subtitle {
@@ -799,18 +879,92 @@ html.sidebar-expanded .app-main {
 
 .folder-browser-header {
     align-items: center;
+    background: #eef2f6;
+    border: 1px solid #d6dee8;
+    border-radius: 6px;
     display: flex;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    padding: 6px;
+}
+
+.folder-up-button {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 34px;
+    height: 34px;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 34px;
+    padding: 0;
 }
 
 .folder-browser-header span {
     color: #334155;
     font-size: 13px;
     font-weight: 800;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.settings-section-heading {
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.folder-browser-status {
+    align-items: center;
+    border-radius: 999px;
+    display: none;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    justify-content: center;
+    min-height: 24px;
+    padding: 0 10px;
+    text-align: center;
+    width: fit-content;
+    white-space: nowrap;
+}
+
+.folder-browser-status::before {
+    border-radius: 999px;
+    content: "";
+    display: inline-block;
+    height: 7px;
+    width: 7px;
+}
+
+.folder-browser-status.valid {
+    display: inline-flex;
+    background: #ecfdf3;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.folder-browser-status.valid::before {
+    background: #16a34a;
+}
+
+.folder-browser-status.invalid {
+    display: inline-flex;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+}
+
+.folder-browser-status.invalid::before {
+    background: #ea580c;
+}
+
+.settings-section-heading h5 {
+    margin: 0;
 }
 
 .folder-browser-list {
@@ -829,9 +983,27 @@ html.sidebar-expanded .app-main {
     display: flex;
     justify-content: space-between;
     min-height: 38px;
-    padding: 0 10px;
+    padding: 0 10px 0 8px;
     text-align: left;
+    transition: border-color 120ms ease, background-color 120ms ease;
     width: 100%;
+}
+
+.folder-option:hover,
+.folder-option:focus {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    outline: 0;
+}
+
+.folder-option-name {
+    align-items: center;
+    display: inline-flex;
+    gap: 8px;
+}
+
+.folder-option-name i {
+    color: #64748b;
 }
 
 .folder-option-badge {
