@@ -42,7 +42,12 @@
                     <label for="netboxUrl">URL</label>
                     <input class="form-control" id="netboxUrl" type="url" value="{{ netbox_url or '' }}" placeholder="https://netbox.example.com">
                     <label for="netboxToken">API key</label>
-                    <input class="form-control" id="netboxToken" type="password" placeholder="Paste API token">
+                    <input
+                        class="form-control"
+                        id="netboxToken"
+                        type="password"
+                        placeholder="{{ 'Token is saved (hidden)' if netbox_token_saved else 'Paste API token' }}"
+                    >
                 </section>
                 <div class="settings-message" id="targetSettingsMessage"></div>
             </div>

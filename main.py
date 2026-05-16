@@ -87,6 +87,7 @@ def get_template_context() -> dict:
         'inventory_directory': get_inventory_directory(),
         'root_directory': get_root_directory(),
         'netbox_url': get_netbox_url(),
+        'netbox_token_saved': bool(get_netbox_token()),
     }
 
 def normalize_target_source(source: str | None) -> str:
