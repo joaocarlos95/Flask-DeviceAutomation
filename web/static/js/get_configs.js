@@ -6,6 +6,8 @@
             checkbox: 'panda.get_configs.checkbox',
             groups: 'panda.get_configs.groups',
             hosts: 'panda.get_configs.hosts',
+            manualHosts: 'panda.get_configs.manual_hosts',
+            excludedHosts: 'panda.get_configs.excluded_hosts',
             targetSource: 'panda.target.source'
         },
 
@@ -105,6 +107,56 @@
             });
         },
 
+        devicesForGroups: function(groupValues) {
+            var lookup = {};
+            var groups = this.getGroups();
+            var selectedLookup = {};
+
+            groupValues.forEach(function(group) {
+                selectedLookup[group] = true;
+            });
+
+            groups.forEach(function(group) {
+                if (!selectedLookup[group.value]) {
+                    return;
+                }
+                group.devices.forEach(function(device) {
+                    lookup[device] = true;
+                });
+            });
+
+            return Object.keys(lookup);
+        },
+
+        computeSelectedHostsFromState: function() {
+            var selectedLookup = {};
+            var excludedLookup = {};
+            var groupHosts = this.devicesForGroups(this.selectionState.groups);
+
+            this.selectionState.excludedHosts.forEach(function(host) {
+                excludedLookup[host] = true;
+            });
+
+            this.selectionState.manualHosts.forEach(function(host) {
+                selectedLookup[host] = true;
+            });
+
+            groupHosts.forEach(function(host) {
+                if (!excludedLookup[host]) {
+                    selectedLookup[host] = true;
+                }
+            });
+
+            return Object.keys(selectedLookup);
+        },
+
+        applyTargetState: function() {
+            var selectedHosts = this.computeSelectedHostsFromState();
+            this.setSelected(this.groupSelect, this.selectionState.groups);
+            this.setSelected(this.hostSelect, selectedHosts);
+            this.syncChoiceCards();
+        },
+
         buildTargetChoices: function() {
             this.groupList.innerHTML = '';
             this.hostList.innerHTML = '';
@@ -162,6 +214,9 @@
             var checkboxState = this.readJson(this.keys.checkbox, {});
             var selectedGroups = this.readJson(this.targetKey(this.keys.groups), []);
             var selectedHosts = this.readJson(this.targetKey(this.keys.hosts), []);
+            var manualHosts = this.readJson(this.targetKey(this.keys.manualHosts), []);
+            var excludedHosts = this.readJson(this.targetKey(this.keys.excludedHosts), []);
+            var groupHostsLookup = {};
 
             document.querySelectorAll('#accordion input[type="checkbox"]').forEach(function(input) {
                 input.checked = !!checkboxState[input.id];
@@ -169,9 +224,23 @@
                 input.closest('.choice-card').classList.toggle('disabled', input.disabled);
             });
 
-            this.setSelected(this.groupSelect, selectedGroups);
-            this.setSelected(this.hostSelect, selectedHosts);
-            this.syncChoiceCards();
+            this.devicesForGroups(selectedGroups).forEach(function(host) {
+                groupHostsLookup[host] = true;
+            });
+
+            if (!manualHosts.length && selectedHosts.length) {
+                manualHosts = selectedHosts.filter(function(host) {
+                    return !groupHostsLookup[host];
+                });
+            }
+
+            this.selectionState = {
+                groups: selectedGroups.slice(),
+                manualHosts: manualHosts.slice(),
+                excludedHosts: excludedHosts.slice()
+            };
+
+            this.applyTargetState();
         },
 
         bindEvents: function() {
@@ -218,9 +287,12 @@
                 self.setSectionsCollapsed('[data-target-section]', true);
             });
             document.getElementById('clearTargets').addEventListener('click', function() {
-                self.setSelected(self.groupSelect, []);
-                self.setSelected(self.hostSelect, []);
-                self.syncChoiceCards();
+                self.selectionState = {
+                    groups: [],
+                    manualHosts: [],
+                    excludedHosts: []
+                };
+                self.applyTargetState();
                 self.saveTargets();
                 self.render();
             });
@@ -242,10 +314,92 @@
         },
 
         handleTargetChoice: function(card) {
-            var select = card.dataset.type === 'group' ? this.groupSelect : this.hostSelect;
-            var selected = this.selectedValuesFromCards(card.dataset.type);
-            this.setSelected(select, selected);
-            this.syncChoiceCards();
+            var self = this;
+            var selectedGroupsLookup = {};
+            var nextGroups;
+
+            if (card.dataset.type === 'group') {
+                nextGroups = this.selectedValuesFromCards('group');
+                this.selectionState.groups.forEach(function(group) {
+                    selectedGroupsLookup[group] = true;
+                });
+
+                // When a group is selected, reset exclusions for that group's hosts so bulk select is explicit.
+                nextGroups.forEach(function(groupName) {
+                    var group = self.getGroups().find(function(item) {
+                        return item.value === groupName;
+                    });
+
+                    if (!group || selectedGroupsLookup[groupName]) {
+                        return;
+                    }
+
+                    self.selectionState.excludedHosts = self.selectionState.excludedHosts.filter(function(host) {
+                        return group.devices.indexOf(host) === -1;
+                    });
+                });
+
+                this.selectionState.groups = nextGroups;
+            }
+
+            if (card.dataset.type === 'host') {
+                var hostName = card.dataset.value;
+                var hostChecked = !!card.querySelector('input').checked;
+                var coveredByGroup = this.devicesForGroups(this.selectionState.groups).indexOf(hostName) !== -1;
+                var groupsToKeep = [];
+                var selectedHostsLookup = {};
+                var groupCoveredLookup = {};
+
+                if (hostChecked) {
+                    this.selectionState.excludedHosts = this.selectionState.excludedHosts.filter(function(host) {
+                        return host !== hostName;
+                    });
+
+                    if (!coveredByGroup && this.selectionState.manualHosts.indexOf(hostName) === -1) {
+                        this.selectionState.manualHosts.push(hostName);
+                    }
+                } else {
+                    this.selectionState.manualHosts = this.selectionState.manualHosts.filter(function(host) {
+                        return host !== hostName;
+                    });
+
+                    if (coveredByGroup && this.selectionState.excludedHosts.indexOf(hostName) === -1) {
+                        this.selectionState.excludedHosts.push(hostName);
+                    }
+                }
+
+                this.computeSelectedHostsFromState().forEach(function(host) {
+                    selectedHostsLookup[host] = true;
+                });
+
+                this.selectionState.groups.forEach(function(groupName) {
+                    var group = self.getGroups().find(function(item) {
+                        return item.value === groupName;
+                    });
+
+                    if (!group) {
+                        return;
+                    }
+
+                    var hasSelectedHost = group.devices.some(function(device) {
+                        return !!selectedHostsLookup[device];
+                    });
+
+                    if (hasSelectedHost) {
+                        groupsToKeep.push(groupName);
+                        group.devices.forEach(function(device) {
+                            groupCoveredLookup[device] = true;
+                        });
+                    }
+                });
+
+                this.selectionState.groups = groupsToKeep;
+                this.selectionState.excludedHosts = this.selectionState.excludedHosts.filter(function(host) {
+                    return !!groupCoveredLookup[host];
+                });
+            }
+
+            this.applyTargetState();
             this.saveTargets();
             this.render();
         },
@@ -286,6 +440,8 @@
         saveTargets: function() {
             this.writeJson(this.targetKey(this.keys.groups), this.selectedGroups());
             this.writeJson(this.targetKey(this.keys.hosts), this.selectedHosts());
+            this.writeJson(this.targetKey(this.keys.manualHosts), this.selectionState.manualHosts);
+            this.writeJson(this.targetKey(this.keys.excludedHosts), this.selectionState.excludedHosts);
         },
 
         setSectionsCollapsed: function(selector, collapsed) {

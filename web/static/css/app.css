@@ -611,6 +611,7 @@ html.sidebar-expanded .app-main {
 .secondary-button {
     align-items: center;
     border-radius: 6px;
+    cursor: pointer;
     display: inline-flex;
     font-weight: 800;
     gap: 8px;
@@ -649,6 +650,7 @@ html.sidebar-expanded .app-main {
     background: var(--surface-soft);
     border: 0;
     color: var(--ink);
+    cursor: pointer;
     display: flex;
     font-size: 15px;
     font-weight: 800;
@@ -680,6 +682,7 @@ html.sidebar-expanded .app-main {
     border: 1px solid var(--border);
     border-radius: 7px;
     color: #334155;
+    cursor: pointer;
     display: flex;
     font-size: 13px;
     font-weight: 750;

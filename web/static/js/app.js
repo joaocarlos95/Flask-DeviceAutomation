@@ -79,13 +79,16 @@
             var currentLabel = source === 'inventory' ? 'Inventory' : 'NetBox';
 
             this.sourceButtons.forEach(function(button) {
-                button.classList.toggle('active', button.dataset.targetSource === source);
-
                 if (button.classList.contains('source-switch')) {
+                    // This control is a mode switcher, so it should always look active.
+                    button.classList.add('active');
                     button.dataset.targetSource = nextSource;
                     button.classList.toggle('is-netbox', source === 'netbox');
                     button.title = nextSource === 'inventory' ? 'Switch to inventory' : 'Switch to NetBox';
+                    return;
                 }
+
+                button.classList.toggle('active', button.dataset.targetSource === source);
             });
 
             document.querySelectorAll('[data-source-current]').forEach(function(label) {
