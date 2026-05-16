@@ -1,4 +1,10 @@
 ---
+# Runtime inventory source of truth is resolved by app initialization:
+# 1) UI-selected inventory directory
+# 2) .env INVENTORY_DIRECTORY
+# 3) default inputfiles/inventory
+# These inventory file paths are injected into Nornir at runtime.
+# The block below remains as a readable baseline/default reference.
 inventory:
     plugin: SimpleInventory
     options:
