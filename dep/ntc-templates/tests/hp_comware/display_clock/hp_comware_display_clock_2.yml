@@ -1,8 +1,0 @@
----
-parsed_sample:
-  - time: "15:10:00"
-    timezone: "Z5"
-    dayweek: "Fri"
-    month: "03"
-    day: "16"
-    year: "2015"

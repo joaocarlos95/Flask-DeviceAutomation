@@ -1,6 +1,0 @@
----
-parsed_sample:
-  - hour: "21"
-    last_ntp_sync: "never"
-    minute: "05"
-    second: "34"

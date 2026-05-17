@@ -1,6 +1,0 @@
----
-parsed_sample:
-  - status: "enable"
-    trap: "linkUp"
-  - status: "enable"
-    trap: "linkDown"

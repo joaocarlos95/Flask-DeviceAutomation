@@ -1,0 +1,3 @@
+[submodule "dep/ntc-templates"]
+	path = dep/ntc-templates
+	url = https://github.com/networktocode/ntc-templates.git

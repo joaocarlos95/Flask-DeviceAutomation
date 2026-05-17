@@ -1,8 +1,0 @@
----
-parsed_sample:
-  - time: "19:35:31"
-    timezone: "UTC"
-    dayweek: "Sat"
-    month: "01"
-    day: "08"
-    year: "2011"
