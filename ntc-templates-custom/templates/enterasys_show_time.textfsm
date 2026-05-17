@@ -1,0 +1,4 @@
+Value CURRENT_TIME (.+)
+
+Start
+  ^${CURRENT_TIME}

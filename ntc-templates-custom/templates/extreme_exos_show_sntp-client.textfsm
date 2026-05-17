@@ -1,0 +1,50 @@
+Value SNTP_STATUS (\S+)
+Value SNTP_VALIDATION (\S+)
+Value PRI_SERVER (\S+)
+Value PRI_VRF (\S+)
+Value SEC_SERVER (\S+)
+Value SEC_VRF (\S+)
+Value QUERY_INT (\d+)
+Value LAST_UPDATE (.+)
+Value PKT_TX_PRI (\d+)
+Value PKT_TX_SEC (\d+)
+Value PKT_RCV_PRI_VALID (\d+)
+Value PKT_RCV_SEC_VALID (\d+)
+Value PKT_RCV_BCAST_VALID (\d+)
+Value PKT_RCV_PRI_INVALID (\d+)
+Value PKT_RCV_SEC_INVALID (\d+)
+Value PKT_RCV_BCAST_INVALID (\d+)
+Value PKT_NOT_RCV_PRI (\d+)
+Value PKT_NOT_RCV_SEC (\d+)
+
+Start
+  ^SNTP client is ${SNTP_STATUS}
+  ^SNTP time is ${SNTP_VALIDATION}
+  ^Primary server:${PRI_SERVER}\s+${PRI_VRF}
+  ^Secondary server:${SEC_SERVER}\s*${SEC_VRF}
+  ^Broadcasts:
+  ^Query interval:${QUERY_INT}
+  ^Last valid SNTP update: From server:\S+, on ${LAST_UPDATE}
+  ^SNTPC Statistics:
+  ^\s+Packets transmitted: -> TX_PACKETS
+
+TX_PACKETS
+  ^\s+to primary server:\s+${PKT_TX_PRI}
+  ^\s+to secondary server:\s+${PKT_TX_SEC}
+  ^\s*Packets received with valid time: -> RX_VALID
+
+RX_VALID
+  ^\s+from Primary server:\s+${PKT_RCV_PRI_VALID}
+  ^\s+from Secondary server:\s+${PKT_RCV_SEC_VALID}
+  ^\s+from Broadcast server:\s+${PKT_RCV_BCAST_VALID}
+  ^\s*Packets received without valid time: -> RX_INVALID
+
+RX_INVALID
+  ^\s+from Primary server:\s+${PKT_RCV_PRI_INVALID}
+  ^\s+from Secondary server:\s+${PKT_RCV_SEC_INVALID}
+  ^\s+from Broadcast server:\s+${PKT_RCV_BCAST_INVALID}
+  ^\s*Replies not received to requests: -> NOT_RCV
+
+NOT_RCV
+  ^\s+from Primary server:\s+${PKT_NOT_RCV_PRI}
+  ^\s+from Secondary server:\s+${PKT_NOT_RCV_SEC} -> Start

@@ -24,4 +24,5 @@ coverage.xml
 .hypothesis
 .idea
 outputfiles/*
+ntc-templates-custom/runtime/*
 .DS_Store

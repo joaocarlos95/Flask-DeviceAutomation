@@ -1,0 +1,10 @@
+Value TRANSMIT_TIME (\d+)
+Value HOLD_TIME (\d+)
+Value DEVICE_ID (.+)
+Value STATUS (Disabled|Enabled|Auto)
+
+Start
+  ^CiscoDP\s+:${STATUS}
+  ^Timer\s+:${TRANSMIT_TIME}
+  ^Holdtime\s+\(TTl\):\s+${HOLD_TIME}
+  ^Device\s+ID\s+:\s+${DEVICE_ID}

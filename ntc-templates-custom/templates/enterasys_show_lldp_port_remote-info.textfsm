@@ -1,0 +1,14 @@
+Value LOCAL_PORT (\S+)
+Value REMOTE_PORT (\S+)
+Value MGMT_ADDR (\S+)
+Value DEST_HOST (\S+)
+Value SYS_DESC (.+)
+
+Start
+  ^Local Port\s+:\s+${LOCAL_PORT}\s+Remote Port Id\s+:\s+${REMOTE_PORT}
+  ^Mgmt Addr\s+:\s+${MGMT_ADDR}
+  ^Chassis ID\s+:\s+${DEST_HOST}
+  ^Sys Name\s+:\s+${DEST_HOST}
+  ^Sys Desc\s+:\s+${SYS_DESC}
+  ^Sys Cap Supported -> Record
+  ^Operational Speed/Duplex/Type -> Record

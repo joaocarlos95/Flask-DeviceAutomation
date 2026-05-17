@@ -1,0 +1,24 @@
+Value HARDWARE (\S+\s+\S+\s+\S+|\S+)
+Value VERSION (\S+)
+Value SERIAL_NUMBER (\S+)
+Value MAC_ADDR (\S+:\S+:\S+:\S+:\S+:\S+|\S+\-\S+\-\S+\-\S+\-\S+\-\S+)
+
+Start
+  ^\s+UNIT \d+ HARDWARE INFORMATION -> Hardware_Info
+  ^\s+SLOT HARDWARE INFORMATION -> Hardware_Info
+  ^CHASSIS \d+ HARDWARE INFORMATION -> Hardware_Info_Chassis
+  ^CHASSIS HARDWARE INFORMATION -> Hardware_Info_Chassis
+  ^\s+SLOT \d+ -> Hardware_Info
+
+Hardware_Info
+  ^-+
+  ^\s+Model:\s+${HARDWARE}
+  ^\s+Serial Number:\s+${SERIAL_NUMBER}
+  ^\s+Base MAC Address:\s+${MAC_ADDR}
+  ^\s+Firmware Version:\s+${VERSION} -> Record Start
+  ^\s+FirmWare Version:\s+${VERSION} -> Record Start
+
+Hardware_Info_Chassis
+  ^-+
+  ^\s+Chassis Type:\s+${HARDWARE}
+  ^\s+Chassis Serial Number:\s+${SERIAL_NUMBER} -> Record Start
