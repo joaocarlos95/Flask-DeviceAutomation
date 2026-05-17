@@ -14,7 +14,7 @@ class Templater:
 
         self.vendor_os = vendor_os
         self.config_blocks = config_blocks
-        self.comment_char = CONFIG_DATA['comment_char'][vendor_os]
+        self.comment_char = CONFIG_DATA['comment_char'][vendor_os] if not comment_char else comment_char
 
     def get_j2_template(self, filename: str=None):
         '''

@@ -25,7 +25,7 @@ enable snmp access snmpv3
 configure snmpv3 add user "{{ user.username }}" authentication {{ user.auth_algorithm }} {{ user.auth_password }} privacy {{ user.priv_algorithm }} {{ user.priv_password }}
 configure snmpv3 add group "{{ group.name }}" user "{{ user.username }}" sec-model usm
             {% endfor %}
-configure snmpv3 add access "{{ group.name }}" sec-model usm sec-level priv notify-view defaultAdminView read-view defaultAdminView
+configure snmpv3 add access "{{ group.name }}" sec-model usm sec-level priv notify-view defaultAdminView read-view defaultAdminView write-view defaultAdminView
         {% endfor %}
     {% endif %}
 

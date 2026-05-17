@@ -3,9 +3,17 @@
 {% if tacacs.primary_server is defined %}
     set tacacs enable
     set tacacs server 1 {{ tacacs.primary_server.addr }} {{ tacacs.primary_server.port }} {{ tacacs.primary_server.shared_secret }}
+    set tacacs server 1 timeout 10
+    set tacacs command accounting enable
+    set tacacs session accounting enable
+{% elif tacacs.secondary_server is defined %}
+    set tacacs enable
+    set tacacs server 2 {{ tacacs.secondary_server.addr }} {{ tacacs.secondary_server.port }} {{ tacacs.secondary_server.shared_secret }}
+    set tacacs server 2 timeout 10
+    set tacacs command accounting enable
     set tacacs session accounting enable
 {% else %}
     set tacacs disable
+    set tacacs command accounting disable
     set tacacs session accounting disable
 {% endif %}
-

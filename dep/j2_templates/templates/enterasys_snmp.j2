@@ -7,7 +7,7 @@
                 set snmp user {{ user.username }} authentication {{ user.auth_algorithm }} {{ user.auth_password }} encryption {{ user.priv_algorithm }} privacy {{ user.priv_password }} nonvolatile
                 set snmp group {{ group.name }} user {{ user.username }} security-model usm nonvolatile
             {% endfor %}
-            set snmp access {{ group.name }} security-model usm privacy exact read All notify All nonvolatile
+            set snmp access {{ group.name }} security-model usm privacy exact read All notify All write All nonvolatile
         {% endfor %}
     {% endif %}
 
@@ -19,6 +19,3 @@
         set snmp notify {{ traps.server_name }}_Notification tag {{ traps.server_name }}_Tag inform nonvolatile
     {% endif %}
 {% endif %}
-
-
-

@@ -4,10 +4,20 @@
     enable tacacs
     enable tacacs-authorization
     enable tacacs-accounting
-    configure tacacs primary server {{ tacacs.primary_server.addr }} {{ tacacs.primary_server.port }} client-ip {{ tacacs.mgmt_ip_addr }} vr {{ tacacs.primary_server.vrf | default("VR-Default", true) }}
     configure tacacs primary shared-secret {{ tacacs.primary_server.shared_secret }}
-    configure tacacs-accounting primary server {{ tacacs.primary_server.addr }} {{ tacacs.primary_server.port }} client-ip {{ tacacs.mgmt_ip_addr }} vr {{ tacacs.primary_server.vrf | default("VR-Default", true) }}
+    configure tacacs primary server {{ tacacs.primary_server.addr }} {{ tacacs.primary_server.port }} client-ip {{ tacacs.mgmt_ip_addr }} vr {{ tacacs.primary_server.vrf | default("VR-Default", true) }}
     configure tacacs-accounting primary shared-secret {{ tacacs.primary_server.shared_secret }}
+    configure tacacs-accounting primary server {{ tacacs.primary_server.addr }} {{ tacacs.primary_server.port }} client-ip {{ tacacs.mgmt_ip_addr }} vr {{ tacacs.primary_server.vrf | default("VR-Default", true) }}
+    configure tacacs fallback disallow
+    configure tacacs priv-lvl required
+{% elif tacacs.secondary_server is defined %}
+    enable tacacs
+    enable tacacs-authorization
+    enable tacacs-accounting
+    configure tacacs secondary server {{ tacacs.secondary_server.addr }} {{ tacacs.secondary_server.port }} client-ip {{ tacacs.mgmt_ip_addr }} vr {{ tacacs.secondary_server.vrf | default("VR-Default", true) }}
+    configure tacacs secondary shared-secret {{ tacacs.secondary_server.shared_secret }}
+    configure tacacs-accounting secondary server {{ tacacs.secondary_server.addr }} {{ tacacs.secondary_server.port }} client-ip {{ tacacs.mgmt_ip_addr }} vr {{ tacacs.secondary_server.vrf | default("VR-Default", true) }}
+    configure tacacs-accounting secondary shared-secret {{ tacacs.secondary_server.shared_secret }}
     configure tacacs fallback disallow
     configure tacacs priv-lvl required
 {% else %}
