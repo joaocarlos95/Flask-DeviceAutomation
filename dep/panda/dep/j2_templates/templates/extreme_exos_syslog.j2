@@ -1,8 +1,0 @@
-{#- Configure Syslog server -#}
-
-enable log display
-
-configure syslog add {{ syslog.addr }}:{{ syslog.port | default("514", true) }} vr {{ vrf | default("VR-Default", true) }} local0
-enable log target syslog {{ syslog.addr }}:{{ syslog.port | default("514", true) }} vr {{ vrf | default("VR-Default", true) }} local0
-configure log target syslog {{ syslog.addr }}:{{ syslog.port | default("514", true) }} vr {{ vrf | default("VR-Default", true) }} local0 severity Debug-Data
-configure log target syslog {{ syslog.addr }}:{{ syslog.port | default("514", true) }} vr {{ vrf | default("VR-Default", true) }} local0 format timestamp seconds date mm/dd/yyyy event-name condition severity priority host-name tag-id tag-name

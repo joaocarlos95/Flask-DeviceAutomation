@@ -6,17 +6,27 @@ Value UPTIME (.+)
 Value VERSION (\S+)
 Value List SERIAL_NUMBER (\S+\-\S+)
 Value List HARDWARE (\S+)
+Value TZ_INFO (.+)
+Value TZ_DST_STATUS (.+)
+Value TZ_DST_BEGIN (.+)
+Value TZ_DST_END (.+)
 
 Start
   ^SysLocation:\s+${LOCATION}
   ^System MAC:\s+${MAC_ADDR}
   ^Current Time:\s+${CURRENT_TIME}
+  ^Timezone:\s+${TZ_INFO} -> TIMEZONE
   ^Boot Time:\s+${LAST_BOOT}
   ^System UpTime:\s+${UPTIME}
   ^show version -> Serial_Number_Version
   ^show temperature -> Hardware
   ^show power -> Record
-  
+
+TIMEZONE
+  ^\s+DST of ${TZ_DST_STATUS}
+  ^\s+DST begins ${TZ_DST_BEGIN}
+  ^\s+DST ends ${TZ_DST_END} -> Start
+
 Serial_Number_Version
   ^Slot-\d+\s+\:\s+\S+\s+${SERIAL_NUMBER}\s+Rev
   ^Switch\s+\:\s+\S+\s+${SERIAL_NUMBER}\s+Rev

@@ -1,8 +1,0 @@
-{% for interface in device.ip_addresses %}
-interface {{ interface.name }}
-    {%+ if interface.description -%}
-        description {{ interface.description }}
-    {% endif %}
-    ip address {{ interface.ip_address }} {{ interface.netmask }}
-    {{ interface.status }}
-{% endfor %}

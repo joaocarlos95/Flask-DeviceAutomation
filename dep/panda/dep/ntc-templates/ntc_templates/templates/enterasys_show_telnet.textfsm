@@ -1,4 +1,0 @@
-Value TELNET_STATUS (DISABLED|ENABLED)
-
-Start
-  ^Telnet\s+inbound\s+is\s+currently:\s+${TELNET_STATUS}

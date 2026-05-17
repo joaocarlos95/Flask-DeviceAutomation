@@ -1,6 +1,0 @@
----
-parsed_sample:
-  - state: "not enabled"
-    next_filename: ""
-    filenames: []
-    current_index: ""
