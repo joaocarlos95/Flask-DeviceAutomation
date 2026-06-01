@@ -1,4 +1,4 @@
-(function(window, document, $) {
+﻿(function(window, document, $) {
     'use strict';
 
     var GetConfigs = {
@@ -8,7 +8,8 @@
             hosts: 'panda.get_configs.hosts',
             manualHosts: 'panda.get_configs.manual_hosts',
             excludedHosts: 'panda.get_configs.excluded_hosts',
-            targetSource: 'panda.target.source'
+            targetSource: 'panda.target.source',
+            runId: 'panda.get_configs.run_id'
         },
 
         init: function() {
@@ -16,8 +17,11 @@
             this.buildTargetChoices();
             this.restoreState();
             this.bindEvents();
+            this.switchModalView('confirm');
             this.loadStoredTargetSource();
             this.render();
+            this.updateReopenButton(false);
+            this.restoreActiveRunState();
         },
 
         cache: function() {
@@ -38,6 +42,46 @@
             this.modalTargets = document.getElementById('selectedDeviceGroupsModal');
             this.emptyTargets = document.getElementById('deviceGroupSearchEmpty');
             this.sourceMessage = document.getElementById('targetSourceMessage');
+            this.executionRunState = document.getElementById('executionRunState');
+            this.executionStatusList = document.getElementById('executionStatusList');
+            this.executionRunningCount = document.getElementById('executionRunningCount');
+            this.executionSuccessCount = document.getElementById('executionSuccessCount');
+            this.executionErrorCount = document.getElementById('executionErrorCount');
+            this.executionEventSearch = document.getElementById('executionEventSearch');
+            this.executionShowAll = document.getElementById('executionShowAll');
+            this.executionShowErrors = document.getElementById('executionShowErrors');
+            this.modalOutsidePrev = document.getElementById('modalOutsidePrev');
+            this.modalOutsideNext = document.getElementById('modalOutsideNext');
+            this.modalShell = document.querySelector('#runGetConfigsModal .modal-shell');
+            this.runFixedDialog = document.querySelector('#runGetConfigsModal .run-fixed-dialog');
+            this.runModalFixed = document.querySelector('#runGetConfigsModal .run-modal-fixed');
+            this.miniConfirmCard = document.getElementById('miniConfirmCard');
+            this.miniLogsCard = document.getElementById('miniLogsCard');
+            this.miniConfirmDataCount = document.getElementById('miniConfirmDataCount');
+            this.miniConfirmTargetCount = document.getElementById('miniConfirmTargetCount');
+            this.miniReviewBody = document.getElementById('miniReviewBody');
+            this.miniLogsRunCount = document.getElementById('miniLogsRunCount');
+            this.miniLogsSuccessCount = document.getElementById('miniLogsSuccessCount');
+            this.miniLogsErrorCount = document.getElementById('miniLogsErrorCount');
+            this.miniLogsStatus = document.getElementById('miniLogsStatus');
+            this.miniLogsBody = document.getElementById('miniLogsBody');
+            this.confirmViewPanel = document.getElementById('confirmViewPanel');
+            this.logsViewPanel = document.getElementById('logsViewPanel');
+            this.modalRunAction = document.querySelector('#runGetConfigsModal .modal-run-action');
+            this.runModalFooter = document.getElementById('runModalFooter');
+            this.recentRunsWrap = document.getElementById('recentRunsWrap');
+            this.recentRunsList = document.getElementById('recentRunsList');
+            this.runScriptBtn = document.getElementById('runScriptBtn');
+            this.openRunModalBtn = document.getElementById('openRunModalBtn');
+            this.reopenExecutionBtn = document.getElementById('reopenExecutionBtn');
+            this.activeRunId = null;
+            this.statusPollHandle = null;
+            this.executionViewMode = 'all';
+            this.runActionMode = 'run';
+            this.modalView = 'confirm';
+            this.modalOpenMode = 'confirm';
+            this.latestRunStatus = null;
+            this.currentRunTargets = [];
         },
 
         targetKey: function(key) {
@@ -245,6 +289,11 @@
 
         bindEvents: function() {
             var self = this;
+            var safeBind = function(element, eventName, handler) {
+                if (element) {
+                    element.addEventListener(eventName, handler);
+                }
+            };
 
             document.querySelectorAll('#accordion input[type="checkbox"]').forEach(function(input) {
                 input.addEventListener('change', function() {
@@ -304,12 +353,81 @@
                 self.filterTargets();
             });
 
-            document.getElementById('runScriptBtn').addEventListener('click', function() {
+            safeBind(this.runScriptBtn, 'click', function() {
+                if (self.runActionMode === 'interrupt') {
+                    self.interruptRun();
+                    return;
+                }
+                if (self.modalView === 'logs') {
+                    return;
+                }
                 self.run();
             });
-
+            safeBind(this.executionShowAll, 'click', function() {
+                self.executionViewMode = 'all';
+                self.executionShowAll.classList.add('active');
+                self.executionShowErrors.classList.remove('active');
+                self.fetchRunStatus();
+            });
+            safeBind(this.executionShowErrors, 'click', function() {
+                self.executionViewMode = 'errors';
+                self.executionShowErrors.classList.add('active');
+                self.executionShowAll.classList.remove('active');
+                self.fetchRunStatus();
+            });
+            safeBind(this.executionEventSearch, 'input', function() {
+                if (self.latestRunStatus) {
+                    self.renderRunStatus(self.latestRunStatus);
+                }
+            });
+            safeBind(this.modalOutsidePrev, 'click', function() { self.switchModalView('confirm'); });
+            safeBind(this.modalOutsideNext, 'click', function() { self.switchModalView('logs'); });
+            safeBind(this.miniConfirmCard, 'click', function() { self.switchModalView('confirm'); });
+            safeBind(this.miniLogsCard, 'click', function() { self.switchModalView('logs'); });
+            safeBind(this.openRunModalBtn, 'click', function() {
+                self.modalOpenMode = 'confirm';
+            });
+            safeBind(this.reopenExecutionBtn, 'click', function() {
+                if (self.reopenExecutionBtn.disabled) {
+                    return;
+                }
+                self.modalOpenMode = 'logs';
+                $('#runGetConfigsModal').modal('show');
+                self.switchModalView('logs');
+                self.fetchRunStatus();
+            });
+            if (this.recentRunsList) {
+                this.recentRunsList.addEventListener('wheel', function(event) {
+                    if (!self.recentRunsList) {
+                        return;
+                    }
+                    if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+                        self.recentRunsList.scrollLeft += event.deltaY;
+                        event.preventDefault();
+                    }
+                }, { passive: false });
+            }
             window.addEventListener('panda:target-source-change', function(event) {
                 self.loadTargetSource(event.detail.source);
+            });
+
+            $('#runGetConfigsModal').on('show.bs.modal', function() {
+                self.switchModalView(self.modalOpenMode === 'logs' ? 'logs' : 'confirm');
+                if (self.runActionMode !== 'interrupt') {
+                    self.setRunButtonMode('run');
+                }
+                self.fetchRecentRuns();
+            });
+            $('#runGetConfigsModal').on('shown.bs.modal', function() {
+                self.alignMiniCards();
+            });
+            $('#runGetConfigsModal').on('hidden.bs.modal', function() {
+                document.body.classList.remove('modal-open');
+                $('.modal-backdrop').remove();
+                self.updateReopenButton();
+            });
+            window.addEventListener('resize', function() {
+                self.alignMiniCards();
             });
         },
 
@@ -532,28 +650,37 @@
         },
 
         selectedTargetDevices: function() {
-            var lookup = {};
-            var groups = this.selectedGroups();
-            var hosts = this.selectedHosts();
-            var groupLookup = {};
+            return this.selectedHosts().slice().sort();
+        },
 
-            groups.forEach(function(group) {
-                groupLookup[group] = true;
+        getRunTargetDevices: function() {
+            var lookup = {};
+            var excludedLookup = {};
+            var devices = [];
+            var self = this;
+
+            (this.selectionState.excludedHosts || []).forEach(function(host) {
+                excludedLookup[host] = true;
             });
 
-            this.getGroups().forEach(function(group) {
-                if (groupLookup[group.value]) {
-                    group.devices.forEach(function(device) {
-                        lookup[device] = true;
-                    });
+            this.devicesForGroups(this.selectionState.groups || []).forEach(function(host) {
+                if (!excludedLookup[host]) {
+                    lookup[host] = true;
                 }
             });
 
-            hosts.forEach(function(host) {
-                lookup[host] = true;
+            (this.selectionState.manualHosts || []).forEach(function(host) {
+                if (!excludedLookup[host]) {
+                    lookup[host] = true;
+                }
             });
 
-            return Object.keys(lookup).sort();
+            Object.keys(lookup).forEach(function(host) {
+                devices.push(host);
+            });
+
+            devices.sort();
+            return devices;
         },
 
         render: function() {
@@ -567,9 +694,57 @@
             this.reviewTargetCount.textContent = devices.length;
             this.modalDataCount.textContent = infoCount;
             this.modalTargetCount.textContent = devices.length;
+            if (this.miniConfirmDataCount) {
+                this.miniConfirmDataCount.textContent = infoCount;
+            }
+            if (this.miniConfirmTargetCount) {
+                this.miniConfirmTargetCount.textContent = devices.length;
+            }
+            this.renderMiniPreviews(this.flattenInformation(info), devices);
 
             this.renderReview(info, devices);
             this.renderModal(info, devices);
+        },
+
+        renderMiniPreviews: function(dataItems, targetItems) {
+            var dataList = dataItems && dataItems.length ? dataItems : ['No information data selected'];
+            var targetList = targetItems && targetItems.length ? targetItems : ['No target devices selected'];
+            var html = '';
+
+            if (!this.miniReviewBody) {
+                return;
+            }
+
+            html =
+                '<div class="mini-review-section">' +
+                '<span class="mini-label"><i class="fas fa-sliders" aria-hidden="true"></i> Information Data</span>' +
+                '<div class="mini-review-list mini-review-list-clean">' + this.renderMiniCleanList(dataList) + '</div>' +
+                '</div>' +
+                '<div class="mini-review-section">' +
+                '<span class="mini-label"><i class="fas fa-network-wired" aria-hidden="true"></i> Target Devices</span>' +
+                '<div class="mini-review-list mini-review-list-clean">' + this.renderMiniCleanList(targetList) + '</div>' +
+                '</div>';
+
+            this.miniReviewBody.innerHTML = html;
+        },
+
+        toMiniPill: function(item) {
+            return '<div class="mini-review-pill">' + this.escapeHtml(item) + '</div>';
+        },
+
+        renderMiniCleanList: function(items) {
+            return items.map(function(item) {
+                return '<div class="mini-review-line-item">' + this.escapeHtml(item) + '</div>';
+            }.bind(this)).join('');
+        },
+
+        escapeHtml: function(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         },
 
         renderReview: function(info, devices) {
@@ -623,6 +798,7 @@
             var self = this;
             var selectedGroups = this.selectedGroups();
             var selectedHosts = this.selectedHosts();
+            var selectedHostLookup = {};
             var assigned = {};
             var blocks = [];
             var hostLookup = {};
@@ -632,11 +808,19 @@
                 hostLookup[host.value] = host;
             });
 
+            selectedHosts.forEach(function(hostName) {
+                selectedHostLookup[hostName] = true;
+            });
+
             selectedGroups.forEach(function(groupName) {
                 var group = self.getGroups().find(function(item) {
                     return item.value === groupName;
                 });
-                var devices = group ? group.devices.slice().sort() : [];
+                var devices = group
+                    ? group.devices.filter(function(device) {
+                        return !!selectedHostLookup[device];
+                    }).slice().sort()
+                    : [];
 
                 devices.forEach(function(device) {
                     assigned[device] = true;
@@ -836,10 +1020,29 @@
         },
 
         run: function() {
+            var self = this;
             var info = [];
+            var runDevices = this.getRunTargetDevices();
             document.querySelectorAll('#accordion input[type="checkbox"]:checked').forEach(function(input) {
                 info.push(input.id);
             });
+
+            this.executionRunState.textContent = 'Starting run...';
+            this.executionStatusList.innerHTML = '';
+            this.executionRunningCount.textContent = '0';
+            this.executionSuccessCount.textContent = '0';
+            this.executionErrorCount.textContent = '0';
+            if (this.executionEventSearch) {
+                this.executionEventSearch.value = '';
+            }
+            this.latestRunStatus = null;
+            this.currentRunTargets = runDevices.slice();
+            this.executionViewMode = 'all';
+            this.executionShowAll.classList.add('active');
+            this.executionShowErrors.classList.remove('active');
+            this.setRunButtonMode('interrupt');
+            this.switchModalView('logs');
+            this.updateReopenButton(true);
 
             $.ajax({
                 url: '/run_get_configs',
@@ -848,10 +1051,538 @@
                 data: JSON.stringify({
                     targetSource: this.getTargetSource(),
                     selectedDeviceGroups: this.selectedGroups(),
-                    selectedDevices: this.selectedHosts(),
+                    selectedDevices: runDevices,
+                    excludedDevices: this.selectionState.excludedHosts.slice(),
                     informationDataSelected: info
-                })
+                }),
+                success: function(data) {
+                    self.activeRunId = data.runId;
+                    sessionStorage.setItem(self.keys.runId, data.runId);
+                    self.executionRunState.textContent = 'Run started. Collecting command statuses...';
+                    self.updateReopenButton(true);
+                    self.fetchRecentRuns();
+                    self.startStatusPolling();
+                },
+                error: function(xhr) {
+                    var message = 'Could not start run.';
+                    if (xhr && xhr.responseJSON && xhr.responseJSON.error) {
+                        message = xhr.responseJSON.error;
+                    }
+                    self.executionRunState.textContent = message;
+                }
             });
+        },
+
+        switchModalView: function(viewName) {
+            var showConfirm = viewName === 'confirm';
+            this.modalView = viewName;
+            if (this.modalShell) {
+                this.modalShell.setAttribute('data-view', showConfirm ? 'confirm' : 'logs');
+            }
+            if (this.confirmViewPanel) {
+                this.confirmViewPanel.classList.toggle('is-hidden', !showConfirm);
+            }
+            if (this.logsViewPanel) {
+                this.logsViewPanel.classList.toggle('is-hidden', showConfirm);
+            }
+            if (this.modalOutsidePrev) {
+                this.modalOutsidePrev.disabled = showConfirm;
+            }
+            if (this.modalOutsideNext) {
+                this.modalOutsideNext.disabled = !showConfirm;
+            }
+            if (this.miniConfirmCard) {
+                this.miniConfirmCard.classList.add('is-hidden');
+            }
+            if (this.miniLogsCard) {
+                this.miniLogsCard.classList.add('is-hidden');
+            }
+            if (showConfirm) {
+                if (this.miniLogsCard) {
+                    this.miniLogsCard.classList.remove('is-hidden');
+                }
+            } else {
+                if (this.miniConfirmCard) {
+                    this.miniConfirmCard.classList.remove('is-hidden');
+                }
+            }
+            if (this.modalRunAction) {
+                this.modalRunAction.classList.remove('is-hidden');
+            }
+            if (this.recentRunsWrap) {
+                this.recentRunsWrap.classList.toggle('is-hidden', showConfirm);
+            }
+            if (this.runModalFooter) {
+                this.runModalFooter.setAttribute('data-view', showConfirm ? 'confirm' : 'logs');
+            }
+            if (this.runScriptBtn && this.runActionMode !== 'interrupt') {
+                this.runScriptBtn.disabled = !showConfirm;
+            }
+            this.alignMiniCards();
+        },
+
+        alignMiniCards: function() {
+            var modal = document.getElementById('runGetConfigsModal');
+            var overlap = 0;
+            var insetY = 10;
+            var setCardPos = function(card, left, top, height) {
+                if (!card) {
+                    return;
+                }
+                card.style.left = Math.max(8, Math.round(left)) + 'px';
+                card.style.top = Math.round(top + insetY) + 'px';
+                card.style.transform = 'none';
+                card.style.height = Math.round(Math.max(420, height - (insetY * 2))) + 'px';
+                card.style.minHeight = Math.round(Math.max(420, height - (insetY * 2))) + 'px';
+            };
+
+            if (!modal || !modal.classList.contains('show')) {
+                return;
+            }
+
+            if (window.innerWidth <= 900) {
+                return;
+            }
+
+            var anchor = this.runModalFixed || this.runFixedDialog;
+            if (!anchor) {
+                return;
+            }
+
+            var rect = anchor.getBoundingClientRect();
+            if (!rect.width || !rect.height) {
+                return;
+            }
+
+            if (this.miniConfirmCard) {
+                var confirmWidth = this.miniConfirmCard.offsetWidth || 260;
+                setCardPos(this.miniConfirmCard, rect.left - confirmWidth + overlap, rect.top, rect.height);
+            }
+            if (this.miniLogsCard) {
+                setCardPos(this.miniLogsCard, rect.right - overlap, rect.top, rect.height);
+            }
+        },
+
+        setRunButtonMode: function(mode) {
+            this.runActionMode = mode;
+            if (mode === 'interrupt') {
+                this.runScriptBtn.classList.remove('primary-button');
+                this.runScriptBtn.classList.add('secondary-button');
+                this.runScriptBtn.innerHTML = '<i class="fas fa-stop" aria-hidden="true"></i>Stop';
+                this.runScriptBtn.disabled = false;
+            } else {
+                this.runScriptBtn.classList.remove('secondary-button');
+                this.runScriptBtn.classList.add('primary-button');
+                this.runScriptBtn.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>Run';
+                this.runScriptBtn.disabled = this.modalView === 'logs';
+            }
+        },
+
+        interruptRun: function() {
+            var self = this;
+            if (!this.activeRunId) {
+                return;
+            }
+            $.ajax({
+                url: '/run_get_configs_interrupt/' + this.activeRunId,
+                type: 'POST',
+                success: function() {
+                    self.executionRunState.textContent = 'Stop requested (interrupt)...';
+                    self.setRunButtonMode('run');
+                },
+                error: function() {
+                    self.executionRunState.textContent = 'Could not request interrupt.';
+                }
+            });
+        },
+
+        startStatusPolling: function() {
+            var self = this;
+
+            if (this.statusPollHandle) {
+                window.clearInterval(this.statusPollHandle);
+                this.statusPollHandle = null;
+            }
+
+            this.statusPollHandle = window.setInterval(function() {
+                self.fetchRunStatus();
+            }, 1000);
+
+            this.fetchRunStatus();
+        },
+
+        fetchRunStatus: function() {
+            var self = this;
+            if (!this.activeRunId) {
+                return;
+            }
+
+            $.ajax({
+                url: '/run_get_configs_status/' + this.activeRunId,
+                type: 'GET',
+                success: function(data) {
+                    self.renderRunStatus(data);
+                    if (data.status !== 'running') {
+                        window.clearInterval(self.statusPollHandle);
+                        self.statusPollHandle = null;
+                        self.setRunButtonMode('run');
+                        self.updateReopenButton(true);
+                        self.fetchRecentRuns();
+                    }
+                },
+                error: function() {
+                    self.executionRunState.textContent = 'Could not read run status.';
+                    if (self.statusPollHandle) {
+                        window.clearInterval(self.statusPollHandle);
+                        self.statusPollHandle = null;
+                    }
+                    self.setRunButtonMode('run');
+                    self.updateReopenButton(true);
+                    sessionStorage.removeItem(self.keys.runId);
+                }
+            });
+        },
+
+        renderRunStatus: function(statusData) {
+            var self = this;
+            var events = statusData.events || [];
+            var failedEvents = events.filter(function(event) {
+                return ((event.status || '').toLowerCase() === 'error');
+            });
+            var statusLabel = statusData.status || 'running';
+            var searchText = this.executionEventSearch ? (this.executionEventSearch.value || '').trim().toLowerCase() : '';
+            var selectedDevices = this.currentRunTargets && this.currentRunTargets.length
+                ? this.currentRunTargets
+                : this.selectedHosts();
+            var deviceStats = this.buildDeviceStats(events, selectedDevices);
+            this.latestRunStatus = statusData;
+
+            if (statusLabel === 'completed') {
+                this.executionRunState.textContent = 'Completed successfully.';
+            } else if (statusLabel === 'failed') {
+                this.executionRunState.textContent = 'Failed: ' + (statusData.error || 'Unknown error');
+            } else if (statusLabel === 'interrupted') {
+                this.executionRunState.textContent = 'Interrupted by user.';
+            } else {
+                this.executionRunState.textContent = 'Running...';
+            }
+
+            this.executionRunningCount.textContent = deviceStats.running;
+            this.executionSuccessCount.textContent = deviceStats.success;
+            this.executionErrorCount.textContent = deviceStats.error;
+            if (this.miniLogsStatus) {
+                this.miniLogsStatus.textContent = String(statusLabel || 'idle').toUpperCase();
+            }
+            if (this.miniLogsRunCount) {
+                this.miniLogsRunCount.textContent = deviceStats.running;
+            }
+            if (this.miniLogsSuccessCount) {
+                this.miniLogsSuccessCount.textContent = deviceStats.success;
+            }
+            if (this.miniLogsErrorCount) {
+                this.miniLogsErrorCount.textContent = deviceStats.error;
+            }
+            this.renderMiniLogsPreview(statusData, deviceStats);
+            this.alignMiniCards();
+
+            this.executionStatusList.innerHTML = '';
+            var listToRender = this.executionViewMode === 'errors' ? failedEvents : events;
+            if (searchText) {
+                listToRender = listToRender.filter(function(event) {
+                    return self.matchExecutionEvent(event, searchText);
+                });
+            }
+
+            listToRender.slice(-250).forEach(function(event) {
+                var pill = document.createElement('span');
+                var status = (event.status || '').toLowerCase();
+                var icon = status === 'error' ? '✗' : (status === 'success' ? '✓' : '…');
+                pill.className = 'pill status-' + status;
+                pill.textContent =
+                    '[' + (event.timestamp || '') + '] ' +
+                    icon + ' ' +
+                    (event.device || '-') + ' (' + (event.ip || '-') + ') ' +
+                    (event.config_info || '-') + ' :: ' + (event.command || '-') + ' - ' + (event.message || '');
+                self.executionStatusList.appendChild(pill);
+            });
+        },
+
+        updateReopenButton: function(hasRunStarted) {
+            if (!this.reopenExecutionBtn) {
+                return;
+            }
+            var enabled = !!hasRunStarted || !!this.activeRunId;
+            this.reopenExecutionBtn.disabled = !enabled;
+            this.reopenExecutionBtn.classList.toggle('is-disabled', !enabled);
+            this.reopenExecutionBtn.classList.toggle('is-active', enabled);
+        },
+
+        restoreActiveRunState: function() {
+            var storedRunId = sessionStorage.getItem(this.keys.runId);
+            var self = this;
+            if (!storedRunId) {
+                this.fetchRecentRuns();
+                return;
+            }
+            this.activeRunId = storedRunId;
+            this.updateReopenButton(true);
+            $.ajax({
+                url: '/run_get_configs_status/' + storedRunId,
+                type: 'GET',
+                success: function(data) {
+                    self.latestRunStatus = data;
+                    self.renderRunStatus(data);
+                    self.fetchRecentRuns();
+                    if (data.status === 'running') {
+                        self.startStatusPolling();
+                    } else {
+                        self.setRunButtonMode('run');
+                        self.updateReopenButton(true);
+                    }
+                },
+                error: function() {
+                    self.activeRunId = null;
+                    self.updateReopenButton(false);
+                    sessionStorage.removeItem(self.keys.runId);
+                }
+            });
+        },
+
+        fetchRecentRuns: function() {
+            var self = this;
+            if (!this.recentRunsList) {
+                return;
+            }
+            $.ajax({
+                url: '/run_get_configs_recent',
+                type: 'GET',
+                success: function(data) {
+                    self.renderRecentRuns((data && data.runs) || []);
+                }
+            });
+        },
+
+        renderRecentRuns: function(runs) {
+            var self = this;
+            if (!this.recentRunsList) {
+                return;
+            }
+
+            this.recentRunsList.innerHTML = '';
+            if (!runs.length) {
+                var empty = document.createElement('span');
+                empty.className = 'recent-run-empty';
+                empty.textContent = 'No runs yet';
+                this.recentRunsList.appendChild(empty);
+                return;
+            }
+
+            runs.slice(0, 8).forEach(function(run) {
+                var button = document.createElement('button');
+                var startedAt = run.startedAt ? new Date(run.startedAt * 1000) : null;
+                var hh = startedAt ? String(startedAt.getHours()).padStart(2, '0') : '--';
+                var mm = startedAt ? String(startedAt.getMinutes()).padStart(2, '0') : '--';
+                var status = (run.status || 'unknown').toLowerCase();
+
+                button.type = 'button';
+                button.className = 'btn secondary-button btn-sm recent-run-btn status-' + status;
+                if (run.runId === self.activeRunId) {
+                    button.classList.add('active');
+                }
+                button.textContent = hh + ':' + mm + ' ' + status;
+                button.addEventListener('click', function() {
+                    self.activeRunId = run.runId;
+                    sessionStorage.setItem(self.keys.runId, run.runId);
+                    self.modalOpenMode = 'logs';
+                    self.switchModalView('logs');
+                    self.fetchRunStatus();
+                    self.updateReopenButton(true);
+                    self.fetchRecentRuns();
+                });
+                self.recentRunsList.appendChild(button);
+            });
+        },
+
+        matchExecutionEvent: function(event, searchText) {
+            if (!searchText) {
+                return true;
+            }
+            var eventText = [
+                event.timestamp || '',
+                event.status || '',
+                event.device || '',
+                event.ip || '',
+                event.config_info || '',
+                event.command || '',
+                event.message || ''
+            ].join(' ').toLowerCase();
+            return eventText.indexOf(searchText) !== -1;
+        },
+
+        buildDeviceStats: function(events, selectedDevices) {
+            var states = {};
+            var stats = { running: 0, success: 0, error: 0 };
+
+            selectedDevices.forEach(function(device) {
+                states[device] = 'pending';
+            });
+
+            events.forEach(function(event) {
+                var device = event.device || '';
+                var status = (event.status || '').toLowerCase();
+                var previous = states[device];
+
+                if (!device || device === '-') {
+                    return;
+                }
+
+                if (typeof previous === 'undefined') {
+                    states[device] = 'pending';
+                    previous = 'pending';
+                }
+
+                if (status === 'error') {
+                    states[device] = 'error';
+                    return;
+                }
+
+                if (status === 'running') {
+                    if (previous !== 'error') {
+                        states[device] = 'running';
+                    }
+                    return;
+                }
+
+                if (status === 'success') {
+                    if (previous !== 'error') {
+                        states[device] = 'success';
+                    }
+                }
+            });
+
+            Object.keys(states).forEach(function(device) {
+                var state = states[device];
+                if (state === 'running') {
+                    stats.running += 1;
+                } else if (state === 'success') {
+                    stats.success += 1;
+                } else if (state === 'error') {
+                    stats.error += 1;
+                }
+            });
+
+            return stats;
+        },
+
+        latestEventCompact: function(events) {
+            if (!events || !events.length) {
+                return 'No execution events yet';
+            }
+            var event = events[events.length - 1];
+            var ts = event.timestamp || '';
+            var status = (event.status || 'info').toUpperCase();
+            var message = event.message || '';
+            return '[' + ts + '] ' + status + ' - ' + message;
+        },
+
+        renderMiniLogsPreview: function(statusData, deviceStats) {
+            var events = (statusData && statusData.events) ? statusData.events : [];
+            var stats = deviceStats || this.buildDeviceStats(events, this.currentRunTargets || []);
+            var recent = events.slice().reverse();
+            var statusLabel = (statusData && statusData.status ? String(statusData.status) : 'idle').toUpperCase();
+            var durationLabel = this.getMiniRunDuration(statusData, events);
+            var html = '';
+            var items = [];
+
+            if (!this.miniLogsBody) {
+                return;
+            }
+
+            items = recent.slice(0, 10);
+
+            html =
+                '<div class="mini-logs-layout">' +
+                '<div class="mini-logs-status">' +
+                '<strong>' + this.escapeHtml(statusLabel) + '</strong>' +
+                '<span>' + this.escapeHtml(durationLabel) + '</span>' +
+                '</div>' +
+                '<div class="mini-logs-health">' +
+                '<div class="mini-logs-health-item"><strong>' + this.escapeHtml(String(stats.running)) + '</strong><span>Running</span></div>' +
+                '<div class="mini-logs-health-item"><strong>' + this.escapeHtml(String(stats.success)) + '</strong><span>Success</span></div>' +
+                '<div class="mini-logs-health-item"><strong>' + this.escapeHtml(String(stats.error)) + '</strong><span>Errors</span></div>' +
+                '</div>' +
+                '<span class="mini-label">Event summary</span>' +
+                '<div class="mini-review-list mini-review-list-clean mini-logs-events">' +
+                (items.length ? items.map(function(event) {
+                    return '<div class="mini-review-line-item ' + this.getMiniEventClass(event) + '">' + this.escapeHtml(this.formatMiniEventLine(event)) + '</div>';
+                }.bind(this)).join('') : '<div class="mini-review-line-item">No execution events yet</div>') +
+                '</div>' +
+                '</div>';
+
+            this.miniLogsBody.innerHTML = html;
+        },
+
+        getMiniRunDuration: function(statusData, events) {
+            var data = statusData || {};
+            var value = data.duration || data.duration_seconds || data.durationSeconds;
+            var seconds = Number(value);
+
+            if (!Number.isNaN(seconds) && seconds > 0) {
+                return 'Duration: ' + Math.round(seconds) + 's';
+            }
+
+            var candidate = (events || []).slice().reverse().find(function(event) {
+                return /execution time/i.test(String(event.message || ''));
+            });
+
+            if (candidate && candidate.message) {
+                return 'Duration: ' + String(candidate.message).replace(/^.*Execution time:\s*/i, '');
+            }
+
+            return 'Duration: -';
+        },
+
+        formatMiniEventLine: function(event) {
+            var ts = event && event.timestamp ? String(event.timestamp) : '';
+            var status = event && event.status ? String(event.status).toUpperCase() : 'INFO';
+            var device = event && event.device ? String(event.device) : '-';
+            var message = event && event.message ? String(event.message) : '';
+            var shortMessage = message.split('\n')[0].split('. ')[0].trim();
+
+            if (shortMessage.length > 64) {
+                shortMessage = shortMessage.slice(0, 61) + '...';
+            }
+            if (!shortMessage) {
+                shortMessage = '-';
+            }
+
+            return '[' + ts + '] ' + status + ' ' + device + ' - ' + shortMessage;
+        },
+
+        getMiniEventClass: function(event) {
+            var status = String((event && event.status) || '').toLowerCase();
+            if (status === 'error') {
+                return 'mini-event-error';
+            }
+            if (status === 'success') {
+                return 'mini-event-success';
+            }
+            if (status === 'running') {
+                return 'mini-event-running';
+            }
+            return 'mini-event-info';
+        },
+
+        latestEventField: function(events, fieldName, fallback) {
+            if (!events || !events.length) {
+                return fallback;
+            }
+            var event = events[events.length - 1];
+            var value = event[fieldName];
+            if (!value || value === '-') {
+                return fallback;
+            }
+            return String(value);
         }
     };
 
@@ -861,3 +1592,4 @@
 
     window.PandaGetConfigs = GetConfigs;
 })(window, document, jQuery);
+

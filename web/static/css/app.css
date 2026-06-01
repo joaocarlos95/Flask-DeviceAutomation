@@ -815,6 +815,28 @@ html.sidebar-expanded .app-main {
 #sourceSettingsModal .modal-dialog {
     max-width: 760px;
     width: min(760px, calc(100vw - 32px));
+    margin: 1rem auto;
+}
+
+#sourceSettingsModal .modal-dialog.modal-dialog-centered {
+    min-height: calc(100vh - 2rem);
+    min-height: calc(100dvh - 2rem);
+}
+
+#sourceSettingsModal .modal-content {
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+}
+
+#sourceSettingsModal .modal-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#sourceSettingsModal .modal-body::-webkit-scrollbar {
+    display: none;
 }
 
 .app-modal .modal-header {

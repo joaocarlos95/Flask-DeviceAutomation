@@ -3,7 +3,7 @@
 
 {% set active_page = "get_configs" %}
 
-{% block title %}Get Configurations | PANDA{% endblock %}
+{% block title %}PANDA | Get Configurations{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/get_configs.css') }}">
@@ -128,49 +128,96 @@
         </header>
         <div class="review-body" id="informationDataSelectedBody"></div>
         <footer class="review-footer">
-            <button type="button" class="btn primary-button run-button" data-toggle="modal" data-target="#runGetConfigsModal">
-                <i class="fas fa-play" aria-hidden="true"></i>
-                Run
-            </button>
+            <div class="run-actions-row">
+                <button type="button" class="btn primary-button run-button" id="openRunModalBtn" data-toggle="modal" data-target="#runGetConfigsModal">
+                    <i class="fas fa-play" aria-hidden="true"></i>
+                    Run
+                </button>
+                <button type="button" class="btn secondary-button run-button reopen-run-button is-disabled" id="reopenExecutionBtn" disabled>
+                    <i class="fas fa-terminal" aria-hidden="true"></i>
+                    Monitor
+                </button>
+            </div>
         </footer>
     </aside>
 </div>
 
-<div class="modal" id="runGetConfigsModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content app-modal run-modal">
+<div class="modal" id="runGetConfigsModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true" data-keyboard="true">
+    <div class="modal-shell" role="document">
+        <button class="modal-side-mini is-hidden" type="button" id="miniConfirmCard" aria-label="Show review">
+            <span class="mini-title">Review</span>
+            <div class="mini-review-metrics">
+                <div class="mini-meta"><strong id="miniConfirmDataCount">0</strong> data points</div>
+                <div class="mini-meta"><strong id="miniConfirmTargetCount">0</strong> target devices</div>
+            </div>
+            <div class="mini-review-body" id="miniReviewBody"></div>
+        </button>
+    <div class="modal-dialog modal-lg modal-dialog-centered run-fixed-dialog" role="document">
+        <div class="modal-content app-modal run-modal run-modal-fixed">
             <div class="modal-header">
                 <div>
                     <h4 class="modal-title">Confirm Collection Run</h4>
-                    <p class="modal-subtitle">Review selected information data and target devices before running.</p>
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body">
-                <div class="modal-metrics">
-                    <div><strong id="modalDataPointCount">0</strong><span>Data points</span></div>
-                    <div><strong id="modalTargetCount">0</strong><span>Target devices</span></div>
-                </div>
-                <section class="modal-section">
-                    <h5><i class="fas fa-sliders" aria-hidden="true"></i> Information Data</h5>
-                    <div id="informationDataModal"></div>
-                </section>
-                <section class="modal-section">
-                    <h5><i class="fas fa-network-wired" aria-hidden="true"></i> Target Devices</h5>
-                    <div id="selectedDeviceGroupsModal"></div>
-                </section>
+                        <div id="confirmViewPanel">
+                            <div class="modal-metrics">
+                                <div><strong id="modalDataPointCount">0</strong><span>Data points</span></div>
+                                <div><strong id="modalTargetCount">0</strong><span>Target devices</span></div>
+                            </div>
+                            <section class="modal-section">
+                                <h5><i class="fas fa-sliders" aria-hidden="true"></i> Information Data</h5>
+                                <div id="informationDataModal"></div>
+                            </section>
+                            <section class="modal-section">
+                                <h5><i class="fas fa-network-wired" aria-hidden="true"></i> Target Devices</h5>
+                                <div id="selectedDeviceGroupsModal"></div>
+                            </section>
+                        </div>
+
+                        <div id="logsViewPanel" class="is-hidden">
+                            <section class="modal-section">
+                                <h5><i class="fas fa-terminal" aria-hidden="true"></i> Execution Status</h5>
+                                <div id="executionRunState" class="modal-empty">Waiting to start.</div>
+                                <div class="modal-metrics execution-metrics">
+                                    <div><strong id="executionRunningCount">0</strong><span>Running</span></div>
+                                    <div><strong id="executionSuccessCount">0</strong><span>Success</span></div>
+                                    <div><strong id="executionErrorCount">0</strong><span>Errors</span></div>
+                                </div>
+                                <div class="execution-search-row">
+                                    <div class="search-box execution-search-box">
+                                        <i class="fas fa-search" aria-hidden="true"></i>
+                                        <input id="executionEventSearch" type="search" class="form-control" placeholder="Search events by device, command, status, or text">
+                                    </div>
+                                    <div class="toolbar-actions execution-toolbar">
+                                        <button class="btn secondary-button btn-sm" type="button" id="executionShowAll">Events</button>
+                                        <button class="btn secondary-button btn-sm" type="button" id="executionShowErrors">Errors</button>
+                                    </div>
+                                </div>
+                                <div id="executionStatusList" class="pill-list"></div>
+                            </section>
+                        </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn secondary-button" type="button" data-dismiss="modal">Cancel</button>
-                <form id="runGetConfigsForm" action="/run_get_configs" method="POST">
+            <div class="modal-footer" id="runModalFooter" data-view="confirm">
+                <div class="recent-runs is-hidden" id="recentRunsWrap">
+                    <span class="recent-runs-label">Recent Runs</span>
+                    <div class="recent-runs-list" id="recentRunsList"></div>
+                </div>
+                <form id="runGetConfigsForm" class="modal-run-action" action="/run_get_configs" method="POST">
                     <input type="hidden" id="selectedDeviceGroupsFlask" name="selectedDeviceGroupsFlask">
-                    <button class="btn primary-button" type="button" data-dismiss="modal" id="runScriptBtn">
+                    <button class="btn primary-button" type="button" id="runScriptBtn">
                         <i class="fas fa-play" aria-hidden="true"></i>
                         Run
                     </button>
                 </form>
             </div>
         </div>
+    </div>
+    <button class="modal-side-mini is-hidden" type="button" id="miniLogsCard" aria-label="Show execution logs">
+        <span class="mini-title">Execution</span>
+        <div class="mini-review-body" id="miniLogsBody"></div>
+    </button>
     </div>
 </div>
 {% endblock %}

@@ -20,6 +20,12 @@
         cache: function() {
             this.sidebarToggle = document.querySelector('.sidebar-toggle');
             this.sourceButtons = document.querySelectorAll('.target-source-button');
+            this.rootInput = document.getElementById('rootDirectoryInput');
+            this.rootBrowserButton = document.getElementById('openRootBrowser');
+            this.rootBrowser = document.getElementById('rootFolderBrowser');
+            this.rootBrowserPath = document.getElementById('rootBrowserPath');
+            this.rootBrowserList = document.getElementById('rootBrowserList');
+            this.rootBrowserUp = document.getElementById('rootBrowserUp');
             this.inventoryInput = document.getElementById('inventoryRootDirectory');
             this.browserButton = document.getElementById('openInventoryBrowser');
             this.browser = document.getElementById('inventoryFolderBrowser');
@@ -117,34 +123,55 @@
         bindFolderBrowser: function() {
             var self = this;
 
+            if (this.rootBrowserButton && this.rootInput) {
+                this.rootBrowserButton.addEventListener('click', function() {
+                    if (self.rootBrowser && !self.rootBrowser.hidden) {
+                        self.rootBrowser.hidden = true;
+                        return;
+                    }
+                    self.loadFolder(self.rootInput.value, true, 'root');
+                });
+            }
+
+            if (this.rootBrowserUp) {
+                this.rootBrowserUp.addEventListener('click', function() {
+                    if (self.rootBrowserUp.dataset.path) {
+                        self.loadFolder(self.rootBrowserUp.dataset.path, true, 'root');
+                    }
+                });
+            }
+
             if (this.browserButton && this.inventoryInput) {
                 this.browserButton.addEventListener('click', function() {
                     if (self.browser && !self.browser.hidden) {
                         self.browser.hidden = true;
                         return;
                     }
-                    self.loadFolder(self.inventoryInput.value, true);
+                    self.loadFolder(self.inventoryInput.value, true, 'inventory');
                 });
             }
 
             if (this.browserUp) {
                 this.browserUp.addEventListener('click', function() {
                     if (self.browserUp.dataset.path) {
-                        self.loadFolder(self.browserUp.dataset.path, true);
+                        self.loadFolder(self.browserUp.dataset.path, true, 'inventory');
                     }
                 });
             }
 
             $('#sourceSettingsModal').on('shown.bs.modal', function() {
+                if (self.rootInput) {
+                    self.loadFolder(self.rootInput.value, false, 'root');
+                }
                 if (self.inventoryInput) {
-                    self.loadFolder(self.inventoryInput.value, false);
+                    self.loadFolder(self.inventoryInput.value, false, 'inventory');
                 }
                 self.refreshNetboxStatus();
             });
 
         },
 
-        loadFolder: function(path, showBrowser) {
+        loadFolder: function(path, showBrowser, context) {
             var self = this;
             var shouldShowBrowser = showBrowser !== false;
 
@@ -152,7 +179,7 @@
                 url: '/browse_folders',
                 data: {path: path},
                 success: function(data) {
-                    self.renderFolders(data, shouldShowBrowser);
+                    self.renderFolders(data, shouldShowBrowser, context || 'inventory');
                 },
                 error: function() {
                     self.showSettingsMessage('Could not open that folder.');
@@ -160,37 +187,65 @@
             });
         },
 
-        renderFolders: function(data, showBrowser) {
+        getFolderBrowserRefs: function(context) {
+            if (context === 'root') {
+                return {
+                    browser: this.rootBrowser,
+                    list: this.rootBrowserList,
+                    path: this.rootBrowserPath,
+                    up: this.rootBrowserUp,
+                    status: null,
+                    input: this.rootInput
+                };
+            }
+            return {
+                browser: this.browser,
+                list: this.browserList,
+                path: this.browserPath,
+                up: this.browserUp,
+                status: this.browserStatus,
+                input: this.inventoryInput
+            };
+        },
+
+        renderFolders: function(data, showBrowser, context) {
             var self = this;
             var shouldShowBrowser = showBrowser !== false;
+            var refs = this.getFolderBrowserRefs(context);
+            var isInventory = context !== 'root';
 
-            if (!this.browser || !this.browserList || !this.browserPath || !this.browserUp || !this.browserStatus) {
+            if (!refs.browser || !refs.list || !refs.path || !refs.up) {
                 return;
             }
 
-            this.browser.hidden = !shouldShowBrowser;
-            this.browserPath.textContent = data.currentPath;
-            this.browserUp.disabled = !data.parentPath;
-            this.browserUp.dataset.path = data.parentPath || '';
-            if (this.inventoryInput) {
-                this.inventoryInput.value = data.currentPath;
+            refs.browser.hidden = !shouldShowBrowser;
+            refs.path.textContent = data.currentPath;
+            refs.up.disabled = !data.parentPath;
+            refs.up.dataset.path = data.parentPath || '';
+            if (refs.input) {
+                refs.input.value = data.currentPath;
             }
-            this.browserStatus.className = 'folder-browser-status ' + (data.hasInventoryFiles ? 'valid' : 'invalid');
-            this.browserStatus.textContent = data.hasInventoryFiles
-                ? 'Inventory files found.'
-                : 'Inventory files missing.';
-            this.browserList.innerHTML = '';
+            if (isInventory) {
+                refs.status.className = 'folder-browser-status ' + (data.hasInventoryFiles ? 'valid' : 'invalid');
+                refs.status.textContent = data.hasInventoryFiles
+                    ? 'Inventory files found.'
+                    : 'Inventory files missing.';
+            } else if (refs.status) {
+                refs.status.className = 'folder-browser-status valid';
+                refs.status.textContent = 'Folder selected.';
+            }
+            refs.list.innerHTML = '';
 
             if (!data.folders.length) {
-                this.browserList.appendChild(this.createMessage('No subfolders found.'));
+                refs.list.appendChild(this.createMessage('No subfolders found.'));
             }
 
             data.folders.forEach(function(folder) {
-                self.browserList.appendChild(self.createFolderButton(folder));
+                refs.list.appendChild(self.createFolderButton(folder, context));
             });
         },
 
-        createFolderButton: function(folder) {
+        createFolderButton: function(folder, context) {
             var self = this;
             var button = document.createElement('button');
             var name = document.createElement('span');
@@ -207,7 +262,7 @@
             name.appendChild(label);
             button.appendChild(name);
 
-            if (folder.hasInventoryFiles) {
+            if (context !== 'root' && folder.hasInventoryFiles) {
                 var badge = document.createElement('span');
                 badge.className = 'folder-option-badge';
                 badge.textContent = 'inventory';
@@ -215,7 +270,7 @@
             }
 
             button.addEventListener('click', function() {
-                self.loadFolder(folder.path);
+                self.loadFolder(folder.path, true, context || 'inventory');
             });
 
             return button;
@@ -265,6 +320,7 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({
+                    rootDirectory: self.rootInput ? self.rootInput.value : '',
                     inventoryDirectory: self.inventoryInput ? self.inventoryInput.value : '',
                     netboxUrl: self.netboxUrlInput ? self.netboxUrlInput.value : '',
                     netboxToken: self.netboxTokenInput ? self.netboxTokenInput.value : ''

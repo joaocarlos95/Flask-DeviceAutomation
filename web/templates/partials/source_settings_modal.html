@@ -3,12 +3,36 @@
         <div class="modal-content app-modal">
             <div class="modal-header">
                 <div>
-                    <h4 class="modal-title">Target Sources</h4>
-                    <p class="modal-subtitle">Configure inventory files or NetBox access.</p>
+                    <h4 class="modal-title">Settings</h4>
+                    <p class="modal-subtitle">Configure workspace paths and NetBox connection.</p>
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body">
+                <section class="settings-section">
+                    <div class="settings-section-heading">
+                        <h5>Root workspace</h5>
+                    </div>
+                    <label for="rootDirectoryInput">Directory</label>
+                    <div class="input-with-button">
+                        <input class="form-control" id="rootDirectoryInput" type="text" value="{{ root_directory or '' }}" placeholder="/path/to/root-workspace">
+                        <button class="btn secondary-button" id="openRootBrowser" type="button">
+                            <i class="fas fa-folder-open" aria-hidden="true"></i>
+                            Browse
+                        </button>
+                    </div>
+                    <small>Workspace that contains inputfiles and where outputfiles are saved.</small>
+                    <div class="folder-browser" id="rootFolderBrowser" hidden>
+                        <div class="folder-browser-header">
+                            <button class="btn secondary-button btn-sm folder-up-button" id="rootBrowserUp" type="button">
+                                <i class="fas fa-level-up-alt" aria-hidden="true"></i>
+                            </button>
+                            <span id="rootBrowserPath"></span>
+                        </div>
+                        <div class="folder-browser-list" id="rootBrowserList"></div>
+                    </div>
+                </section>
+
                 <section class="settings-section">
                     <div class="settings-section-heading">
                         <h5>Inventory folder</h5>
