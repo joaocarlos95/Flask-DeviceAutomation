@@ -1,4 +1,3 @@
-import csv
 import inspect
 import json
 import logging
@@ -20,8 +19,8 @@ from ntc_templates.parse import parse_output
 from typing import Literal
 
 from .decorators import write_to_file
-from .device import Device
 from .colors import Colors
+from dep.j2_templates.classes.templater import Templater
 
 
 logging.basicConfig(
@@ -32,8 +31,12 @@ logging.basicConfig(
 )
 
 
-# Define environment variable for TextFSM, so that the package can get the correct templates
-os.environ['NTC_TEMPLATES_DIR'] = os.path.join(os.path.dirname(__file__), '../dep/ntc-templates/ntc_templates/templates')
+# Define a default TextFSM templates directory.
+# The app startup may override this with a merged runtime directory.
+os.environ.setdefault(
+    'NTC_TEMPLATES_DIR',
+    os.path.join(os.path.dirname(__file__), '../dep/ntc-templates/ntc_templates/templates')
+)
 
 MAX_WORKERS = 40
 
@@ -83,144 +86,23 @@ class NetworkHandler:
             inventory=inventory
         )
 
-    def get_j2_template(self):
-        '''
-        Define the directory of jinja2 templates and specify the base template (skeleton) to be loaded
-        The base_config.j2 template will then be extended by the child templates, specified by the 
-        config_blocks variable passed in the constructor
-        '''
+    def get_device_filtered(self, name: str=None, ip_address: str=None|list, group: str=None, platform: str=None):
 
-        # Load the base template and assign it to a variable for further usage
-        env = Environment(
-            loader=FileSystemLoader(f"{os.path.dirname(__file__)}/../jinja2_templates"), 
-            trim_blocks=True, 
-            lstrip_blocks=True)
-        self.j2_template = env.get_template('base_config.j2')
+        filters = []
+        if name: filters.append(F(name__eq=name))
+        if group: filters.append(F(groups__contains=group))
+        if platform: filters.append(F(platform__eq=platform))
+        if ip_address: filters.append(F(hostname=ip_address))
 
-    def get_j2_data(self):
-        '''
-        Get the data to be used in the jinja2 template, from a YAML file
-        '''
-
-        # Open the default config_data.yaml file and load the content to a variable
-        with open(f"{self.dir}/inputfiles/config_data.yaml") as file:
-            self.j2_data = yaml.safe_load(file)
-
-
-    # def nornir_get_devices(self):
-    #     '''
-    #     Get device list from Nornir inventory and create a device object with the information
-    #     collected from it
-    #     '''
-
-    #     for host, host_object in self.nornir.inventory.hosts.items():
-    #         credentials = {
-    #             'username': host_object.username,
-    #             'password': host_object.password,
-    #             'enable_secret': None
-    #         }
-    #         device = Device(self, host_object.platform, host_object.hostname, credentials)
-    #         self.device_list.append(device)
-
-    def get_devices_from_csv(self):
-        '''
-        Get device list from .csv file and create a device object with the information
-        collected from it. If a keepass database is used to obtain device credentials, this function
-        will call the get_kdbx_credentials function to get the credentials.
-        '''
-
-        # Load client devices information from .csv file present in the client directory
-        if os.path.exists(f"{self.dir}/inputfiles/device_list.csv"):
-            path = f"{self.dir}/inputfiles/device_list.csv"
-        # If this file is not present in the client directory, open the default one 
-        else:
-            path = f"{os.path.dirname(__file__)}/../inputfiles/device_list.csv"
-
-        with open(path, mode='r', encoding='utf-8') as file:
-            for row in csv.DictReader(file, skipinitialspace=True,):
-                
-                # Ignore devices commented
-                if row['vendor_os'].startswith('#'):
-                    continue
-                else:
-                    # Credentials in .csv file have higher priority than in keepass database
-                    if row['username'] != '' and row['password'] != '':
-                        credentials = {
-                            'username': row['username'],
-                            'password': row['password'],
-                            'enable_secret': row['enable_secret']
-                        }                   
-                    # Check if keepass has device credentials
-                    elif self.kdbx_database:
-                        try:
-                            credentials = self.get_kdbx_credentials(self.kdbx_database, row['ip_address'])
-                        except Exception as exception:
-                            raise exception
-                    # Couldn't find credentials neither in .csv file nor .kdbx file
-                    else:
-                        credentials = {
-                            'username': None,
-                            'password': None,
-                            'enable_secret': None
-                        }
-
-                # Create a new Device object and append it to the list of devices
-                device = Device(self, row['vendor_os'], row['ip_address'], credentials)
-                self.device_list.append(device)
-
-    def get_device_filtered_by_name(self, hostname: str=None):
-        return self.nornir.filter(F(name__eq=hostname))
+        nr_filtered = self.nornir
+        for f in filters:
+            nr_filtered = nr_filtered.filter(f)
+        return nr_filtered
     
     def add_devices_credentials(self, nornir, username: str=None, password: str=None):
         for hostname, host_obj in nornir.inventory.hosts.items():
             host_obj.username = username
             host_obj.password = password
-
-    def get_kdbx_database(self, filename):
-        '''
-        Get keepass database from .kdbx file. This database will be later iterated through to get the device credentials
-        '''
-
-        try:
-            kdbx_password = getpass(f"{Colors.OK_YELLOW}[>]{Colors.END} Please insert your Keepass password: ")
-            # Load .kdbx file, passing in the argument the filename and respective password
-            kdbx_database = PyKeePass(filename, password=kdbx_password)
-        except Exception as exception:
-            if 'No such file or directory:' in str(exception):
-                print(f"{Colors.NOK_RED}[!]{Colors.END} Error getting keepass database)")
-                raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Error getting keepass database)")
-            elif len(str(exception)) == 0:
-                print(f"{Colors.NOK_RED}[!]{Colors.END} Wrong keepass password")
-                raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Wrong keepass password")
-            else:
-                raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Error in {inspect.currentframe().f_code.co_name}", exception)
-        
-        return kdbx_database
-
-
-    def get_kdbx_credentials(self, kdbx_database, ip_address):
-        '''
-        Get device credentials from keepass database, specifying the client name and device
-        IP address.
-        '''
-    
-        # Find client group within keepass, using its name
-        group = kdbx_database.find_groups(name=self.name, first=True)
-        if not group:
-            print(f"{Colors.NOK_RED}[!]{Colors.END} Group {self.name} doesn't exist in keepass database")
-            raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Group {self.name} doesn't exist in keepass database")
-
-        # Find device credentials, using its IP address 
-        entry = kdbx_database.find_entries(group=group, url=ip_address, tags=['SSH', 'Telnet'], recursive=True, first=True)
-        if not entry:
-            # Find device credentials, using common entry (usually credentials for all devices)
-            entry = kdbx_database.find_entries(group=group, title='RADIUS', first=True)
-            if not entry:
-                print(f"{Colors.NOK_RED}[!]{Colors.END} Couldn't find credentials for device with IP: {ip_address}")
-                raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} Couldn't find credentials for device with IP: {ip_address}")
-
-        return {'username': entry.username, 'password': entry.password, 'enable_secret': None}
-
 
     def get_commands(self):
         '''
@@ -229,8 +111,7 @@ class NetworkHandler:
         with open(f"{os.path.dirname(__file__)}/../commands.json", 'r', encoding='utf-8') as cmds:
             self.command_list = json.load(cmds)
 
-
-    def nornir_get_configs(self, get_configs_info: list, nornir_filtered) -> None:
+    def nornir_get_configs(self, get_configs_info: list, nornir_filtered, progress_callback=None, should_stop=None) -> None:
         """
         Function used to interact with the devices in Nornir.
 
@@ -239,7 +120,7 @@ class NetworkHandler:
             nornir_filtered (Nornir): Nornir object with the devices to interact with
         """
 
-        def run_get_configs(task: Task, config_info: str) -> Result:
+        def run_get_configs(task: Task, config_info: str, progress_callback=None, should_stop=None) -> Result:
             """
             Nornir task function to send commands to a device and save the output to
             a file.
@@ -251,9 +132,25 @@ class NetworkHandler:
             Returns:
                 Result: Nornir result object
             """
-
-            # Get the commands to be sent to the device, based on Netmiko host platform
-            commands = self.nornir.config.user_defined['device_data'][config_info]['commands'][task.host.platform]
+            # Get the commands to be sent to the device, based on host platform.
+            try:
+                commands_by_platform = self.nornir.config.user_defined['device_data'][config_info]['commands']
+                commands = commands_by_platform[task.host.platform]
+            except KeyError:
+                message = (
+                    f"No commands mapped for platform '{task.host.platform}' in config info '{config_info}'"
+                )
+                print(f"{Colors.NOK_RED}[{task.host.hostname}]{Colors.END} {message}")
+                if progress_callback:
+                    progress_callback({
+                        "device": task.host.name,
+                        "ip": task.host.hostname,
+                        "config_info": config_info,
+                        "command": "platform_command_mapping",
+                        "status": "error",
+                        "message": message
+                    })
+                return Result(host=task.host, failed=True, exception=RuntimeError(message))
 
             # Adjust read_timeout value for potencial longer commands
             if 'read_timeout' in self.nornir.config.user_defined['device_data'][config_info]:
@@ -263,7 +160,18 @@ class NetworkHandler:
 
             # Iterate over the commands and run them in the device, saving the output to a file
             for command in commands:
+                if should_stop and should_stop():
+                    raise RuntimeError("Interrupted by user")
                 print(f"{Colors.OK_GREEN}[{task.host.hostname}]{Colors.END} Running command: {command}")
+                if progress_callback:
+                    progress_callback({
+                        "device": task.host.name,
+                        "ip": task.host.hostname,
+                        "config_info": config_info,
+                        "command": command,
+                        "status": "running",
+                        "message": "Running command"
+                    })
 
                 try:
                     # Get device prompt in order to use it as expect_string when running a command
@@ -277,8 +185,28 @@ class NetworkHandler:
                         expect_string=re.escape(prompt),
                         read_timeout=read_timeout
                     )
+                    output_content = result.result
+                    if progress_callback:
+                        progress_callback({
+                            "device": task.host.name,
+                            "ip": task.host.hostname,
+                            "config_info": config_info,
+                            "command": command,
+                            "status": "success",
+                            "message": "Command completed"
+                        })
                 except Exception as exception:
                     print(f"{Colors.NOK_RED}[{task.host.hostname}]{Colors.END} {str(exception)}")
+                    output_content = f"ERROR: {str(exception)}"
+                    if progress_callback:
+                        progress_callback({
+                            "device": task.host.name,
+                            "ip": task.host.hostname,
+                            "config_info": config_info,
+                            "command": command,
+                            "status": "error",
+                            "message": str(exception)
+                        })
 
                 path = f"{self.dir}/outputfiles/GetConfigs/{config_info}/{datetime.now().strftime('%Y%m%d')}/{command.replace(' ', '_')}"
                 filename = f"[{datetime.now().strftime('%Y%m%d%H%M%S')}] {task.host.name} ({task.host.hostname}) - {command}.txt"
@@ -288,7 +216,7 @@ class NetworkHandler:
                     name="save_to_file",
                     task=write_file,
                     filename=f"{path}/{filename}",
-                    content=result.result
+                    content=output_content
                 )
 
             return Result(host=task.host)
@@ -299,20 +227,31 @@ class NetworkHandler:
             result = nornir_filtered.run(
                 name=config_info,
                 task=run_get_configs,
-                config_info=config_info
+                config_info=config_info,
+                progress_callback=progress_callback,
+                should_stop=should_stop
             )
             self.get_config_results[config_info] = result
 
-    def nornir_set_configs(self, nornir_filtered, device_config_list: dict) -> None:
+    def nornir_set_configs(self, nornir_filtered, device_config_list: dict=None) -> None:
         """
         """
-           
-        def run_set_configs(task: Task, device_config_list: dict) -> Result:
+
+        def run_set_configs(task: Task, device_config_list: dict=None) -> Result:
             '''
             '''
 
             try:
+
+                if task.host.get('generated_config'):
+                    config = task.host.get('generated_config')
+                elif device_config_list.get(task.host.name):
+                    config = device_config_list[task.host.name]
+                else:
+                    print(f"{Colors.NOK_RED}[!]{Colors.END} No configuration found for {task.host.name}")
+                    raise Exception(f"{Colors.NOK_RED}[!]{Colors.END} No configuration found for {task.host.name}")
                 
+                print(f"{Colors.OK_GREEN}[{task.host.hostname}]{Colors.END} Applying configuration to {task.host.name}")
                 # Temporary, since there is an issue with send_config for Enterasys
                 if task.host.platform == 'enterasys':
                     # Get device prompt in order to use it as expect_string when running a command
@@ -321,7 +260,7 @@ class NetworkHandler:
                     result = task.run(
                         name="set_configs",
                         task=netmiko_multiline,
-                        commands=device_config_list[task.host.hostname].split('\n'),
+                        commands=config.split('\n'),
                         expect_string=re.escape(prompt),
                         read_timeout=10,
                     )
@@ -337,7 +276,7 @@ class NetworkHandler:
                     result = task.run(
                         name="set_configs",
                         task=netmiko_send_config,
-                        config_commands=device_config_list[task.host.hostname].split('\n')
+                        config_commands=config.split('\n')
                     )
                     task.run(
                         name="save_config",
@@ -347,20 +286,15 @@ class NetworkHandler:
             except Exception as exception:
                 print(f"{Colors.NOK_RED}[{task.host.hostname}]{Colors.END} {str(exception)}")
 
-            return
+        #     task.run(
+        #         name="save_to_file",
+        #         task=write_file,
+        #         filename=f"{path}/{filename}",
+        #         content=result.result
+        #     )
 
-
-
-            task.run(
-                name="save_to_file",
-                task=write_file,
-                filename=f"{path}/{filename}",
-                content=result.result
-            )
-
-            return Result(host=task.host)
+        #     return Result(host=task.host)
         
-        self.get_config_results = {}
         result = nornir_filtered.run(
             name="set_configs",
             task=run_set_configs,
@@ -369,9 +303,56 @@ class NetworkHandler:
         return
 
 
+    def nornir_generate_configs(self, nornir_filtered, set_configs_info: dict) -> dict:
+
+        def deep_merge(data_1, data_2):
+
+            for key, value in data_2.items():
+                if isinstance(value, dict) and key in data_1 and isinstance(data_1[key], dict):
+                    deep_merge(data_1[key], value)  # Recursively merge nested dictionaries
+                else:
+                    data_1[key] = value  # Override or add new key-value pairs
+            return data_1
+
+        def run_generate_configs(task: Task, set_configs_info: dict) -> Result:
+
+            templater = Templater(vendor_os=task.host.platform, config_blocks=set_configs_info)
+            j2_template = templater.get_j2_template()
+
+            if os.path.exists(f"{self.dir}/inputfiles/configs/{task.host.name}.yaml"):
+                print(f"{Colors.OK_GREEN}[{task.host.hostname}]{Colors.END} Generating configuration for {task.host.name}")
+                defaults_data = templater.get_j2_data_from_file(f"{self.dir}/inputfiles/configs/defaults.yaml")
+                if not defaults_data: defaults_data = {}
+                device_data = templater.get_j2_data_from_file(f"{self.dir}/inputfiles/configs/{task.host.name}.yaml")
+                if not device_data: device_data = {}
+                data = {key: value for d in deep_merge(defaults_data, device_data).values() for key, value in d.items()}
+                task.host['generated_config'] = templater.render_config(j2_template, data, hostname=task.host.name)
+
+                print(f"{Colors.OK_GREEN}[{task.host.hostname}]{Colors.END} Saving configuration from {task.host.name} to file")
+                path = f"{self.dir}/outputfiles/GenerateConfig/{datetime.now().strftime('%Y%m%d')}"
+                filename = f"[{datetime.now().strftime('%Y%m%d%H%M%S')}] {task.host.name} ({task.host.hostname}) - jinja2_config.txt"
+                os.makedirs(f"{path}", exist_ok=True)
+
+                task.run(
+                    name="save_to_file",
+                    task=write_file,
+                    filename=f"{path}/{filename}",
+                    content=task.host['generated_config']
+                )
+
+            else:
+                print(f"{Colors.NOK_RED}[!]{Colors.END} Data file for {task.host.name} doesn't exist in root directory")
+
+            return Result(host=task.host, result=task.host['generated_config'])
+
+        nornir_filtered.run(
+            name="generate_configs",
+            task=run_generate_configs,
+            set_configs_info=set_configs_info
+        )
             
     @write_to_file
-    def nornir_generate_data_dict(self) -> dict:
+    def nornir_generate_data_dict(self, progress_callback=None) -> dict:
         '''
         Generate a data structured with all the data used to interact with the devices and the
         output of the interaction. Only the relevant data will be stored
@@ -405,6 +386,16 @@ class NetworkHandler:
                 command_result_dict = {}
                 for command, command_result in host_result.items():
 
+                    if progress_callback:
+                        progress_callback({
+                            "device": host,
+                            "ip": self.nornir.inventory.hosts[host].hostname,
+                            "config_info": config_info,
+                            "command": command,
+                            "status": "running",
+                            "message": "Parsing command output"
+                        })
+
                     output_parsed = self.parse_command_result(
                         device_information=self.nornir.inventory.hosts[host],
                         config_info=config_info,
@@ -412,7 +403,8 @@ class NetworkHandler:
                             'data': command_result['result'],
                             'platform': self.nornir.inventory.hosts[host].platform,
                             'command': command
-                        }   
+                        },
+                        progress_callback=progress_callback
                     )
                     
                     if f"update_{config_info}" in locals():
@@ -429,7 +421,7 @@ class NetworkHandler:
         return script_data
 
 
-    def parse_command_result(self, device_information, config_info, textfsm_args) -> list|None:
+    def parse_command_result(self, device_information, config_info, textfsm_args, progress_callback=None) -> list|None:
         '''
         Use TextFSM to parse the output of the command. The get_structured_data receives the raw
         output, device platform and command issued.
@@ -441,6 +433,15 @@ class NetworkHandler:
             # Delete output_parsed variable since output couldn't be converted
             if isinstance(output_parsed, str):
                 print(f"{Colors.NOK_RED}[{device_information.hostname}]{Colors.END} Couldn't parse the output of the command: {textfsm_args['command']}")
+                if progress_callback:
+                    progress_callback({
+                        "device": getattr(device_information, "name", ""),
+                        "ip": device_information.hostname,
+                        "config_info": config_info,
+                        "command": textfsm_args['command'],
+                        "status": "error",
+                        "message": "Parse returned string (template mismatch)"
+                    })
                 return None
             
             # For the extreme OS, consider all entries where the protocol is equal to CDP
@@ -482,11 +483,29 @@ class NetworkHandler:
                         output_parsed_tmp.append(new_entry)
                 output_parsed = output_parsed_tmp
 
+            if progress_callback:
+                progress_callback({
+                    "device": getattr(device_information, "name", ""),
+                    "ip": device_information.hostname,
+                    "config_info": config_info,
+                    "command": textfsm_args['command'],
+                    "status": "success",
+                    "message": "Parsing completed"
+                })
             return output_parsed
 
         except Exception as exception:
             print(f"{Colors.NOK_RED}[{device_information.hostname}]{Colors.END} Couldn't parse the output of the command: {textfsm_args['command']}")
             print(exception)
+            if progress_callback:
+                progress_callback({
+                    "device": getattr(device_information, "name", ""),
+                    "ip": device_information.hostname,
+                    "config_info": config_info,
+                    "command": textfsm_args['command'],
+                    "status": "error",
+                    "message": f"Parsing error: {exception}"
+                })
             return []
 
     @write_to_file
@@ -540,6 +559,28 @@ class NetworkHandler:
                 }
                 for command, command_result in device_result.items():
                     if 'output_parsed' in command_result.keys() and command_result['output_parsed'] != None:
+                        for output_parsed in command_result['output_parsed']:
+                            output_parsed_dict[config_info][command.replace(' ', '_')].append({**merged_output, **output_parsed})
+                    else:
+                        output_parsed_dict[config_info][command.replace(' ', '_')].append(merged_output)
+
+        return output_parsed_dict
+
+    def nornir_build_config_parsed(self, script_data: dict) -> dict:
+        """
+        Build parsed output structure without writing files.
+        """
+        output_parsed_dict = defaultdict(list)
+
+        for config_info, config_info_result in script_data['get_configs'].items():
+            output_parsed_dict[config_info] = defaultdict(list)
+            for device, device_result in config_info_result.items():
+                merged_output = {
+                    'device_hostname': device.split('(')[0].strip(),
+                    'device_ip_address': device.split('(')[1].split(')')[0].strip()
+                }
+                for command, command_result in device_result.items():
+                    if 'output_parsed' in command_result.keys() and command_result['output_parsed'] is not None:
                         for output_parsed in command_result['output_parsed']:
                             output_parsed_dict[config_info][command.replace(' ', '_')].append({**merged_output, **output_parsed})
                     else:
@@ -620,17 +661,6 @@ class NetworkHandler:
 
         return diagram
 
-
-
-
-
-
-
-
-
-
-
-
     def generate_config_report(self):
         ''' Generate report for commands executed on the device'''
 
@@ -660,37 +690,3 @@ class NetworkHandler:
                 })
 
         self.write_csv(report, filename='Configuration Report')
-
-    def generate_upgrade_report(self):
-        ''' Generate report for devices upgrade process '''
-
-        print('[>] Generating upgrade report')
-        report = []
-        for device in self.report:
-            # For each command runned on the device, create a new .csv row
-            for upgrade in device['upgrade_list']:
-
-                # Authentication to the device failed
-                if 'Authentication failed' in upgrade['status']:
-                    current_release = None
-                # Devices with success login
-                else:
-                    current_release = upgrade['current_release']['version']
-                
-                # Devices not in scope
-                if upgrade['target_release'] == None:
-                    target_release = None
-                # Devices in scope
-                else:
-                    target_release = upgrade['target_release']['version']
-                
-                report.append({
-                    'device_hostname': device['hostname'],
-                    'device_ip_address': device['ip_address'],
-                    'step': upgrade['step'],
-                    'current_release': current_release,
-                    'target_release': target_release,
-                    'status': upgrade['status']
-                })
-
-        self.write_csv(report, filename='Upgrade Report')
