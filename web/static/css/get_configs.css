@@ -1055,6 +1055,10 @@
 }
 
 #executionStatusList .pill {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
     align-self: start;
     border-radius: 8px;
     font-size: 12px;
@@ -1063,6 +1067,48 @@
     padding: 8px 10px;
     text-transform: none;
     white-space: normal;
+}
+
+.execution-event-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.execution-open-file-btn {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: #475569;
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 800;
+    gap: 6px;
+    min-height: 30px;
+    padding: 0 12px;
+    transition: all 140ms ease;
+}
+
+.execution-open-file-btn:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #334155;
+    transform: translateY(-1px);
+}
+
+.execution-open-file-btn:focus {
+    outline: none;
+    border-color: #94a3b8;
+}
+
+.execution-open-file-btn i {
+    font-size: 12px;
+}
+
+.execution-open-file-btn span {
+    line-height: 1;
 }
 
 #executionStatusList .status-info {

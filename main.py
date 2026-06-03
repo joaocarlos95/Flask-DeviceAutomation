@@ -361,6 +361,35 @@ def run_get_configs_recent():
     return jsonify(runs=runs[:12])
 
 
+@app.route('/open_output_file', methods=['POST'])
+def open_output_file():
+    """Open an exported file from the execution log when it lives under outputfiles."""
+    payload = request.get_json() or {}
+    raw_path = str(payload.get("path") or "").strip()
+    if not raw_path:
+        return jsonify(error="Missing file path."), 400
+
+    file_path = Path(raw_path).expanduser().resolve(strict=False)
+    output_root = (Path(get_root_directory(app)) / "outputfiles").resolve(strict=False)
+
+    try:
+        file_path.relative_to(output_root)
+    except ValueError:
+        return jsonify(error="That file is outside the allowed output directory."), 403
+
+    if not file_path.exists():
+        return jsonify(error="File not found."), 404
+
+    try:
+        os.startfile(str(file_path))
+    except AttributeError:
+        return jsonify(error="Opening files is only supported on Windows."), 500
+    except OSError as exception:
+        return jsonify(error=str(exception)), 500
+
+    return jsonify(success=True)
+
+
 @app.route('/run_get_configs_interrupt/<run_id>', methods=['POST'])
 def run_get_configs_interrupt(run_id):
     with app.extensions["run_status_lock"]:

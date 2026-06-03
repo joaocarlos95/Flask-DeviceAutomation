@@ -1294,16 +1294,49 @@
             }
 
             listToRender.slice(-250).forEach(function(event) {
-                var pill = document.createElement('span');
+                var pill = document.createElement('div');
+                var eventText = document.createElement('span');
                 var status = (event.status || '').toLowerCase();
                 var icon = status === 'error' ? '✗' : (status === 'success' ? '✓' : '…');
                 pill.className = 'pill status-' + status;
-                pill.textContent =
+                eventText.className = 'execution-event-text';
+                eventText.textContent =
                     '[' + (event.timestamp || '') + '] ' +
                     icon + ' ' +
                     (event.device || '-') + ' (' + (event.ip || '-') + ') ' +
                     (event.config_info || '-') + ' :: ' + (event.command || '-') + ' - ' + (event.message || '');
+                pill.appendChild(eventText);
+
+                if (event.file_path && status === 'success' && event.command === 'excel_export') {
+                    var openButton = document.createElement('button');
+                    openButton.type = 'button';
+                    openButton.className = 'execution-open-file-btn';
+                    openButton.innerHTML = '<i class="fas fa-file-excel" aria-hidden="true"></i><span>Open</span>';
+                    openButton.addEventListener('click', function(clickEvent) {
+                        clickEvent.stopPropagation();
+                        self.openOutputFile(event.file_path);
+                    });
+                    pill.appendChild(openButton);
+                }
+
                 self.executionStatusList.appendChild(pill);
+            });
+        },
+
+        openOutputFile: function(filePath) {
+            var self = this;
+            $.ajax({
+                url: '/open_output_file',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ path: filePath }),
+                error: function(xhr) {
+                    var message = 'Could not open file.';
+                    if (xhr && xhr.responseJSON && xhr.responseJSON.error) {
+                        message = xhr.responseJSON.error;
+                    }
+                    self.executionRunState.textContent = message;
+                }
             });
         },
 

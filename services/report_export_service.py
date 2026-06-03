@@ -27,7 +27,8 @@ def export_parsed_excel(root_directory: str, parsed_data: dict, progress_callbac
                 "config_info": config_info,
                 "command": "excel_export",
                 "status": "running",
-                "message": f"Writing Excel file: {file_path.name}"
+                "message": f"Writing Excel file: {file_path.name}",
+                "file_path": str(file_path),
             })
         print(
             f"{Colors.OK_GREEN}[>]{Colors.END} Saving data to excel\n"
@@ -47,5 +48,6 @@ def export_parsed_excel(root_directory: str, parsed_data: dict, progress_callbac
                 "config_info": config_info,
                 "command": "excel_export",
                 "status": "success",
-                "message": f"Excel saved: {file_path.name}"
+                "message": f"Excel saved: {file_path.name}",
+                "file_path": str(file_path),
             })
